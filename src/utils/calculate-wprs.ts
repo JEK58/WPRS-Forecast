@@ -1,6 +1,7 @@
 // https://www.fai.org/sites/default/files/civl/documents/sporting_code_s7_e_-_wprs_2022.pdf
 
-import puppeteer from "puppeteer";
+import edgeChromium from "chrome-aws-lambda";
+import puppeteer from "puppeteer-core";
 import axios from "axios";
 import { prisma } from "@/server/db";
 
@@ -22,6 +23,9 @@ export interface CompForecast {
   Pp: number;
   WPR: number;
 }
+
+const LOCAL_CHROME_EXECUTABLE =
+  "/Applications/Google Chrome.app/Contents/MacOS/Google Chrome";
 
 export async function getWprs(url: string) {
   console.log("🚀 ~ url:", url);
@@ -121,7 +125,14 @@ function generateAirtribuneCompUrl(url: string) {
 }
 
 async function getAirtribunePilots(url: string) {
-  const browser = await puppeteer.launch();
+  // Edge executable will return an empty string locally.
+  const executablePath =
+    (await edgeChromium.executablePath) || LOCAL_CHROME_EXECUTABLE;
+  const browser = await puppeteer.launch({
+    executablePath,
+    args: edgeChromium.args,
+    headless: false,
+  });
   const page = await browser.newPage();
   await page.goto(url);
   // await page.goto(
@@ -157,7 +168,14 @@ async function getAirtribunePilots(url: string) {
 }
 
 async function getCivlcompPilots(url: string) {
-  const browser = await puppeteer.launch();
+  // Edge executable will return an empty string locally.
+  const executablePath =
+    (await edgeChromium.executablePath) || LOCAL_CHROME_EXECUTABLE;
+  const browser = await puppeteer.launch({
+    executablePath,
+    args: edgeChromium.args,
+    headless: false,
+  });
   const page = await browser.newPage();
 
   await page.goto(url);
