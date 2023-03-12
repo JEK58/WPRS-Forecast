@@ -27,17 +27,23 @@ export async function getWprs(url: string) {
   console.log("🚀 ~ url:", url);
   if (isAirtibuneLink(url)) {
     const compUrl = generateAirtribuneCompUrl(url);
-    console.log("🚀 ~ compUrl:", compUrl);
     const pilots = await getAirtribunePilots(compUrl);
     return await calculateWPRS(pilots);
   }
+  if (isCivlLink(url)) {
+    const compUrl = generateCivlCompUrl(url);
+    const pilots = await getCivlcompPilots(compUrl);
+    return await calculateWPRS(pilots);
+  }
 }
-function isAirtibuneLink(url: string) {
+export function isAirtibuneLink(url: string) {
   return url.includes("airtribune.com");
 }
-function isCivlLink(url: string) {
+
+export function isCivlLink(url: string) {
   return url.includes("civlcomps.org");
 }
+
 async function calculateWPRS(pilots: Pilot[]) {
   const numPilots = pilots.length;
 
@@ -52,8 +58,6 @@ async function calculateWPRS(pilots: Pilot[]) {
   for (let i = 0; i < numPilots / 2; i++) {
     if (topPilots.length) Pq_srtp += topPilots[i]?.points ?? 0;
   }
-
-  console.log("🚀 ~ Pq_srtp:", Pq_srtp);
 
   const compPilotsWprs: number[] = [];
 
@@ -89,12 +93,17 @@ async function calculateWPRS(pilots: Pilot[]) {
   const Pp = Math.max(Pplacing ** (1 + Pq), Pplacing ** 2);
   const WPR = +(100 * Pp * Pq * Pn * Ta).toFixed(2); // *Td
 
-  return { numPilots, Pq, Pq_srp, Pq_srtp, Pn, compRanking, Pp, WPR };
+  return {
+    numPilots,
+    Pq: Pq.toFixed(3),
+    Pq_srp,
+    Pq_srtp,
+    Pn,
+    compRanking: compRanking.toFixed(3),
+    Pp,
+    WPR,
+  };
 }
-// const url = "https://airtribune.com/montegrappa-trophy-2023";
-// const url =
-//   "https://civlcomps.org/event/staufen-cup-2023-bawu-open-und-vorarlberger-landesmeistersch/";
-// const url = "https://airtribune.com/flory-cup-2023/pilots"
 
 function getPosition(string: string, subString: string, index: number) {
   return string.split(subString, index).join(subString).length;
@@ -111,8 +120,8 @@ function generateAirtribuneCompUrl(url: string) {
 async function getAirtribunePilots(url: string) {
   const browser = await puppeteer.launch();
   const page = await browser.newPage();
-
-  await page.goto(url);
+  const _url = "file:///Users/steph/Documents/GitHub/wprs-forecast/demo.html";
+  await page.goto(_url);
   // await page.goto(
   //   "file:///Users/sschoepe/Documents/GitHub/wprs-calculator/flory-cup.html"
   // );
@@ -145,71 +154,76 @@ async function getAirtribunePilots(url: string) {
   return pilots;
 }
 
-// async function getCivlcompPilots(url: string) {
-//   const browser = await puppeteer.launch();
-//   const page = await browser.newPage();
+async function getCivlcompPilots(url: string) {
+  const browser = await puppeteer.launch();
+  const page = await browser.newPage();
 
-//   await page.goto(url);
+  await page.goto(url);
 
-//   // Set screen size
-//   await page.setViewport({ width: 1080, height: 1024 });
-//   await page.waitForSelector(".participants-item");
+  // Set screen size
+  await page.setViewport({ width: 1080, height: 1024 });
+  await page.waitForSelector(".participants-item");
 
-//   const data = await page.evaluate(() => {
-//     const rows = document.querySelectorAll(".participants-item tr");
-//     return Array.from(rows, (row) => {
-//       const columns = row.querySelectorAll("td");
-//       return Array.from(columns, (column) => column.innerText);
-//     });
-//   });
+  const data = await page.evaluate(() => {
+    const rows = document.querySelectorAll(".participants-item tr");
+    return Array.from(rows, (row) => {
+      const columns = row.querySelectorAll("td");
+      return Array.from(columns, (column) => column.innerText);
+    });
+  });
 
-//   const confirmedPilots = data.filter((el) => {
-//     return el[5] == "Confirmed" || el[5] == "Wildcard";
-//   });
+  const confirmedPilots = data.filter((el) => {
+    return el[5] == "Confirmed" || el[5] == "Wildcard";
+  });
 
-//   const pilots = await Promise.all(
-//     confirmedPilots.map(async (el) => {
-//       const input = el[1] ?? "";
-//       const name = input.split(" (")[0] ?? "";
-//       const civlID = await lookupCivlId(name);
+  const pilots = await Promise.all(
+    confirmedPilots.map(async (el) => {
+      const input = el[1] ?? "";
+      const name = input.split(" (")[0] ?? "";
+      const civlID = await lookupCivlId(name);
 
-//       return {
-//         name,
-//         nationality: el[2],
-//         civlID,
-//         wing: el[3],
-//         status: el[5],
-//       };
-//     })
-//   );
+      return {
+        name,
+        nationality: el[2],
+        civlID,
+        wing: el[3],
+        status: el[5],
+      };
+    })
+  );
 
-//   await browser.close();
-//   return pilots;
-// }
+  await browser.close();
+  return pilots;
+}
 
-// async function lookupCivlId(name: string) {
-//   const headersList = {
-//     Accept: "*/*",
-//     "Content-Type": "application/x-www-form-urlencoded",
-//   };
+interface CivlPilotLookup {
+  id: number;
+  text: string;
+}
+async function lookupCivlId(name: string) {
+  const headersList = {
+    Accept: "*/*",
+    "Content-Type": "application/x-www-form-urlencoded",
+  };
 
-//   const bodyContent = `term=${name}`;
+  const bodyContent = `term=${name}`;
+  const reqOptions = {
+    url: "https://civlcomps.org/meta/search-profile/",
+    method: "GET",
+    headers: headersList,
+    data: bodyContent,
+  };
 
-//   const reqOptions = {
-//     url: "https://civlcomps.org/meta/search-profile/",
-//     method: "GET",
-//     headers: headersList,
-//     data: bodyContent,
-//   };
-//   try {
-//     const res = await axios.request(reqOptions);
-//     if (!res.data || !res.data.length) throw new Error(`No data for ${name}`);
+  try {
+    const res = await axios.request<CivlPilotLookup[]>(reqOptions);
+    // TODO: Handle multiple results for a name
+    if (!res.data || !res.data.length) throw new Error(`No data for ${name}`);
 
-//     const data = res.data;
-
-//     return (data[0].id as number) ?? 99999;
-//   } catch (error) {
-//     console.log(error);
-//     return 99999;
-//   }
-// }
+    const data = res.data;
+    if (data[0]) return data[0].id;
+    else return 99999;
+  } catch (error) {
+    console.log(error);
+    return 99999;
+  }
+}
