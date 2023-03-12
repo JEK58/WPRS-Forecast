@@ -40,6 +40,8 @@ const Home: NextPage = () => {
         setCompForecast(resData);
       } else if (response.status === 429) setError("Too many requests");
       else if (response.status === 400) setError("This is not a valid link");
+      else if (response.status === 204)
+        setError("No confirmed pilots in this comp");
       else throw new Error("Ooops… something went wrong.");
     } catch (error) {
       setError("Ooops… something went wrong.");

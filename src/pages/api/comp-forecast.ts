@@ -44,6 +44,7 @@ async function handler(req: ExtendedNextApiRequest, res: NextApiResponse) {
 
     try {
       const forecast = await getWprs(url);
+      if (forecast == 0) return res.status(204).end();
       wprs = forecast?.WPR;
       if (forecast) res.status(201).send(forecast);
       else throw new Error(`Could not calculate WPRS from URL: ${url}`);
@@ -62,8 +63,6 @@ async function handler(req: ExtendedNextApiRequest, res: NextApiResponse) {
       });
     }
   } catch (error) {
-    console.log("⚠️");
-
     console.log(error);
   }
 }

@@ -28,11 +28,14 @@ export async function getWprs(url: string) {
   if (isAirtibuneLink(url)) {
     const compUrl = generateAirtribuneCompUrl(url);
     const pilots = await getAirtribunePilots(compUrl);
+    if (!pilots.length) return 0;
+
     return await calculateWPRS(pilots);
   }
   if (isCivlLink(url)) {
     const compUrl = generateCivlCompUrl(url);
     const pilots = await getCivlcompPilots(compUrl);
+    if (!pilots.length) return 0;
     return await calculateWPRS(pilots);
   }
 }
@@ -120,8 +123,7 @@ function generateAirtribuneCompUrl(url: string) {
 async function getAirtribunePilots(url: string) {
   const browser = await puppeteer.launch();
   const page = await browser.newPage();
-  const _url = "file:///Users/steph/Documents/GitHub/wprs-forecast/demo.html";
-  await page.goto(_url);
+  await page.goto(url);
   // await page.goto(
   //   "file:///Users/sschoepe/Documents/GitHub/wprs-calculator/flory-cup.html"
   // );
