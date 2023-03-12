@@ -106,9 +106,9 @@ const Home: NextPage = () => {
             <input
               id="url-input"
               type="text"
-              className="dark:highlight-white/5 hidden h-12 w-72 items-center space-x-3 rounded-lg bg-white px-4 text-left text-slate-400 shadow-sm ring-1 ring-slate-900/10 hover:ring-slate-300 focus:outline-none focus:ring-2 focus:ring-sky-500  sm:flex"
+              className="dark:highlight-white/5 hidden h-12 w-72 items-center space-x-3 rounded-lg bg-white px-4 text-left text-slate-400 shadow-sm ring-1 ring-slate-900/10 hover:ring-slate-300 focus:outline-none focus:ring-2 focus:ring-[hsl(125,50%,56%)]  sm:flex"
               onChange={onUrlChange}
-              placeholder="Link to comp"
+              placeholder="Link to comp (civl or airtribune)"
             />
           </div>
 
