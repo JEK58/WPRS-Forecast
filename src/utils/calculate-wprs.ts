@@ -3,6 +3,7 @@
 import playwright from "playwright";
 import axios from "axios";
 import { prisma } from "@/server/db";
+import chromium from "chrome-aws-lambda";
 
 interface Pilot {
   name?: string;
@@ -22,9 +23,6 @@ export interface CompForecast {
   Pp: number;
   WPR: number;
 }
-
-const LOCAL_CHROME_EXECUTABLE =
-  "/Applications/Google Chrome.app/Contents/MacOS/Google Chrome";
 
 export async function getWprs(url: string) {
   console.log("🚀 ~ url:", url);
@@ -126,7 +124,11 @@ function generateAirtribuneCompUrl(url: string) {
 async function getAirtribunePilots(url: string) {
   // Edge executable will return an empty string locally.
 
-  const browser = await playwright.chromium.launch();
+  const browser = await playwright.chromium.launch({
+    args: chromium.args,
+    executablePath: await chromium.executablePath,
+    headless: chromium.headless,
+  });
   const page = await browser.newPage();
   await page.goto(url);
   // await page.goto(
@@ -160,8 +162,11 @@ async function getAirtribunePilots(url: string) {
 }
 
 async function getCivlcompPilots(url: string) {
-  // Edge executable will return an empty string locally.
-  const browser = await playwright.chromium.launch();
+  const browser = await playwright.chromium.launch({
+    args: chromium.args,
+    executablePath: await chromium.executablePath,
+    headless: chromium.headless,
+  });
   const page = await browser.newPage();
 
   await page.goto(url);
