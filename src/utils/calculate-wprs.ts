@@ -1,6 +1,6 @@
 // https://www.fai.org/sites/default/files/civl/documents/sporting_code_s7_e_-_wprs_2022.pdf
 
-import puppeteer from "puppeteer";
+import playwright from "playwright";
 import axios from "axios";
 import { prisma } from "@/server/db";
 
@@ -126,15 +126,13 @@ function generateAirtribuneCompUrl(url: string) {
 async function getAirtribunePilots(url: string) {
   // Edge executable will return an empty string locally.
 
-  const browser = await puppeteer.launch();
+  const browser = await playwright.chromium.launch();
   const page = await browser.newPage();
   await page.goto(url);
   // await page.goto(
   //   "file:///Users/sschoepe/Documents/GitHub/wprs-calculator/flory-cup.html"
   // );
 
-  // Set screen size
-  await page.setViewport({ width: 1080, height: 1024 });
   await page.waitForSelector(".table-pilot");
 
   const data = await page.evaluate(() => {
@@ -163,13 +161,11 @@ async function getAirtribunePilots(url: string) {
 
 async function getCivlcompPilots(url: string) {
   // Edge executable will return an empty string locally.
-  const browser = await puppeteer.launch();
+  const browser = await playwright.chromium.launch();
   const page = await browser.newPage();
 
   await page.goto(url);
 
-  // Set screen size
-  await page.setViewport({ width: 1080, height: 1024 });
   await page.waitForSelector(".participants-item");
 
   const data = await page.evaluate(() => {
