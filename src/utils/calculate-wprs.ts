@@ -68,12 +68,10 @@ async function calculateWPRS(pilots: Pilot[]) {
   // sum ranking-points of the top 1/2 ranked participants
   for (let i = 0; i < numPilots; i++) {
     const element = pilots[i];
-    console.log("🚀 ~ element:", element);
     if (!element) continue;
     const civl = element.civlID;
     if (!civl || isNaN(civl) || civl > 99999) continue;
 
-    console.log("🚀 ~ civl:", civl);
     const pilot = await prisma.ranking.findUnique({ where: { id: civl } });
 
     if (pilot) compPilotsWprs.push(pilot.points);
