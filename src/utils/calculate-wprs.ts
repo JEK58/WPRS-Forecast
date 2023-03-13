@@ -1,8 +1,8 @@
 // https://www.fai.org/sites/default/files/civl/documents/sporting_code_s7_e_-_wprs_2022.pdf
 
-import { launchChromium } from "playwright-aws-lambda";
 import axios from "axios";
 import { prisma } from "@/server/db";
+import { load } from "cheerio";
 
 interface Pilot {
   name?: string;
@@ -10,6 +10,13 @@ interface Pilot {
   civlID?: number;
   wing?: string;
   status?: string;
+}
+
+interface AirtribunePilot
+  extends Omit<Pilot, "civlID" | "wing" | "nationality"> {
+  country: { ioc_code: string };
+  glider_model: string;
+  civl_id: string;
 }
 
 export interface CompForecast {
@@ -56,7 +63,6 @@ async function calculateWPRS(pilots: Pilot[]) {
     orderBy: [{ rank: "asc" }],
     take: numPilots + 10,
   });
-  console.log("🚀 ~ topPilots:", topPilots.length);
   // sum ranking-points if they had been the top-ranked pilots of the world
   for (let i = 0; i < numPilots / 2; i++) {
     if (topPilots.length) Pq_srtp += topPilots[i]?.points ?? 0;
@@ -121,81 +127,83 @@ function generateAirtribuneCompUrl(url: string) {
 }
 
 async function getAirtribunePilots(url: string) {
-  // Edge executable will return an empty string locally.
+  const response = await fetch(url);
+  const body = await response.text();
 
-  const browser = await launchChromium();
-  const context = await browser.newContext();
+  const jsonRegex = /window\.ATDATA\.pilots\s*=\s*({[\s\S]*?});/;
+  const match = body.match(jsonRegex);
 
-  const page = await context.newPage();
-  // const page = await browser.newPage();
-  await page.goto(url);
-  // await page.goto(
-  //   "file:///Users/sschoepe/Documents/GitHub/wprs-calculator/flory-cup.html"
-  // );
+  if (match && typeof match[1] == "string") {
+    const jsonData = JSON.parse(match[1]) as { pilots: AirtribunePilot[] };
 
-  await page.waitForSelector(".table-pilot");
-
-  const data = await page.evaluate(() => {
-    const rows = document.querySelectorAll(".table-pilot tr");
-    return Array.from(rows, (row) => {
-      const columns = row.querySelectorAll("td");
-      return Array.from(columns, (column) => column.innerText);
+    const confirmedPilots = jsonData.pilots.filter((el) => {
+      return el.status == "confirmed" || el.status == "wildcard";
     });
-  });
-  const confirmedPilots = data.filter((el) => {
-    return el[6] == "Confirmed" || el[6] == "Wildcard";
-  });
-  const pilots = confirmedPilots.map((el) => {
-    return {
-      name: el[1],
-      nationality: el[2],
-      civlID: parseInt(el[3]?.split(":")[1] ?? "99999", 10),
-      wing: el[5],
-      status: el[6],
-    };
-  });
 
-  await browser.close();
-  return pilots;
+    const pilots = confirmedPilots.map((el) => {
+      return {
+        name: el.name,
+        nationality: el.country.ioc_code,
+        civlID: parseInt(el.civl_id ?? "99999", 10),
+        wing: el.glider_model,
+        status: el.status,
+      };
+    });
+    return pilots;
+  } else {
+    console.log("No JSON data found in the mixed text.");
+    return [];
+  }
 }
 
 async function getCivlcompPilots(url: string) {
-  const browser = await launchChromium();
-  const page = await browser.newPage();
+  const response = await fetch(url);
+  const body = await response.text();
 
-  await page.goto(url);
+  const $ = load(body, { xmlMode: true });
 
-  await page.waitForSelector(".participants-item");
+  const content = $(".participants-item");
 
-  const data = await page.evaluate(() => {
-    const rows = document.querySelectorAll(".participants-item tr");
-    return Array.from(rows, (row) => {
-      const columns = row.querySelectorAll("td");
-      return Array.from(columns, (column) => column.innerText);
+  const rows = content.find("tr");
+
+  interface RowData {
+    [key: string]: string;
+  }
+
+  const data: RowData[] = [];
+
+  rows.each((i, row) => {
+    const columns = $(row).find("td");
+    const rowData: RowData = {};
+
+    columns.each((j, column) => {
+      const columnName = content.find("th").eq(j).text().trim().toLowerCase();
+      rowData[columnName] = $(column).text().trim();
     });
+
+    data.push(rowData);
   });
 
   const confirmedPilots = data.filter((el) => {
-    return el[5] == "Confirmed" || el[5] == "Wildcard";
+    return el.status == "Confirmed" || el.status == "Wildcard";
   });
 
   const pilots = await Promise.all(
     confirmedPilots.map(async (el) => {
-      const input = el[1] ?? "";
+      const input = el.name ?? "";
       const name = input.split(" (")[0] ?? "";
       const civlID = await lookupCivlId(name);
 
       return {
         name,
-        nationality: el[2],
+        nationality: el.country,
         civlID,
-        wing: el[3],
-        status: el[5],
+        wing: el.glider,
+        status: el.status,
       };
     })
   );
 
-  await browser.close();
   return pilots;
 }
 
