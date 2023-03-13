@@ -119,9 +119,8 @@ const Home: NextPage = () => {
               </Link>
               <p className="text-sm">
                 This forecast is based on the currently confirmed pilots and
-                their CIVL rankings - given that there will be three valid
-                tasks. The calculation will become more accurate as the
-                competition date approaches.
+                their CIVL rankings. The calculation will become more accurate
+                as the competition date approaches.
               </p>
               <p className="text-sm text-slate-200">
                 Limitations: For technical reasons, the calculation of a comp

@@ -28,6 +28,8 @@ export interface CompForecast {
   compRanking: number;
   Pp: number;
   WPR: number;
+  wprDeval0_8: number;
+  wprDeval0_5: number;
 }
 
 export async function getWprs(url: string) {
@@ -96,11 +98,15 @@ async function calculateWPRS(pilots: Pilot[]) {
   const Pn = Pn_tmp > Pn_max ? Pn_max : Pn_tmp;
 
   // 1 task: 0.5, 2 tasks: 0.8, 3 tasks: 1.0
-  const Ta = 1.0;
-  const compRanking = Pq * Pn * Ta;
+  const Ta3 = 1.0;
+  const Ta2 = 0.8;
+  const Ta1 = 0.5;
+  const compRanking = Pq * Pn * Ta3;
   const Pplacing = (numPilots - 1 + 1) / numPilots;
   const Pp = Math.max(Pplacing ** (1 + Pq), Pplacing ** 2);
-  const WPR = +(100 * Pp * Pq * Pn * Ta).toFixed(2); // *Td
+  const WPR = +(100 * Pp * Pq * Pn * Ta3).toFixed(2); // *Td
+  const wprDeval0_8 = +(100 * Pp * Pq * Pn * Ta2).toFixed(2); // *Td
+  const wprDeval0_5 = +(100 * Pp * Pq * Pn * Ta1).toFixed(2); // *Td
 
   return {
     numPilots,
@@ -111,6 +117,8 @@ async function calculateWPRS(pilots: Pilot[]) {
     compRanking: compRanking.toFixed(3),
     Pp,
     WPR,
+    wprDeval0_8,
+    wprDeval0_5,
   };
 }
 
