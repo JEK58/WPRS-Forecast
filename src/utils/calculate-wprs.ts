@@ -1,6 +1,6 @@
 // https://www.fai.org/sites/default/files/civl/documents/sporting_code_s7_e_-_wprs_2022.pdf
 
-import * as playwright from "playwright-aws-lambda";
+import { launchChromium } from "playwright-aws-lambda";
 import axios from "axios";
 import { prisma } from "@/server/db";
 
@@ -123,7 +123,7 @@ function generateAirtribuneCompUrl(url: string) {
 async function getAirtribunePilots(url: string) {
   // Edge executable will return an empty string locally.
 
-  const browser = await playwright.launchChromium();
+  const browser = await launchChromium();
   const context = await browser.newContext();
 
   const page = await context.newPage();
@@ -160,7 +160,7 @@ async function getAirtribunePilots(url: string) {
 }
 
 async function getCivlcompPilots(url: string) {
-  const browser = await playwright.launchChromium();
+  const browser = await launchChromium();
   const page = await browser.newPage();
 
   await page.goto(url);
