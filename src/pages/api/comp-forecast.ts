@@ -27,11 +27,13 @@ async function handler(req: ExtendedNextApiRequest, res: NextApiResponse) {
     return res.status(400).json({ error: "No link submitted" });
   }
 
-  try {
-    const res = await prisma.usage.create({ data: { compUrl: body.url } });
-    queryID = res.id;
-  } catch (error) {
-    console.log(error);
+  if (process.env.NODE_ENV === "production") {
+    try {
+      const res = await prisma.usage.create({ data: { compUrl: body.url } });
+      queryID = res.id;
+    } catch (error) {
+      console.log(error);
+    }
   }
 
   const url = sanitizeUrl(body.url);
