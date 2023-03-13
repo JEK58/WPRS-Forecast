@@ -125,7 +125,8 @@ const Home: NextPage = () => {
               <p className="text-sm text-slate-200">
                 Limitations: For technical reasons, the calculation of a comp
                 listed on civlcomps.org is currently less accurate than on
-                airtribune.com. I&apos;m working on it 😜
+                airtribune.com (And takes significantly longer). I&apos;m
+                working on it 😜
               </p>
             </div>
           )}
