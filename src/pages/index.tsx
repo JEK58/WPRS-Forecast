@@ -87,7 +87,7 @@ const Home: NextPage = () => {
               <button
                 disabled={!isValidLink}
                 onClick={handleSubmit}
-                className="flex h-12 w-full items-center justify-center rounded-md bg-indigo-600 px-4 py-2 font-medium text-white shadow-sm hover:bg-indigo-700 focus:outline-none  focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"
+                className="flex h-12 w-full items-center justify-center rounded-md bg-indigo-600 px-4 py-2 font-medium text-white shadow-sm focus:outline-none focus:ring-2  focus:ring-indigo-500 focus:ring-offset-2 enabled:hover:bg-indigo-700"
               >
                 {isLoading && <Spinner />}{" "}
                 {isLoading ? "Calculating…" : "Calculate"}
