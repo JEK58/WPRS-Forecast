@@ -1,7 +1,7 @@
 version: "3.8"
 
 services:
-  next-app:
+  wprs-forecast:
       container_name: wprs-forecast
       build:
         context: ./
