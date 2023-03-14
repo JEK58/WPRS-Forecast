@@ -17,7 +17,7 @@ export async function getCivlcompPilots(url: string) {
 
   const data: RowData[] = [];
 
-  rows.each((i, row) => {
+  rows.each((_, row) => {
     const columns = $(row).find("td");
     const rowData: RowData = {};
 
@@ -78,6 +78,7 @@ async function lookupCivlId(name: string) {
     }
 
     const data = res.data;
+
     if (data.length > 1) {
       const filtered = data.filter((el) => el.text.includes(name));
       if (!filtered[0]) {
