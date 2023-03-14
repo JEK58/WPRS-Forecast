@@ -72,10 +72,23 @@ async function lookupCivlId(name: string) {
 
   try {
     const res = await axios.request<CivlPilotLookup[]>(reqOptions);
-    // TODO: Handle multiple results for a name
-    if (!res.data || !res.data.length) throw new Error(`No data for ${name}`);
+    if (!res.data || !res.data.length) {
+      console.log(`❗️ ~ No data for ${name}`);
+      return 99999;
+    }
 
     const data = res.data;
+    if (data.length > 1) {
+      const filtered = data.filter((el) => el.text.includes(name));
+      if (!filtered[0]) {
+        console.log(`❗️ ~ No data for ${name}`);
+        return 99999;
+      }
+      console.log(
+        `❗️ ~ Multiple results for ${name}. Picked: ${filtered[0].text}`
+      );
+      return filtered[0].id;
+    }
     if (data[0]) return data[0].id;
     else return 99999;
   } catch (error) {
