@@ -1,0 +1,30 @@
+version: "3.8"
+
+services:
+  next-app:
+      container_name: wprs-forecast
+      build:
+        context: ./
+        dockerfile: Dockerfile
+      environment:
+        DATABASE_URL: ${DATABASE_URL}
+        SUBMIT_RATE_LIMIT: ${SUBMIT_RATE_LIMIT}
+
+      restart: always
+      ports:
+        - 3000:3000
+      labels:
+        traefik.enable: true
+        traefik.http.routers.wprs-forecast.rule: "Host(`${TRAEFIK_DOMAIN}`)"
+        traefik.http.routers.wprs-forecast.entrypoints: websecure
+        traefik.http.routers.wprs-forecast.tls.certresolver: myresolver
+        traefik.http.routers.wprs-forecast.priority: 100
+        traefik.port: 3000
+        traefik.docker.network: traefik
+
+networks:
+  default:
+    external:
+      name: traefik
+
+  
