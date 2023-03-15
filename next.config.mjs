@@ -20,6 +20,6 @@ const config = {
     locales: ["en"],
     defaultLocale: "en",
   },
-  output: "standalone",
+  // output: "standalone",
 };
 export default config;
