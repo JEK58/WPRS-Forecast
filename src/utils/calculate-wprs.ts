@@ -3,6 +3,7 @@
 import { prisma } from "@/server/db";
 import { getAirtribunePilots } from "@/utils/get-airtribune-pilots";
 import { getCivlcompPilots } from "@/utils/get-civl-pilots";
+import { getPwcPilots } from "./get-pwc-pilots";
 
 export interface Pilot {
   name?: string;
@@ -40,6 +41,12 @@ export async function getWprs(url: string) {
     if (!pilots.length) return 0;
     return await calculateWPRS(pilots);
   }
+  if (isPwcLink(url)) {
+    const compUrl = generatePwcCompUrl(url);
+    const pilots = await getPwcPilots(compUrl);
+    if (!pilots.length) return 0;
+    return await calculateWPRS(pilots);
+  }
 }
 export function isAirtibuneLink(url: string) {
   return url.includes("airtribune.com");
@@ -47,6 +54,10 @@ export function isAirtibuneLink(url: string) {
 
 export function isCivlLink(url: string) {
   return url.includes("civlcomps.org");
+}
+
+export function isPwcLink(url: string) {
+  return url.includes("pwca.org");
 }
 
 async function calculateWPRS(pilots: Pilot[]) {
@@ -125,4 +136,8 @@ function generateCivlCompUrl(url: string) {
 
 function generateAirtribuneCompUrl(url: string) {
   return url.slice(0, getPosition(url, "/", 4)) + "/pilots";
+}
+
+function generatePwcCompUrl(url: string) {
+  return url.slice(0, getPosition(url, "/", 5)) + "/selection";
 }

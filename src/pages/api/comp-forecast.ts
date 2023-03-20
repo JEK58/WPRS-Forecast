@@ -71,7 +71,11 @@ async function handler(req: ExtendedNextApiRequest, res: NextApiResponse) {
 export default handler;
 
 function isValidUrl(url: string) {
-  if (url.includes("airtribune.com") || url.includes("civlcomps.org"))
+  if (
+    url.includes("airtribune.com") ||
+    url.includes("civlcomps.org") ||
+    url.includes("pwca.org")
+  )
     return true;
   return false;
 }

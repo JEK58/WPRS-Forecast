@@ -1,7 +1,6 @@
-import axios from "axios";
 import { load } from "cheerio";
+import { lookupCivlId } from "@/utils/lookup-civl-id";
 
-const CIVL_PLACEHOLDER_ID = 99999;
 export async function getCivlcompPilots(url: string) {
   const response = await fetch(url);
   const body = await response.text();
@@ -51,49 +50,4 @@ export async function getCivlcompPilots(url: string) {
   );
 
   return pilots;
-}
-
-interface CivlPilotLookup {
-  id: number;
-  text: string;
-}
-async function lookupCivlId(name: string) {
-  const headersList = {
-    Accept: "*/*",
-    "Content-Type": "application/x-www-form-urlencoded",
-  };
-
-  const reqOptions = {
-    url: "https://civlcomps.org/meta/search-profile/",
-    method: "GET",
-    headers: headersList,
-    data: `term=${name}`,
-  };
-
-  try {
-    const res = await axios.request<CivlPilotLookup[]>(reqOptions);
-    if (!res.data || !res.data.length) {
-      console.log(`❗️ ~ No data for ${name}`);
-      return CIVL_PLACEHOLDER_ID;
-    }
-
-    const data = res.data;
-
-    if (data.length > 1) {
-      const filtered = data.filter((el) => el.text.includes(name));
-      if (!filtered[0]) {
-        console.log(`❗️ ~ No data for ${name}`);
-        return CIVL_PLACEHOLDER_ID;
-      }
-      console.log(
-        `❗️ ~ Multiple results for ${name}. Picked: ${filtered[0].text}`
-      );
-      return filtered[0].id;
-    }
-    if (data[0]) return data[0].id;
-    else return CIVL_PLACEHOLDER_ID;
-  } catch (error) {
-    console.log(error);
-    return CIVL_PLACEHOLDER_ID;
-  }
 }
