@@ -19,7 +19,7 @@ const Home: NextPage = () => {
   const [url, setUrl] = useState<string>("");
   const [isValidLink, setIsValidLink] = useState(false);
 
-  const handleSubmit = async (event: React.MouseEvent<HTMLButtonElement>) => {
+  const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     setIsLoading(true);
     setError(undefined);
@@ -78,7 +78,10 @@ const Home: NextPage = () => {
           <h1 className="text-5xl font-extrabold tracking-tight text-white sm:text-[5rem]">
             WPRS <span className="text-[hsl(125,50%,56%)]">Forecast</span>
           </h1>
-          <div className="mt-5 w-full justify-center gap-3 sm:flex">
+          <form
+            className="mt-5 w-full justify-center gap-3 sm:flex"
+            onSubmit={handleSubmit}
+          >
             <div className="md:w-100 mb-3 w-full sm:mb-0  md:max-w-xl">
               <input
                 type="text"
@@ -89,15 +92,15 @@ const Home: NextPage = () => {
             </div>
             <div className="w-full sm:w-auto md:w-40">
               <button
+                type="submit"
                 disabled={!isValidLink}
-                onClick={handleSubmit}
                 className="flex h-12 w-full items-center justify-center rounded-md bg-indigo-600 px-4 py-2 font-medium text-white shadow-sm focus:outline-none focus:ring-2  focus:ring-indigo-500 focus:ring-offset-2 enabled:hover:bg-indigo-700"
               >
                 {isLoading && <Spinner />}{" "}
                 {isLoading ? "Calculating…" : "Calculate"}
               </button>
             </div>
-          </div>
+          </form>
           <div className="text-red-500">
             <p>{error}</p>
           </div>
