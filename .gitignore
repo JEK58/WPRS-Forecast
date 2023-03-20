@@ -8,6 +8,10 @@
 # testing
 /coverage
 
+# data
+input.xlsx
+
+
 # database
 /prisma/db.sqlite
 /prisma/db.sqlite-journal
