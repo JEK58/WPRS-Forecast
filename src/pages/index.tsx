@@ -21,6 +21,7 @@ const Home: NextPage = () => {
   const [isValidLink, setIsValidLink] = useState(false);
 
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
+    if (!isValidLink) return;
     event.preventDefault();
     setIsLoading(true);
     setError(undefined);
