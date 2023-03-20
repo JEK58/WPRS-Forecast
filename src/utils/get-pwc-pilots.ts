@@ -3,20 +3,8 @@ import { lookupCivlId } from "@/utils/lookup-civl-id";
 interface PWCApiResponse {
   subscriptions?: PilotDetails[];
   isSelectionStarted: boolean;
-  subscriptionStatusesOrder?: SubscriptionStatusesOrder[];
+  subscriptionStatusesOrder?: string[];
 }
-
-type SubscriptionStatusesOrder =
-  | "Confirmed"
-  | "Wildcard Confirmed"
-  | "Guest Card Confirmed"
-  | "Payment in Progress"
-  | "Waiting for Payment"
-  | "Wildcard"
-  | "Guest Card"
-  | "Waiting List"
-  | "Cancelled"
-  | "Late Cancelled";
 
 type SubscriptionStatusKeys =
   | "confirmed"
@@ -52,6 +40,9 @@ export async function getPwcPilots(url: string) {
     await fetch(apiUrl),
     await fetch(femaleApiUrl),
   ]);
+
+  if (maleRes.status == 404 || femaleRes.status == 404) return [];
+
   const male = (await maleRes.json()) as PWCApiResponse;
   const female = (await femaleRes.json()) as PWCApiResponse;
 

@@ -49,15 +49,15 @@ export async function getWprs(url: string) {
   }
 }
 export function isAirtibuneLink(url: string) {
-  return url.includes("airtribune.com");
+  return url.includes("airtribune.com/");
 }
 
 export function isCivlLink(url: string) {
-  return url.includes("civlcomps.org");
+  return url.includes("civlcomps.org/");
 }
 
 export function isPwcLink(url: string) {
-  return url.includes("pwca.org");
+  return url.includes("pwca.org/");
 }
 
 async function calculateWPRS(pilots: Pilot[]) {

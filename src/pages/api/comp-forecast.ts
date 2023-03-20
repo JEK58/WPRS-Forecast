@@ -4,6 +4,7 @@ import { getWprs } from "@/utils/calculate-wprs";
 import { sanitizeUrl } from "@braintree/sanitize-url";
 import rateLimit from "@/utils/rate-limit";
 import { env } from "@/env.mjs";
+import { isValidUrl } from "@/utils/check-valid-url";
 
 const limiter = rateLimit({
   interval: 60 * 1000, // 60 seconds
@@ -69,13 +70,3 @@ async function handler(req: ExtendedNextApiRequest, res: NextApiResponse) {
   }
 }
 export default handler;
-
-function isValidUrl(url: string) {
-  if (
-    url.includes("airtribune.com") ||
-    url.includes("civlcomps.org") ||
-    url.includes("pwca.org")
-  )
-    return true;
-  return false;
-}

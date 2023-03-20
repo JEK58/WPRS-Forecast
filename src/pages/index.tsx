@@ -6,6 +6,7 @@ import Head from "next/head";
 import Link from "next/link";
 import { useEffect, useState, type ChangeEvent } from "react";
 import { Footer } from "@/components/Footer";
+import { isValidUrl } from "@/utils/check-valid-url";
 
 // const url = "https://airtribune.com/montegrappa-trophy-2023";
 // const url =
@@ -52,12 +53,7 @@ const Home: NextPage = () => {
   };
 
   useEffect(() => {
-    if (
-      url.includes("airtribune.com") ||
-      url.includes("civlcomps.org") ||
-      url.includes("pwca.org")
-    )
-      setIsValidLink(true);
+    if (isValidUrl(url)) setIsValidLink(true);
     else setIsValidLink(false);
   }, [url]);
 
