@@ -92,7 +92,7 @@ async function calculateWPRS(pilots: Pilot[]) {
     .slice(0, numPilots / 2)
     .reduce((a, b) => a + b);
 
-  const Pq_min = 0;
+  const Pq_min = 0.2;
   const Pq = (Pq_srp / Pq_srtp) * (1 - Pq_min) + Pq_min;
 
   const avgNumParticipants = 69;
