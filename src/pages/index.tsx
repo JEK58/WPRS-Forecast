@@ -73,7 +73,8 @@ const Home: NextPage = () => {
       <main className="flex min-h-screen flex-col items-center  bg-gradient-to-b from-[#2e026d] to-[#15162c]">
         <div className="container flex flex-grow flex-col items-center gap-8 px-4 py-16 ">
           <h1 className="text-5xl font-extrabold tracking-tight text-white sm:text-[5rem]">
-            WPRS <span className="text-[hsl(125,50%,56%)]">Forecast</span>
+            WPRS <span className="text-[hsl(125,50%,56%)]">Forecast</span>{" "}
+            <span className="text-sm">beta</span>
           </h1>
           <form
             className="mt-5 w-full justify-center gap-3 sm:flex"
