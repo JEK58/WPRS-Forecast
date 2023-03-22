@@ -85,7 +85,7 @@ const Home: NextPage = () => {
                 type="text"
                 className="h-12 w-full items-center space-x-3 rounded-lg border border-gray-300 bg-white px-4 text-left text-slate-600 shadow-sm  ring-1 ring-slate-900/10 hover:ring-slate-300 focus:outline-none focus:ring-2 focus:ring-[hsl(125,50%,56%)]"
                 onChange={onUrlChange}
-                placeholder="Link to comp (CIVL, PWC, or Airtribune)"
+                placeholder="Link to comp (CIVL, PWC, Airtribune or Swissleague)"
               />
             </div>
             <div className="w-full sm:w-auto md:w-40">
@@ -129,9 +129,9 @@ const Home: NextPage = () => {
               </p>
               <p className="text-sm text-slate-200">
                 Limitations: For technical reasons (lookup by name), the
-                calculation of a comp listed on civlcomps.org and pwca.org is
-                currently less accurate than on airtribune.com (And takes
-                significantly longer). I&apos;m working on it 😜
+                calculation of a comp listed on civlcomps.org, swissleague.ch
+                and pwca.org is currently less accurate than on airtribune.com
+                (And takes significantly longer). I&apos;m working on it 😜
               </p>
             </div>
           )}
