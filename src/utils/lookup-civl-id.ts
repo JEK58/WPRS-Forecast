@@ -25,15 +25,12 @@ export async function lookupCivlId(name: string) {
     if (!res.data || !res.data.length) {
       /**
        * Try again with less information.
-       * Sometimes the CIVL search does not find pilots if they have a second name and/or if the order is
-       * lastName firstName middleName
+       * Sometimes the CIVL search does not find pilots if they have a middle name
        */
 
-      const newSearchString = searchString
-        .split("+")
-        .splice(0, 2)
-        .reverse()
-        .join("+");
+      const splitName = searchString.split("+");
+      splitName.splice(1, 1);
+      const newSearchString = splitName.join("+");
 
       reqOptions.data = `term=${newSearchString}`;
       res = await axios.request<CivlPilotLookup[]>(reqOptions);
