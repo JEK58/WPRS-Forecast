@@ -21,30 +21,59 @@ export async function lookupCivlId(name: string) {
   };
 
   try {
-    const res = await axios.request<CivlPilotLookup[]>(reqOptions);
+    let res = await axios.request<CivlPilotLookup[]>(reqOptions);
     if (!res.data || !res.data.length) {
-      console.log(`❗️ ~ No data for ${name}`);
-      return CIVL_PLACEHOLDER_ID;
-    }
+      /**
+       * Try again with less information.
+       * Sometimes the CIVL search does not find pilots if they have a middle name
+       */
 
+      const splitName = searchString.split("+");
+      splitName.splice(1, 1);
+      const newSearchString = splitName.join("+");
+
+      reqOptions.data = `term=${newSearchString}`;
+      res = await axios.request<CivlPilotLookup[]>(reqOptions);
+      if (!res.data || !res.data.length) {
+        console.log(`❗️ ~ No data for ${name}`);
+        return CIVL_PLACEHOLDER_ID;
+      }
+    }
     const data = res.data;
 
-    const splitNameParts = normalizeName(name).split(" ");
-
     if (data.length > 1) {
-      const filtered = data.filter(
-        (el) =>
-          normalizeName(el.text).includes(splitNameParts[0] ?? "") &&
-          normalizeName(el.text).includes(" " + (splitNameParts.at(-1) ?? ""))
-      );
-      if (!filtered[0]) {
+      // Find the best match if the search returns multiple results
+
+      const namePartsRegex = /(\S+)\s*(\S+)?\s*(\S+)?/;
+      const nameParts =
+        normalizeName(name).match(namePartsRegex)?.slice(1).sort() ?? [];
+
+      let bestMatch: CivlPilotLookup | undefined;
+      let bestMatchScore = 0;
+      for (const pilot of data) {
+        const currentNameParts =
+          normalizeName(pilot.text).match(namePartsRegex)?.slice(1).sort() ??
+          [];
+
+        let matchScore = 0;
+        for (const part of nameParts) {
+          if (currentNameParts.includes(part)) matchScore++;
+        }
+
+        if (matchScore >= 2 && matchScore > bestMatchScore) {
+          bestMatch = pilot;
+          bestMatchScore = matchScore;
+        }
+      }
+
+      if (!bestMatch) {
         console.log(`❗️ ~ No data for ${name}`);
         return CIVL_PLACEHOLDER_ID;
       }
       console.log(
-        `❗️ ~ Multiple results for ${name}. Picked: ${filtered[0].text}`
+        `❗️ ~ Multiple results for ${name}. Picked: ${bestMatch.text}`
       );
-      return filtered[0].id;
+      return bestMatch.id;
     }
     if (data[0]) return data[0].id;
     else return CIVL_PLACEHOLDER_ID;
