@@ -73,7 +73,8 @@ const Home: NextPage = () => {
       <main className="flex min-h-screen flex-col items-center  bg-gradient-to-b from-[#2e026d] to-[#15162c]">
         <div className="container flex flex-grow flex-col items-center gap-8 px-4 py-16 ">
           <h1 className="text-5xl font-extrabold tracking-tight text-white sm:text-[5rem]">
-            WPRS <span className="text-[hsl(125,50%,56%)]">Forecast</span>
+            WPRS <span className="text-[hsl(125,50%,56%)]">Forecast</span>{" "}
+            <span className="text-sm tracking-normal">beta</span>
           </h1>
           <form
             className="mt-5 w-full justify-center gap-3 sm:flex"
@@ -84,7 +85,7 @@ const Home: NextPage = () => {
                 type="text"
                 className="h-12 w-full items-center space-x-3 rounded-lg border border-gray-300 bg-white px-4 text-left text-slate-600 shadow-sm  ring-1 ring-slate-900/10 hover:ring-slate-300 focus:outline-none focus:ring-2 focus:ring-[hsl(125,50%,56%)]"
                 onChange={onUrlChange}
-                placeholder="Link to comp (CIVL, PWC, or Airtribune)"
+                placeholder="Link to comp (CIVL, PWC, Airtribune or Swissleague)"
               />
             </div>
             <div className="w-full sm:w-auto md:w-40">
@@ -128,9 +129,9 @@ const Home: NextPage = () => {
               </p>
               <p className="text-sm text-slate-200">
                 Limitations: For technical reasons (lookup by name), the
-                calculation of a comp listed on civlcomps.org and pwca.org is
-                currently less accurate than on airtribune.com (And takes
-                significantly longer). I&apos;m working on it 😜
+                calculation of a comp listed on civlcomps.org, swissleague.ch
+                and pwca.org is currently less accurate than on airtribune.com
+                (And takes significantly longer). I&apos;m working on it 😜
               </p>
             </div>
           )}

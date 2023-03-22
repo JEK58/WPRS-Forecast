@@ -4,11 +4,11 @@ export function ForecastDetails({ data }: { data: CompForecast }) {
   return (
     <ul>
       <li>
-        WPRS two vaild tasks:{" "}
+        WPRS two valid tasks:{" "}
         <span className="text-slate-400">{data.wprDeval0_8}</span>
       </li>
       <li>
-        WPRS one vaild task:{" "}
+        WPRS one valid task:{" "}
         <span className="text-slate-400">{data.wprDeval0_5}</span>
       </li>
       <li>

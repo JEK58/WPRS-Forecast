@@ -4,6 +4,7 @@ import { prisma } from "@/server/db";
 import { getAirtribunePilots } from "@/utils/get-airtribune-pilots";
 import { getCivlcompPilots } from "@/utils/get-civl-pilots";
 import { getPwcPilots } from "./get-pwc-pilots";
+import { getSwissleaguePilots } from "./get-swissleague-pilots";
 
 export interface Pilot {
   name?: string;
@@ -47,6 +48,12 @@ export async function getWprs(url: string) {
     if (!pilots.length) return 0;
     return await calculateWPRS(pilots);
   }
+  if (isSwissleagueLink(url)) {
+    const compUrl = generateSwissleagueCompUrl(url);
+    const pilots = await getSwissleaguePilots(compUrl);
+    if (!pilots.length) return 0;
+    return await calculateWPRS(pilots);
+  }
 }
 export function isAirtibuneLink(url: string) {
   return url.includes("airtribune.com/");
@@ -58,6 +65,9 @@ export function isCivlLink(url: string) {
 
 export function isPwcLink(url: string) {
   return url.includes("pwca.org/");
+}
+export function isSwissleagueLink(url: string) {
+  return url.includes("swissleague.ch/");
 }
 
 async function calculateWPRS(pilots: Pilot[]) {
@@ -92,7 +102,7 @@ async function calculateWPRS(pilots: Pilot[]) {
     .slice(0, numPilots / 2)
     .reduce((a, b) => a + b);
 
-  const Pq_min = 0;
+  const Pq_min = 0.2;
   const Pq = (Pq_srp / Pq_srtp) * (1 - Pq_min) + Pq_min;
 
   const avgNumParticipants = 69;
@@ -117,7 +127,7 @@ async function calculateWPRS(pilots: Pilot[]) {
     Pq: Pq.toFixed(3),
     Pq_srp,
     Pq_srtp,
-    Pn,
+    Pn: Pn.toFixed(3),
     compRanking: compRanking.toFixed(3),
     Pp,
     WPR,
@@ -140,4 +150,7 @@ function generateAirtribuneCompUrl(url: string) {
 
 function generatePwcCompUrl(url: string) {
   return url.slice(0, getPosition(url, "/", 5)) + "/selection";
+}
+function generateSwissleagueCompUrl(url: string) {
+  return url.slice(0, getPosition(url, "/", 7)) + "/pilots";
 }
