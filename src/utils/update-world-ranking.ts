@@ -1,5 +1,8 @@
 import XLSX from "xlsx";
 import playwright from "playwright";
+import { prisma } from "@/server/db";
+import { normalizeName } from "./lookup-civl-id";
+import { z } from "zod";
 
 const civlURL = "https://civlcomps.org/ranking/paragliding-xc/pilots";
 
@@ -42,20 +45,44 @@ export async function updateWorldRanking() {
   // Update the range in the worksheet
   worksheet["!ref"] = XLSX.utils.encode_range(range);
 
-  const worldRanking = XLSX.utils.sheet_to_json(worksheet);
-  console.log("🚀 ~ worldRanking:", worldRanking);
-}
+  const worldRanking: CivlXlsEntry[] = XLSX.utils.sheet_to_json(worksheet);
 
+  const newEntry = z.object({
+    id: z.number(),
+    name: z.string(),
+    gender: z.string(),
+    points: z.number(),
+    rank: z.number(),
+    nation: z.string(),
+  });
+
+  const data = worldRanking
+    .filter((el) => el.Name && el["CIVL ID"] && el.Rank)
+    .map((el) => {
+      return newEntry.parse({
+        id: el["CIVL ID"],
+        name: el.Name,
+        gender: el.Gender,
+        points: el.Points,
+        rank: el.Rank,
+        nation: el.Nation,
+      });
+    });
+
+  console.log("🚀 ~ data:", data.at(-1));
+
+  // const res = await prisma.ranking.createMany({ data });
+  // console.log(res);
+}
 async function downloadExcel() {
   const browser = await playwright["chromium"].launch();
   const context = await browser.newContext({ acceptDownloads: true });
   const page = await context.newPage();
   await page.goto(civlURL);
   const [download] = await Promise.all([
-    page.waitForEvent("download"), // wait for download to start
+    page.waitForEvent("download"),
     page.click(".icon-exel"),
   ]);
-  // wait for download to complete
   await download.saveAs("./input.xlsx");
   await browser.close();
 }
