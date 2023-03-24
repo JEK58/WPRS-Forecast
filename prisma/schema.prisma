@@ -19,6 +19,7 @@ model Ranking {
     points    Float
     rank      Int
     nation    String
+    date      DateTime
 }
 
 model Usage {

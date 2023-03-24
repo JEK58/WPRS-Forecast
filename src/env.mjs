@@ -8,6 +8,7 @@ const server = z.object({
   DATABASE_URL: z.string().url(),
   SUBMIT_RATE_LIMIT: z.string(),
   NODE_ENV: z.enum(["development", "test", "production"]),
+  API_KEY: z.string(),
 });
 
 /**
@@ -28,6 +29,7 @@ const processEnv = {
   DATABASE_URL: process.env.DATABASE_URL,
   SUBMIT_RATE_LIMIT: process.env.SUBMIT_RATE_LIMIT,
   NODE_ENV: process.env.NODE_ENV,
+  API_KEY: process.env.API_KEY,
   // NEXT_PUBLIC_CLIENTVAR: process.env.NEXT_PUBLIC_CLIENTVAR,
 };
 

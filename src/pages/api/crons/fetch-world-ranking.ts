@@ -1,23 +1,23 @@
-import { prisma } from "@/server/db";
 import type { NextApiRequest, NextApiResponse } from "next";
-import rateLimit from "@/utils/rate-limit";
 import { env } from "@/env.mjs";
 import { updateWorldRanking } from "@/utils/update-world-ranking";
 
-const limiter = rateLimit({
-  interval: 60 * 1000, // 60 seconds
-  uniqueTokenPerInterval: 40, // Max 40 users per second
-});
-
-const SUBMIT_RATE_LIMIT = parseInt(env.SUBMIT_RATE_LIMIT, 10);
-
 async function handler(req: NextApiRequest, res: NextApiResponse) {
+  const { apiKey } = req.query;
+
+  if (!apiKey || apiKey !== env.API_KEY) {
+    console.info("Attempted world ranking update with invalid API key");
+    return res.status(401).json({ message: "Invalid API key" });
+  }
+
+  console.info("🧹 Updating world ranking db...");
   try {
     await updateWorldRanking();
-    res.status(201).send("done");
+    console.info("🧹 ...done");
+    res.status(200).send("done");
   } catch (err) {
     res.status(500).json({ error: "internal error", message: err });
-    console.log(err);
+    console.error(err);
   }
 }
 export default handler;

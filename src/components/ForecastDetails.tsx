@@ -12,6 +12,10 @@ export function ForecastDetails({ data }: { data: CompForecast }) {
         <span className="text-slate-400">{data.wprDeval0_5}</span>
       </li>
       <li>
+        Number of pilots:{" "}
+        <span className="text-slate-400">{data.numPilots}</span>
+      </li>
+      <li>
         Number of participants (Pn):{" "}
         <span className="text-slate-400">{data.Pn}</span>
       </li>
@@ -35,6 +39,14 @@ export function ForecastDetails({ data }: { data: CompForecast }) {
       </li>
       <li>
         Pq_srtp: <span className="text-slate-400">{data.Pq_srtp}</span>
+      </li>
+
+      <li className="mt-3">
+        Latest world ranking update:{" "}
+        <span className="text-slate-400">
+          {" "}
+          {new Date(data.worldRankingDate).toLocaleString()}
+        </span>
       </li>
     </ul>
   );

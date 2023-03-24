@@ -1,13 +1,13 @@
 import XLSX from "xlsx";
 import playwright from "playwright";
 import { prisma } from "@/server/db";
-import { normalizeName } from "./lookup-civl-id";
 import { z } from "zod";
 
-const civlURL = "https://civlcomps.org/ranking/paragliding-xc/pilots";
+const CIVL_URL = "https://civlcomps.org/ranking/paragliding-xc/pilots";
 
 export async function updateWorldRanking() {
-  await downloadExcel();
+  // Download world ranking excel and get date of world ranking
+  const worldRankingDate = await downloadExcel();
 
   interface CivlXlsEntry {
     Rank: number;
@@ -54,6 +54,7 @@ export async function updateWorldRanking() {
     points: z.number(),
     rank: z.number(),
     nation: z.string(),
+    date: z.date(),
   });
 
   const data = worldRanking
@@ -66,28 +67,38 @@ export async function updateWorldRanking() {
         points: el.Points,
         rank: el.Rank,
         nation: el.Nation,
+        date: worldRankingDate,
       });
     });
 
-  // console.log("🚀 ~ data:", data.at(-1));
+  // Update DB
+  const deleted = await prisma.ranking.deleteMany({});
+  console.log("🗑️ ~ Deleted entries:", deleted.count);
 
-  for (const el of data) {
-    const res = await prisma.ranking.create({ data: el });
-    console.log("🚀 ~ res:", res);
-  }
-
-  // const res = await prisma.ranking.createMany({ data });
-  // console.log(res);
+  const entries = await prisma.ranking.createMany({ data });
+  console.log("🧪 ~ New entries:", entries.count);
 }
+
 async function downloadExcel() {
   const browser = await playwright["chromium"].launch();
   const context = await browser.newContext({ acceptDownloads: true });
   const page = await context.newPage();
-  await page.goto(civlURL);
+  await page.goto(CIVL_URL);
+
+  // Find the date of the latest world ranking update
+  const parent = await page.$(".search-pilots");
+  const child = await parent?.$(".text-muted");
+  const el = await child?.textContent();
+  if (!el) throw new Error("World ranking date not found");
+  const date = new Date(el.trim());
+
+  // Download the world ranking  excel file
   const [download] = await Promise.all([
     page.waitForEvent("download"),
     page.click(".icon-exel"),
   ]);
   await download.saveAs("./input.xlsx");
   await browser.close();
+
+  return date;
 }
