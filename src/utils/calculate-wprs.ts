@@ -15,6 +15,7 @@ export interface Pilot {
 }
 
 export interface CompForecast {
+  worldRankingDate: Date;
   numPilots: number;
   Pq: number;
   Pq_srp: number;
@@ -71,6 +72,7 @@ export function isSwissleagueLink(url: string) {
 }
 
 async function calculateWPRS(pilots: Pilot[]) {
+  let worldRankingDate = new Date();
   const numPilots = pilots.length;
 
   let Pq_srtp = 0;
@@ -95,8 +97,12 @@ async function calculateWPRS(pilots: Pilot[]) {
 
     const pilot = await prisma.ranking.findUnique({ where: { id: civl } });
 
-    if (pilot) compPilotsWprs.push(pilot.points);
+    if (pilot) {
+      compPilotsWprs.push(pilot.points);
+      worldRankingDate = pilot.date;
+    }
   }
+
   const Pq_srp = compPilotsWprs
     .sort((a, b) => b - a)
     .slice(0, numPilots / 2)
@@ -123,10 +129,11 @@ async function calculateWPRS(pilots: Pilot[]) {
   const wprDeval0_5 = +(100 * Pp * Pq * Pn * Ta1).toFixed(2); // *Td
 
   return {
+    worldRankingDate: worldRankingDate,
     numPilots,
     Pq: Pq.toFixed(3),
-    Pq_srp,
-    Pq_srtp,
+    Pq_srp: Pq_srp.toFixed(3),
+    Pq_srtp: Pq_srtp.toFixed(3),
     Pn: Pn.toFixed(3),
     compRanking: compRanking.toFixed(3),
     Pp,

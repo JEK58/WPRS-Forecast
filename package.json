@@ -2,6 +2,7 @@
   "name": "wprs-forecast",
   "version": "0.1.0",
   "private": true,
+  "license": "MIT",
   "scripts": {
     "build": "next build",
     "dev": "next dev",
@@ -16,9 +17,11 @@
     "cheerio": "^1.0.0-rc.12",
     "lru-cache": "^8.0.0",
     "next": "^13.2.4",
+    "playwright": "^1.31.2",
     "react": "18.2.0",
     "react-dom": "18.2.0",
     "react-icons": "^4.8.0",
+    "xlsx": "^0.18.5",
     "zod": "^3.21.4"
   },
   "devDependencies": {

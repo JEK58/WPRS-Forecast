@@ -83,7 +83,7 @@ export async function lookupCivlId(name: string) {
   }
 }
 
-function normalizeName(name: string) {
+export function normalizeName(name: string) {
   return name
     .normalize("NFD")
     .replace(/[\u0300-\u036f]/g, "")
