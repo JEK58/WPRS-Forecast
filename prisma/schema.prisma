@@ -16,7 +16,7 @@ model Ranking {
     updatedAt DateTime @updatedAt
     name      String
     gender    String
-    points    Int
+    points    Float
     rank      Int
     nation    String
 }

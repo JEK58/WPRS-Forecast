@@ -69,7 +69,12 @@ export async function updateWorldRanking() {
       });
     });
 
-  console.log("🚀 ~ data:", data.at(-1));
+  // console.log("🚀 ~ data:", data.at(-1));
+
+  for (const el of data) {
+    const res = await prisma.ranking.create({ data: el });
+    console.log("🚀 ~ res:", res);
+  }
 
   // const res = await prisma.ranking.createMany({ data });
   // console.log(res);
