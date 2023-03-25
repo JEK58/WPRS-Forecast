@@ -5,6 +5,13 @@
 
 **Improvements:**
 
+- Automatic world ranking updating added
+
+
+### 2023-03-22
+
+**Improvements:**
+
 - swissleague.ch added
 - CIVL lookup refined
 
