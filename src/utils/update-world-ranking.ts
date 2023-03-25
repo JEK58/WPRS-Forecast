@@ -1,9 +1,14 @@
 import XLSX from "xlsx";
-import playwright from "playwright";
 import { prisma } from "@/server/db";
 import { z } from "zod";
+import axios from "axios";
+import { load } from "cheerio";
+import fs from "fs";
 
 const CIVL_URL = "https://civlcomps.org/ranking/paragliding-xc/pilots";
+const DOWNLOAD_URL =
+  "https://civlcomps.org/ranking/export-new?rankingId=1557&type=export_pilots_ranking&format=xlsx&async=1";
+const FILE_PATH = "./input.xlsx";
 
 export async function updateWorldRanking() {
   // Download world ranking excel and get date of world ranking
@@ -79,26 +84,77 @@ export async function updateWorldRanking() {
   console.log("🧪 ~ New entries:", entries.count);
 }
 
+/**
+ * 1. Gets cookie and csrf-token from the CIVL page
+ * 2. Requests the hash of the excel download
+ * 3. Waits for the download link to be generated
+ * 4. Downloads the excel file
+ * 5. Return the date of the latest CIVL DB update
+ */
 async function downloadExcel() {
-  const browser = await playwright["chromium"].launch();
-  const context = await browser.newContext({ acceptDownloads: true });
-  const page = await context.newPage();
-  await page.goto(CIVL_URL);
+  const res = await fetch(CIVL_URL);
+  const body = await res.text();
 
-  // Find the date of the latest world ranking update
-  const parent = await page.$(".search-pilots");
-  const child = await parent?.$(".text-muted");
-  const el = await child?.textContent();
-  if (!el) throw new Error("World ranking date not found");
-  const date = new Date(el.trim());
+  const $ = load(body, { xmlMode: true });
 
-  // Download the world ranking  excel file
-  const [download] = await Promise.all([
-    page.waitForEvent("download"),
-    page.click(".icon-exel"),
-  ]);
-  await download.saveAs("./input.xlsx");
-  await browser.close();
+  const csrfToken = $('meta[name="csrf-token"]').attr("content");
+  const dateEl = $(".search-pilots .text-muted").text();
+
+  if (!dateEl) throw new Error("World ranking date not found");
+  const date = new Date(dateEl.trim());
+
+  const cookies = res.headers
+    .get("set-cookie")
+    ?.split(",")
+    .map((el) => el.split(";")[0])
+    .join("; ");
+
+  const reqOptions = {
+    url: DOWNLOAD_URL,
+    method: "POST",
+    headers: {
+      "x-csrf-token": csrfToken,
+      cookie: cookies,
+    },
+  };
+  interface HashResponse {
+    status?: string;
+    hash?: string;
+    url?: boolean | string;
+  }
+
+  const resHash = await axios.request<HashResponse>(reqOptions);
+
+  if (!resHash.data.hash)
+    throw new Error("Error while generating download file hash");
+
+  const hash = resHash?.data.hash;
+  const fileUrl = DOWNLOAD_URL + "&hash=" + hash;
+
+  let fileReady = false;
+  let link = "";
+  while (!fileReady) {
+    await new Promise((resolve) => setTimeout(resolve, 1000));
+    const res = await fetch(fileUrl);
+    const dl = (await res.json()) as HashResponse;
+
+    if (typeof dl.url === "string") {
+      link = dl.url;
+      fileReady = true;
+    }
+  }
+
+  const download = await axios<fs.WriteStream>({
+    url: link,
+    method: "GET",
+    responseType: "stream",
+  });
+
+  download.data.pipe(fs.createWriteStream(FILE_PATH));
+  await new Promise((resolve, reject) => {
+    download.data.on("end", resolve);
+    download.data.on("error", reject);
+  });
 
   return date;
 }
