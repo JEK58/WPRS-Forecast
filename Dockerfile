@@ -22,6 +22,7 @@ ARG DATABASE_URL
 ARG NEXT_PUBLIC_CLIENTVAR
 WORKDIR /app
 COPY --from=deps /app/node_modules ./node_modules
+RUN mkdir tmp
 COPY . .
 
 RUN yarn prisma generate
@@ -53,6 +54,7 @@ COPY --from=builder /app/package.json ./package.json
 
 COPY --from=builder --chown=nextjs:nodejs /app/.next/standalone ./
 COPY --from=builder --chown=nextjs:nodejs /app/.next/static ./.next/static
+COPY --from=builder --chown=nextjs:nodejs /app/tmp ./tmp
 
 USER nextjs
 EXPOSE 3000
