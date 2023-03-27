@@ -6,9 +6,7 @@ export async function getCivlcompPilots(url: string) {
   const body = await response.text();
 
   const $ = load(body, { xmlMode: true });
-
   const content = $(".participants-item");
-
   const rows = content.find("tr");
 
   interface RowData {

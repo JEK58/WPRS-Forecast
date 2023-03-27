@@ -27,32 +27,33 @@ export interface CompForecast {
   wprDeval0_8: number;
   wprDeval0_5: number;
 }
+// Minimum required confirmed pilots in a comp
+const MIN_PILOTS = 30;
 
 export async function getWprs(url: string) {
   console.log("🚀 ~ url:", url);
   if (isAirtibuneLink(url)) {
     const compUrl = generateAirtribuneCompUrl(url);
     const pilots = await getAirtribunePilots(compUrl);
-    if (!pilots.length) return 0;
-
+    if (pilots.length < 10) return 0;
     return await calculateWPRS(pilots);
   }
   if (isCivlLink(url)) {
     const compUrl = generateCivlCompUrl(url);
     const pilots = await getCivlcompPilots(compUrl);
-    if (!pilots.length) return 0;
+    if (pilots.length < MIN_PILOTS) return 0;
     return await calculateWPRS(pilots);
   }
   if (isPwcLink(url)) {
     const compUrl = generatePwcCompUrl(url);
     const pilots = await getPwcPilots(compUrl);
-    if (!pilots.length) return 0;
+    if (pilots.length < MIN_PILOTS) return 0;
     return await calculateWPRS(pilots);
   }
   if (isSwissleagueLink(url)) {
     const compUrl = generateSwissleagueCompUrl(url);
     const pilots = await getSwissleaguePilots(compUrl);
-    if (!pilots.length) return 0;
+    if (pilots.length < MIN_PILOTS) return 0;
     return await calculateWPRS(pilots);
   }
 }

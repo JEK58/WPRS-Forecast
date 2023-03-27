@@ -71,7 +71,7 @@ export async function lookupCivlId(name: string) {
         return CIVL_PLACEHOLDER_ID;
       }
       console.log(
-        `❗️ ~ Multiple results for ${name}. Picked: ${bestMatch.text}`
+        `☑️ ~ Multiple results for ${name}. Picked: ${bestMatch.text}`
       );
       return bestMatch.id;
     }
