@@ -8,11 +8,6 @@ import { useEffect, useState, type ChangeEvent } from "react";
 import { Footer } from "@/components/Footer";
 import { isValidUrl } from "@/utils/check-valid-url";
 
-// const url = "https://airtribune.com/montegrappa-trophy-2023";
-// const url =
-//   "https://civlcomps.org/event/staufen-cup-2023-bawu-open-und-vorarlberger-landesmeistersch/";
-// const url = "https://airtribune.com/flory-cup-2023/pilots"
-
 const Home: NextPage = () => {
   const [compForecast, setCompForecast] = useState<CompForecast | undefined>();
   const [isLoading, setIsLoading] = useState(false);
@@ -74,7 +69,9 @@ const Home: NextPage = () => {
         <div className="container flex flex-grow flex-col items-center gap-8 px-4 py-16 ">
           <h1 className="text-5xl font-extrabold tracking-tight text-white sm:text-[5rem]">
             WPRS <span className="text-[hsl(125,50%,56%)]">Forecast</span>{" "}
-            <span className="text-sm tracking-normal">beta</span>
+            <span className="block text-right text-sm tracking-normal sm:inline sm:text-left">
+              beta
+            </span>
           </h1>
           <form
             className="mt-5 w-full justify-center gap-3 sm:flex"
