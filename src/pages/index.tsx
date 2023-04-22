@@ -7,6 +7,7 @@ import Link from "next/link";
 import { useEffect, useState, type ChangeEvent } from "react";
 import { Footer } from "@/components/Footer";
 import { isValidUrl } from "@/utils/check-valid-url";
+import { useRouter } from "next/router";
 
 const Home: NextPage = () => {
   const [compForecast, setCompForecast] = useState<CompForecast | undefined>();
@@ -15,12 +16,11 @@ const Home: NextPage = () => {
   const [url, setUrl] = useState<string>("");
   const [isValidLink, setIsValidLink] = useState(false);
 
-  const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
-    if (!isValidLink) return;
-    event.preventDefault();
+  const startCalculation = async () => {
     setIsLoading(true);
     setError(undefined);
     setCompForecast(undefined);
+    await router.replace("/?comp=" + url);
     const endpoint = "/api/comp-forecast";
     const options = {
       method: "POST",
@@ -48,13 +48,35 @@ const Home: NextPage = () => {
     }
   };
 
+  const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
+    if (!isValidLink) return;
+    event.preventDefault();
+    await startCalculation();
+  };
+
   useEffect(() => {
     if (isValidUrl(url)) setIsValidLink(true);
     else setIsValidLink(false);
   }, [url]);
 
+  const router = useRouter();
+
+  useEffect(() => {
+    // Get comp from url
+    const params = new URLSearchParams(router.asPath.split(/\?/)[1]);
+    const comp = params.get("comp");
+
+    if (comp && url === "") setUrl(comp);
+  }, [router.asPath, url]);
+
   function onUrlChange(event: ChangeEvent<HTMLInputElement>) {
     setUrl(event.target.value);
+  }
+
+  async function clearInput() {
+    await router.replace("/");
+    setUrl("");
+    setCompForecast(undefined);
   }
 
   return (
@@ -78,12 +100,36 @@ const Home: NextPage = () => {
             onSubmit={handleSubmit}
           >
             <div className="md:w-100 mb-3 w-full sm:mb-0  md:max-w-xl">
-              <input
-                type="text"
-                className="h-12 w-full items-center space-x-3 rounded-lg border border-gray-300 bg-white px-4 text-left text-slate-600 shadow-sm  ring-1 ring-slate-900/10 hover:ring-slate-300 focus:outline-none focus:ring-2 focus:ring-[hsl(125,50%,56%)]"
-                onChange={onUrlChange}
-                placeholder="Link to comp (CIVL, PWC, Airtribune or Swissleague)"
-              />
+              <div className="relative">
+                <input
+                  type="text"
+                  value={url}
+                  className="h-12 w-full items-center space-x-3 rounded-lg border border-gray-300 bg-white px-4 text-left text-slate-600 shadow-sm  ring-1 ring-slate-900/10 hover:ring-slate-300 focus:outline-none focus:ring-2 focus:ring-[hsl(125,50%,56%)]"
+                  onChange={onUrlChange}
+                  placeholder="Link to comp (CIVL, PWC, Airtribune or Swissleague)"
+                />
+                {url.length > 0 && (
+                  <button
+                    className="absolute right-0 top-0 mr-2 mt-3 rounded-full bg-indigo-600 px-2 py-1 text-white hover:bg-gray-400 hover:bg-indigo-700 focus:bg-gray-400 focus:outline-none"
+                    type="button"
+                    onClick={clearInput}
+                  >
+                    <svg
+                      className="h-4 w-4 fill-current"
+                      viewBox="0 0 20 20"
+                      xmlns="http://www.w3.org/2000/svg"
+                    >
+                      <path
+                        d="M6.4 6.4l7.2 7.2m0-7.2l-7.2 7.2"
+                        stroke="white"
+                        strokeWidth="2"
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                      />
+                    </svg>
+                  </button>
+                )}
+              </div>
             </div>
             <div className="w-full sm:w-auto md:w-40">
               <button
@@ -97,6 +143,7 @@ const Home: NextPage = () => {
             </div>
           </form>
           <div className="text-red-500">
+            {!isValidLink && url.length > 0 && <p>This is not a valid link</p>}
             <p>{error}</p>
           </div>
 
