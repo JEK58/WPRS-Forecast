@@ -1,6 +1,13 @@
 
 # Changelog
 
+### 2023-04-22
+
+**Improvements:**
+
+- Clear button added for input field
+- Link a comp via url like `https://wprs-forecast.stephanschoepe.de?comp=COMP_URL`
+
 ### 2023-03-22
 
 **Improvements:**
