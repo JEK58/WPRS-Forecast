@@ -108,7 +108,7 @@ const Home: NextPage = () => {
                   onChange={onUrlChange}
                   placeholder="Link to comp (CIVL, PWC, Airtribune or Swissleague)"
                 />
-                {url.length > 0 && (
+                {url.length > 0 && !isLoading && (
                   <button
                     className="absolute right-0 top-0 mr-2 mt-3 rounded-full bg-indigo-600 px-2 py-1 text-white hover:bg-gray-400 hover:bg-indigo-700 focus:bg-gray-400 focus:outline-none"
                     type="button"
