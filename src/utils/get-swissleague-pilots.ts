@@ -30,7 +30,7 @@ export async function getSwissleaguePilots(url: string) {
   });
 
   const confirmedPilots = data.filter((el) => {
-    return el.status == "Paid";
+    return el.status == "Paid" || el.status == "Free Entry";
   });
 
   const pilots = await Promise.all(
