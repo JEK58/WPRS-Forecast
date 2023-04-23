@@ -1,6 +1,12 @@
 
 # Changelog
 
+### 2023-04-23
+
+**Bugfix:**
+
+- Respect pilots with status "Free Entry" in swissleague comps
+
 ### 2023-04-22
 
 **Improvements:**
