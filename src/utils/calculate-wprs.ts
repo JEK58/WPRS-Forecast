@@ -40,7 +40,7 @@ export interface ApiResponse {
   confirmed: CompForecast;
 }
 // Minimum required confirmed pilots in a comp
-const MIN_PILOTS = 30;
+const MIN_PILOTS = 25;
 
 export async function getWprs(url: string) {
   console.log("🚀 ~ url:", url);
@@ -97,7 +97,8 @@ export function isSwissleagueLink(url: string) {
 }
 
 async function calculateWPRS(pilots: Pilot[]) {
-  if (!pilots.length) return {};
+  console.log("🚀 ~ pilots:", pilots.length);
+  if (pilots.length < 2) return {};
   let worldRankingDate = new Date();
   const numPilots = pilots.length;
 
