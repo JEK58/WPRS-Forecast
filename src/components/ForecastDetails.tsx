@@ -51,8 +51,7 @@ export function ForecastDetails({ data }: { data: ApiResponse }) {
       <li className="mt-3">
         Latest world ranking update:{" "}
         <span className="text-slate-400">
-          {" "}
-          {new Date(data.confirmed.worldRankingDate).toLocaleString()}
+          {new Date(data.all.worldRankingDate).toLocaleString()}
         </span>
       </li>
     </ul>
