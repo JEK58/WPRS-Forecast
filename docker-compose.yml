@@ -30,10 +30,14 @@ services:
     command: redis-server --save 60 1 --loglevel warning 
     volumes: 
       - cache:/data
-      
+
 networks:
   default:
     external:
       name: traefik
+
+volumes:
+  cache:
+    driver: local
 
   
