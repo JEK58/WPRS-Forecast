@@ -171,12 +171,6 @@ const Home: NextPage = () => {
                 their CIVL rankings. The calculation will become more accurate
                 as the competition date approaches.
               </p>
-              <p className="text-sm text-slate-200">
-                Limitations: For technical reasons (lookup by name), the
-                calculation of a comp listed on civlcomps.org, swissleague.ch
-                and pwca.org is currently less accurate than on airtribune.com
-                (And takes significantly longer). I&apos;m working on it 😜
-              </p>
             </div>
           )}
         </div>

@@ -1,4 +1,4 @@
-import { lookupCivlId } from "@/utils/lookup-civl-id";
+import { getCivlId } from "@/utils/get-civl-id";
 
 interface PWCApiResponse {
   subscriptions?: PilotDetails[];
@@ -64,7 +64,7 @@ export async function getPwcPilots(url: string) {
     confirmedPilots.map(async (el) => {
       const input = el.pilot ?? "";
       const name = input.split(" (")[0] ?? "";
-      const civlID = await lookupCivlId(name);
+      const civlID = await getCivlId(name);
 
       return {
         name,

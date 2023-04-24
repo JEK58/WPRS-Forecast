@@ -5,6 +5,12 @@ import { getAirtribunePilots } from "@/utils/get-airtribune-pilots";
 import { getCivlcompPilots } from "@/utils/get-civl-pilots";
 import { getPwcPilots } from "./get-pwc-pilots";
 import { getSwissleaguePilots } from "./get-swissleague-pilots";
+import Redis from "ioredis";
+import { type Ranking } from "@prisma/client";
+import { env } from "@/env.mjs";
+
+const redis = new Redis({ host: env.REDIS_URL });
+const EXP_TIME = 60 * 60; // 1 h
 
 export interface Pilot {
   name?: string;
@@ -90,20 +96,28 @@ async function calculateWPRS(pilots: Pilot[]) {
   const compPilotsWprs: number[] = [];
 
   // sum ranking-points of the top 1/2 ranked participants
+
   for (let i = 0; i < numPilots; i++) {
     const element = pilots[i];
     if (!element) continue;
     const civl = element.civlID;
     if (!civl || isNaN(civl) || civl > 99999) continue;
 
-    const pilot = await prisma.ranking.findUnique({ where: { id: civl } });
+    let pilot: Ranking | null;
+    const cachedPilot = await redis.get(`civl:${civl}`);
+
+    if (cachedPilot) pilot = JSON.parse(cachedPilot) as Ranking;
+    else {
+      console.log("🛟 Cache miss:", civl);
+      pilot = await prisma.ranking.findUnique({ where: { id: civl } });
+      await redis.set(`civl:${civl}`, JSON.stringify(pilot), "EX", EXP_TIME);
+    }
 
     if (pilot) {
       compPilotsWprs.push(pilot.points);
       worldRankingDate = pilot.date;
     }
   }
-
   const Pq_srp = compPilotsWprs
     .sort((a, b) => b - a)
     .slice(0, numPilots / 2)
@@ -129,6 +143,7 @@ async function calculateWPRS(pilots: Pilot[]) {
   const wprDeval0_8 = +(100 * Pp * Pq * Pn * Ta2).toFixed(2); // *Td
   const wprDeval0_5 = +(100 * Pp * Pq * Pn * Ta1).toFixed(2); // *Td
 
+  console.log("🚀 ~ WPRS:", WPR);
   return {
     worldRankingDate: worldRankingDate,
     numPilots,

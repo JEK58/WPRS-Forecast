@@ -13,6 +13,8 @@ services:
       restart: always
       ports:
         - 3000:3000
+      depends_on:
+        - redis
       labels:
         traefik.enable: true
         traefik.http.routers.wprs-forecast.rule: "Host(`${TRAEFIK_DOMAIN}`)"
@@ -22,6 +24,13 @@ services:
         traefik.port: 3000
         traefik.docker.network: traefik
 
+  redis:
+    image: redis:6-alpine3.17
+    restart: always
+    command: redis-server --save 60 1 --loglevel warning 
+    volumes: 
+      - cache:/data
+      
 networks:
   default:
     external:

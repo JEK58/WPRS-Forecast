@@ -9,6 +9,7 @@ const server = z.object({
   SUBMIT_RATE_LIMIT: z.string(),
   NODE_ENV: z.enum(["development", "test", "production"]),
   API_KEY: z.string(),
+  REDIS_URL: z.string(),
 });
 
 /**
@@ -30,6 +31,7 @@ const processEnv = {
   SUBMIT_RATE_LIMIT: process.env.SUBMIT_RATE_LIMIT,
   NODE_ENV: process.env.NODE_ENV,
   API_KEY: process.env.API_KEY,
+  REDIS_URL: process.env.REDIS_URL,
   // NEXT_PUBLIC_CLIENTVAR: process.env.NEXT_PUBLIC_CLIENTVAR,
 };
 

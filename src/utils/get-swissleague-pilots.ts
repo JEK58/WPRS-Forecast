@@ -1,5 +1,5 @@
 import { load } from "cheerio";
-import { lookupCivlId } from "@/utils/lookup-civl-id";
+import { getCivlId } from "@/utils/get-civl-id";
 
 export async function getSwissleaguePilots(url: string) {
   const response = await fetch(url);
@@ -36,7 +36,7 @@ export async function getSwissleaguePilots(url: string) {
   const pilots = await Promise.all(
     confirmedPilots.map(async (el) => {
       const name = el.pilot ?? "";
-      const civlID = await lookupCivlId(name);
+      const civlID = await getCivlId(name);
 
       return {
         name,
