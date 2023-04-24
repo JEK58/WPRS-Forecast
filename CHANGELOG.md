@@ -1,6 +1,13 @@
 
 # Changelog
 
+### 2023-04-24
+
+**Improvements:**
+
+- Potential WPRS for all registered pilots added
+- Calculation time reduced by adding redis as cache layer
+
 ### 2023-04-23
 
 **Bugfix:**
