@@ -1,6 +1,6 @@
 import { ForecastDetails } from "@/components/ForecastDetails";
 import { Spinner } from "@/components/Spinner";
-import { type CompForecast } from "@/utils/calculate-wprs";
+import { type ApiResponse } from "@/utils/calculate-wprs";
 import { type NextPage } from "next";
 import Head from "next/head";
 import Link from "next/link";
@@ -10,7 +10,7 @@ import { isValidUrl } from "@/utils/check-valid-url";
 import { useRouter } from "next/router";
 
 const Home: NextPage = () => {
-  const [compForecast, setCompForecast] = useState<CompForecast | undefined>();
+  const [compForecast, setCompForecast] = useState<ApiResponse | undefined>();
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | undefined>();
   const [url, setUrl] = useState<string>("");
@@ -32,7 +32,7 @@ const Home: NextPage = () => {
       const response = await fetch(endpoint, options);
 
       if (response.status === 201) {
-        const resData = (await response.json()) as CompForecast;
+        const resData = (await response.json()) as ApiResponse;
 
         setCompForecast(resData);
       } else if (response.status === 429) setError("Too many requests");
@@ -152,7 +152,7 @@ const Home: NextPage = () => {
               <div className="text-lg">
                 WPRS:{" "}
                 <span className="font-bold text-[hsl(125,50%,56%)]">
-                  {compForecast?.WPR}
+                  {compForecast?.confirmed.WPR}
                 </span>
               </div>
               <div className="text-sm text-slate-100">

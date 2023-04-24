@@ -29,12 +29,8 @@ export async function getSwissleaguePilots(url: string) {
     data.push(rowData);
   });
 
-  const confirmedPilots = data.filter((el) => {
-    return el.status == "Paid" || el.status == "Free Entry";
-  });
-
   const pilots = await Promise.all(
-    confirmedPilots.map(async (el) => {
+    data.map(async (el) => {
       const name = el.pilot ?? "";
       const civlID = await getCivlId(name);
 
@@ -44,9 +40,16 @@ export async function getSwissleaguePilots(url: string) {
         civlID,
         wing: el.glider,
         status: el.status,
+        confirmed: isConfirmed(el.status),
       };
     })
   );
 
   return pilots;
+}
+
+function isConfirmed(status?: string) {
+  return (
+    status?.toLowerCase() == "paid" || status?.toLowerCase() == "free entry"
+  );
 }

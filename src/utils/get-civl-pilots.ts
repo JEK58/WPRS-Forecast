@@ -27,12 +27,8 @@ export async function getCivlcompPilots(url: string) {
     data.push(rowData);
   });
 
-  const confirmedPilots = data.filter((el) => {
-    return el.status == "Confirmed" || el.status == "Wildcard";
-  });
-
   const pilots = await Promise.all(
-    confirmedPilots.map(async (el) => {
+    data.map(async (el) => {
       const input = el.name ?? "";
       const name = input.split(" (")[0] ?? "";
       const civlID = await getCivlId(name);
@@ -43,9 +39,16 @@ export async function getCivlcompPilots(url: string) {
         civlID,
         wing: el.glider,
         status: el.status,
+        confirmed: isConfirmed(el.status),
       };
     })
   );
 
   return pilots;
+}
+
+function isConfirmed(status?: string) {
+  return (
+    status?.toLowerCase() == "confirmed" || status?.toLowerCase() == "wildcard"
+  );
 }

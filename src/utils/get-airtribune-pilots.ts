@@ -18,17 +18,14 @@ export async function getAirtribunePilots(url: string) {
     if (match && typeof match[1] == "string") {
       const jsonData = JSON.parse(match[1]) as { pilots: AirtribunePilot[] };
 
-      const confirmedPilots = jsonData.pilots.filter((el) => {
-        return el.status == "confirmed" || el.status == "wildcard";
-      });
-
-      const pilots = confirmedPilots.map((el) => {
+      const pilots = jsonData.pilots.map((el) => {
         return {
           name: el.name,
           nationality: el.country.ioc_code,
           civlID: parseInt(el.civl_id ?? "99999", 10),
           wing: el.glider_model,
           status: el.status,
+          confirmed: isConfirmed(el.status),
         };
       });
       return pilots;
@@ -40,4 +37,10 @@ export async function getAirtribunePilots(url: string) {
     console.error(error);
     return [];
   }
+}
+
+function isConfirmed(status?: string) {
+  return (
+    status?.toLowerCase() == "confirmed" || status?.toLowerCase() == "wildcard"
+  );
 }
