@@ -108,7 +108,6 @@ async function calculateWPRS(pilots: Pilot[]) {
 
     if (cachedPilot) pilot = JSON.parse(cachedPilot) as Ranking;
     else {
-      console.log("🛟 Cache miss:", civl);
       pilot = await prisma.ranking.findUnique({ where: { id: civl } });
       await redis.set(`civl:${civl}`, JSON.stringify(pilot), "EX", EXP_TIME);
     }

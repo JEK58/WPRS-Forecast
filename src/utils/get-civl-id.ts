@@ -20,7 +20,6 @@ export async function getCivlId(name: string) {
     if (cachedId) return +cachedId;
 
     const id = await lookUpCivlId(name);
-    console.log("🛟 Cache miss", name, id);
 
     // If a placeholder id is returned the CIVL ID may change in the future
     // and therefore gets an expiry of 30 days
