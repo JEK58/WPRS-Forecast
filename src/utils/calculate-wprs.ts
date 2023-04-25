@@ -97,7 +97,6 @@ export function isSwissleagueLink(url: string) {
 }
 
 async function calculateWPRS(pilots: Pilot[]) {
-  console.log("🚀 ~ pilots:", pilots.length);
   if (pilots.length < 2) return {};
   let worldRankingDate = new Date();
   const numPilots = pilots.length;
