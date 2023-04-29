@@ -9,11 +9,12 @@ export function ForecastDetails({ data }: { data: ApiResponse }) {
       </li>
       <li>
         WPRS two valid tasks:{" "}
-        <span className="text-slate-400">{data.confirmed.wprDeval0_8}</span>
+
+        <span className="text-slate-400">{data.WPRS[0]?.Ta2}</span>
       </li>
       <li>
         WPRS one valid task:{" "}
-        <span className="text-slate-400">{data.confirmed.wprDeval0_5}</span>
+        <span className="text-slate-400">{data.WPRS[0]?.Ta1}</span>
       </li>
       <li>
         Number of pilots:{" "}
@@ -22,10 +23,6 @@ export function ForecastDetails({ data }: { data: ApiResponse }) {
       <li>
         Number of participants (Pn):{" "}
         <span className="text-slate-400">{data.confirmed.Pn}</span>
-      </li>
-      <li>
-        Pilot Points (Pp):{" "}
-        <span className="text-slate-400">{data.confirmed.Pp}</span>
       </li>
       <li>
         Participant quality (Pq):{" "}
