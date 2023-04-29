@@ -16,6 +16,8 @@ const Home: NextPage = () => {
   const [url, setUrl] = useState<string>("");
   const [isValidLink, setIsValidLink] = useState(false);
 
+  const router = useRouter();
+
   const startCalculation = async () => {
     setIsLoading(true);
     setError(undefined);
@@ -58,8 +60,6 @@ const Home: NextPage = () => {
     if (isValidUrl(url)) setIsValidLink(true);
     else setIsValidLink(false);
   }, [url]);
-
-  const router = useRouter();
 
   useEffect(() => {
     // Get comp from url
@@ -152,7 +152,7 @@ const Home: NextPage = () => {
               <div className="text-lg">
                 WPRS:{" "}
                 <span className="font-bold text-[hsl(125,50%,56%)]">
-                  {compForecast?.WPR}
+                  {compForecast?.WPRS[0]?.Ta3}
                 </span>
               </div>
               <div className="text-sm text-slate-100">

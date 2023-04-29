@@ -5,11 +5,11 @@ export function ForecastDetails({ data }: { data: CompForecast }) {
     <ul>
       <li>
         WPRS two valid tasks:{" "}
-        <span className="text-slate-400">{data.wprDeval0_8}</span>
+        <span className="text-slate-400">{data.WPRS[0]?.Ta2}</span>
       </li>
       <li>
         WPRS one valid task:{" "}
-        <span className="text-slate-400">{data.wprDeval0_5}</span>
+        <span className="text-slate-400">{data.WPRS[0]?.Ta1}</span>
       </li>
       <li>
         Number of pilots:{" "}
@@ -19,9 +19,7 @@ export function ForecastDetails({ data }: { data: CompForecast }) {
         Number of participants (Pn):{" "}
         <span className="text-slate-400">{data.Pn}</span>
       </li>
-      <li>
-        Pilot Points (Pp): <span className="text-slate-400">{data.Pp}</span>
-      </li>
+
       <li>
         Participant quality (Pq):{" "}
         <span className="text-slate-400">{data.Pq}</span>
