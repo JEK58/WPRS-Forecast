@@ -1,6 +1,13 @@
 
 # Changelog
 
+### 2023-05-01
+
+**Improvements:**
+
+- WPRS list for each rank added
+
+
 ### 2023-04-24
 
 **Improvements:**

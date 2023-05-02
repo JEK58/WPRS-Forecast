@@ -159,7 +159,6 @@ async function calculateWPRS(pilots: Pilot[]) {
   // const wprDeval0_8 = +(100 * Pp * Pq * Pn * Ta2).toFixed(2); // *Td
   // const wprDeval0_5 = +(100 * Pp * Pq * Pn * Ta1).toFixed(2); // *Td
 
-  console.log("🚀 ~ WPRS:", WPR);
   return {
     worldRankingDate: worldRankingDate,
     numPilots,
