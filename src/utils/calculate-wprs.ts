@@ -5,6 +5,12 @@ import { getAirtribunePilots } from "@/utils/get-airtribune-pilots";
 import { getCivlcompPilots } from "@/utils/get-civl-pilots";
 import { getPwcPilots } from "./get-pwc-pilots";
 import { getSwissleaguePilots } from "./get-swissleague-pilots";
+import Redis from "ioredis";
+import { type Ranking } from "@prisma/client";
+import { env } from "@/env.mjs";
+
+const redis = new Redis({ host: env.REDIS_URL });
+const EXP_TIME = 60 * 60; // 1 h
 
 export interface Pilot {
   name?: string;
@@ -12,6 +18,7 @@ export interface Pilot {
   civlID?: number;
   wing?: string;
   status?: string;
+  confirmed?: boolean;
 }
 
 export interface CompForecast {
@@ -25,34 +32,51 @@ export interface CompForecast {
   Pp: number;
   WPRS: { Ta1: number; Ta2: number; Ta3: number }[];
 }
+
+export interface ApiResponse {
+  all: CompForecast;
+  confirmed: CompForecast;
+}
 // Minimum required confirmed pilots in a comp
-const MIN_PILOTS = 30;
+const MIN_PILOTS = 25;
 
 export async function getWprs(url: string) {
   console.log("🚀 ~ url:", url);
   if (isAirtibuneLink(url)) {
     const compUrl = generateAirtribuneCompUrl(url);
     const pilots = await getAirtribunePilots(compUrl);
-    if (pilots.length < 10) return 0;
-    return await calculateWPRS(pilots);
+    if (pilots.length < MIN_PILOTS) return 0;
+    return {
+      all: await calculateWPRS(pilots),
+      confirmed: await calculateWPRS(pilots.filter((p) => p.confirmed)),
+    };
   }
   if (isCivlLink(url)) {
     const compUrl = generateCivlCompUrl(url);
     const pilots = await getCivlcompPilots(compUrl);
     if (pilots.length < MIN_PILOTS) return 0;
-    return await calculateWPRS(pilots);
+    return {
+      all: await calculateWPRS(pilots),
+      confirmed: await calculateWPRS(pilots.filter((p) => p.confirmed)),
+    };
   }
   if (isPwcLink(url)) {
     const compUrl = generatePwcCompUrl(url);
     const pilots = await getPwcPilots(compUrl);
     if (pilots.length < MIN_PILOTS) return 0;
-    return await calculateWPRS(pilots);
+    return {
+      all: await calculateWPRS(pilots),
+      confirmed: await calculateWPRS(pilots.filter((p) => p.confirmed)),
+    };
   }
   if (isSwissleagueLink(url)) {
     const compUrl = generateSwissleagueCompUrl(url);
     const pilots = await getSwissleaguePilots(compUrl);
     if (pilots.length < MIN_PILOTS) return 0;
-    return await calculateWPRS(pilots);
+    return {
+      all: await calculateWPRS(pilots),
+      confirmed: await calculateWPRS(pilots.filter((p) => p.confirmed)),
+    };
   }
 }
 export function isAirtibuneLink(url: string) {
@@ -71,6 +95,7 @@ export function isSwissleagueLink(url: string) {
 }
 
 async function calculateWPRS(pilots: Pilot[]) {
+  if (pilots.length < 2) return {};
   let worldRankingDate = new Date();
   const numPilots = pilots.length;
 
@@ -88,20 +113,27 @@ async function calculateWPRS(pilots: Pilot[]) {
   const compPilotsWprs: number[] = [];
 
   // sum ranking-points of the top 1/2 ranked participants
+
   for (let i = 0; i < numPilots; i++) {
     const element = pilots[i];
     if (!element) continue;
     const civl = element.civlID;
     if (!civl || isNaN(civl) || civl > 99999) continue;
 
-    const pilot = await prisma.ranking.findUnique({ where: { id: civl } });
+    let pilot: Ranking | null;
+    const cachedPilot = await redis.get(`civl:${civl}`);
+
+    if (cachedPilot) pilot = JSON.parse(cachedPilot) as Ranking;
+    else {
+      pilot = await prisma.ranking.findUnique({ where: { id: civl } });
+      await redis.set(`civl:${civl}`, JSON.stringify(pilot), "EX", EXP_TIME);
+    }
 
     if (pilot) {
       compPilotsWprs.push(pilot.points);
       worldRankingDate = pilot.date;
     }
   }
-
   const Pq_srp = compPilotsWprs
     .sort((a, b) => b - a)
     .slice(0, numPilots / 2)

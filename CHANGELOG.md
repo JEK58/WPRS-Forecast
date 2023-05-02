@@ -1,6 +1,26 @@
 
 # Changelog
 
+### 2023-05-01
+
+**Improvements:**
+
+- WPRS list for each rank added
+
+
+### 2023-04-24
+
+**Improvements:**
+
+- Potential WPRS for all registered pilots added
+- Calculation time reduced by adding redis as cache layer
+
+### 2023-04-23
+
+**Bugfix:**
+
+- Respect pilots with status "Free Entry" in swissleague comps
+
 ### 2023-04-22
 
 **Improvements:**

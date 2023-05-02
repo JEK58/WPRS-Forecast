@@ -1,5 +1,5 @@
 import { load } from "cheerio";
-import { lookupCivlId } from "@/utils/lookup-civl-id";
+import { getCivlId } from "@/utils/get-civl-id";
 
 export async function getCivlcompPilots(url: string) {
   const response = await fetch(url);
@@ -27,15 +27,11 @@ export async function getCivlcompPilots(url: string) {
     data.push(rowData);
   });
 
-  const confirmedPilots = data.filter((el) => {
-    return el.status == "Confirmed" || el.status == "Wildcard";
-  });
-
   const pilots = await Promise.all(
-    confirmedPilots.map(async (el) => {
+    data.map(async (el) => {
       const input = el.name ?? "";
       const name = input.split(" (")[0] ?? "";
-      const civlID = await lookupCivlId(name);
+      const civlID = await getCivlId(name);
 
       return {
         name,
@@ -43,9 +39,16 @@ export async function getCivlcompPilots(url: string) {
         civlID,
         wing: el.glider,
         status: el.status,
+        confirmed: isConfirmed(el.status),
       };
     })
   );
 
   return pilots;
+}
+
+function isConfirmed(status?: string) {
+  return (
+    status?.toLowerCase() == "confirmed" || status?.toLowerCase() == "wildcard"
+  );
 }

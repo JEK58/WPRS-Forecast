@@ -1,12 +1,38 @@
 import axios from "axios";
+import Redis from "ioredis";
+import { env } from "@/env.mjs";
+
+const redis = new Redis({ host: env.REDIS_URL });
 
 const CIVL_PLACEHOLDER_ID = 99999;
+const REDIS_ID_EXPIRE_TIME = 30 * 24 * 60 * 60; // 30 days
 
 interface CivlPilotLookup {
   id: number;
   text: string;
 }
-export async function lookupCivlId(name: string) {
+
+export async function getCivlId(name: string) {
+  const redisKey = `name:${name.toLowerCase()}`;
+
+  try {
+    const cachedId = await redis.get(redisKey);
+    if (cachedId) return +cachedId;
+
+    const id = await lookUpCivlId(name);
+
+    // If a placeholder id is returned the CIVL ID may change in the future
+    // and therefore gets an expiry of 30 days
+    if (id != CIVL_PLACEHOLDER_ID) await redis.set(redisKey, id);
+    else await redis.set(redisKey, id, "EX", REDIS_ID_EXPIRE_TIME);
+    return id;
+  } catch (error) {
+    console.log(error);
+    return CIVL_PLACEHOLDER_ID;
+  }
+}
+
+async function lookUpCivlId(name: string) {
   const searchString = name.replaceAll(" ", "+");
   const headersList = {
     Accept: "*/*",

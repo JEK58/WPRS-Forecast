@@ -1,4 +1,4 @@
-import { lookupCivlId } from "@/utils/lookup-civl-id";
+import { getCivlId } from "@/utils/get-civl-id";
 
 interface PWCApiResponse {
   subscriptions?: PilotDetails[];
@@ -52,19 +52,12 @@ export async function getPwcPilots(url: string) {
   ];
 
   if (!mergedData.length) return [];
-  const confirmedPilots = mergedData.filter((el) => {
-    return (
-      el.status_key == "confirmed" ||
-      el.status_key == "wildcard" ||
-      el.status_key == "guest_card_confirmed"
-    );
-  });
 
   const pilots = await Promise.all(
-    confirmedPilots.map(async (el) => {
+    mergedData.map(async (el) => {
       const input = el.pilot ?? "";
       const name = input.split(" (")[0] ?? "";
-      const civlID = await lookupCivlId(name);
+      const civlID = await getCivlId(name);
 
       return {
         name,
@@ -72,9 +65,18 @@ export async function getPwcPilots(url: string) {
         civlID,
         wing: el.glider,
         status: el.status,
+        confirmed: isConfirmed(el.status_key),
       };
     })
   );
 
   return pilots;
+}
+
+function isConfirmed(status?: string) {
+  return (
+    status?.toLowerCase() == "confirmed" ||
+    status?.toLowerCase() == "wildcard" ||
+    status?.toLowerCase() == "guest_card_confirmed"
+  );
 }
