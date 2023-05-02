@@ -8,6 +8,7 @@ import { useEffect, useState, type ChangeEvent } from "react";
 import { Footer } from "@/components/Footer";
 import { isValidUrl } from "@/utils/check-valid-url";
 import { useRouter } from "next/router";
+import { ListRankings } from "@/components/ListRankings";
 
 const Home: NextPage = () => {
   const [compForecast, setCompForecast] = useState<ApiResponse | undefined>();
@@ -15,6 +16,8 @@ const Home: NextPage = () => {
   const [error, setError] = useState<string | undefined>();
   const [url, setUrl] = useState<string>("");
   const [isValidLink, setIsValidLink] = useState(false);
+
+  const router = useRouter();
 
   const startCalculation = async () => {
     setIsLoading(true);
@@ -58,8 +61,6 @@ const Home: NextPage = () => {
     if (isValidUrl(url)) setIsValidLink(true);
     else setIsValidLink(false);
   }, [url]);
-
-  const router = useRouter();
 
   useEffect(() => {
     // Get comp from url
@@ -152,7 +153,7 @@ const Home: NextPage = () => {
               <div className="text-lg">
                 WPRS:{" "}
                 <span className="font-bold text-[hsl(125,50%,56%)]">
-                  {compForecast?.confirmed.WPR}
+                  {compForecast.confirmed.WPRS[0]?.Ta3}
                 </span>
               </div>
               <div className="text-sm text-slate-100">
@@ -171,6 +172,7 @@ const Home: NextPage = () => {
                 their CIVL rankings. The calculation will become more accurate
                 as the competition date approaches.
               </p>
+              <ListRankings data={compForecast} />
             </div>
           )}
         </div>

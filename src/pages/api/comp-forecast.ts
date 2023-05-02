@@ -24,9 +24,7 @@ async function handler(req: ExtendedNextApiRequest, res: NextApiResponse) {
   let queryID: string | undefined = undefined;
   let wprs: number | undefined;
 
-  if (!body.url) {
-    return res.status(400).json({ error: "No link submitted" });
-  }
+  if (!body.url) return res.status(400).json({ error: "No link submitted" });
 
   if (process.env.NODE_ENV === "production") {
     try {
@@ -40,7 +38,7 @@ async function handler(req: ExtendedNextApiRequest, res: NextApiResponse) {
   const url = sanitizeUrl(body.url);
 
   if (!isValidUrl(url))
-    res.status(400).json({ error: "No valid URL submitted" });
+    return res.status(400).json({ error: "No valid URL submitted" });
 
   try {
     await limiter.check(res, SUBMIT_RATE_LIMIT, "CACHE_TOKEN");
@@ -48,7 +46,12 @@ async function handler(req: ExtendedNextApiRequest, res: NextApiResponse) {
     try {
       const forecast = await getWprs(url);
       if (forecast == 0) return res.status(204).end();
-      wprs = forecast?.confirmed.WPR;
+
+      wprs = forecast?.confirmed?.WPRS?.[0]?.Ta3;
+      const potentialWprs = forecast?.all?.WPRS?.[0]?.Ta3;
+
+      console.log("🚀 ~ WPRS confirmed:", wprs, "potential:", potentialWprs);
+
       if (forecast) res.status(201).send(forecast);
       else throw new Error(`Could not calculate WPRS from URL: ${url}`);
     } catch (error) {
@@ -58,6 +61,7 @@ async function handler(req: ExtendedNextApiRequest, res: NextApiResponse) {
   } catch (error) {
     res.status(429).json({ error: "Rate limit exceeded" });
   }
+
   try {
     if (queryID && wprs) {
       await prisma.usage.update({
