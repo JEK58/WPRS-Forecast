@@ -67,7 +67,10 @@ const Home: NextPage = () => {
     <>
       <Head>
         <title>WPRS Forecast</title>
-        <meta name="description" content="" />
+        <meta
+          name="description"
+          content="Enables you to forecast the potential world ranking points for paragliding competitions."
+        />
         <link rel="icon" href="/favicon.ico" />
       </Head>
 

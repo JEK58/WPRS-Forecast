@@ -1,3 +1,4 @@
+import Link from "next/link";
 import { FaGithub } from "react-icons/fa";
 
 export function Footer() {
@@ -17,6 +18,10 @@ export function Footer() {
       >
         Impressum
       </a>
+      |
+      <Link className="flex items-center justify-center text-xs" href="/stats">
+        Statistics
+      </Link>
     </footer>
   );
 }

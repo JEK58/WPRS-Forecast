@@ -1,6 +1,14 @@
 
 # Changelog
 
+### 2023-05-05
+
+**Improvements:**
+
+- Stats added
+- UI changes (no input field in results view, ...)
+- switched to tRPC
+
 ### 2023-05-01
 
 **Improvements:**
