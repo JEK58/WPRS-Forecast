@@ -8,6 +8,7 @@ import { Footer } from "@/components/Footer";
 import { isValidUrl } from "@/utils/check-valid-url";
 import { useRouter } from "next/router";
 import { api } from "@/utils/api";
+import { ListRankings } from "@/components/ListRankings";
 
 const Home: NextPage = () => {
   const [isLoading, setIsLoading] = useState(false);
@@ -169,7 +170,7 @@ const Home: NextPage = () => {
               <div className="text-lg">
                 WPRS:{" "}
                 <span className="font-bold text-[hsl(125,50%,56%)]">
-                  {data?.confirmed?.WPR}
+                  {data?.confirmed?.WPRS[0]?.Ta3}
                 </span>
               </div>
               <div className="text-sm text-slate-100">
@@ -188,8 +189,8 @@ const Home: NextPage = () => {
                 pilots and their CIVL rankings. The calculation will become more
                 accurate as the competition date approaches.
               </p>
+              <ListRankings data={data} />
             </div>
-            // </div>
           )}
         </div>
         <Footer />

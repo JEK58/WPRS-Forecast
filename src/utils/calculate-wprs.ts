@@ -30,10 +30,7 @@ export interface CompForecast {
   Pq_srtp: number;
   Pn: number;
   compRanking: number;
-  Pp: number;
-  WPR: number;
-  wprDeval0_8: number;
-  wprDeval0_5: number;
+  WPRS: { Ta1: number; Ta2: number; Ta3: number }[];
   compTitle?: string;
 }
 
@@ -45,7 +42,7 @@ export interface GetWPRS {
 // Minimum required confirmed pilots in a comp
 const MIN_PILOTS = 25;
 
-export async function getWprs(url: string): Promise<GetWPRS | 0> {
+export async function getWprs(url: string) {
   console.log("🚀 ~ url:", url);
   if (isAirtibuneLink(url)) {
     const compUrl = generateAirtribuneCompUrl(url);
@@ -156,18 +153,17 @@ async function calculateWPRS(
   const Pn_tmp = Math.sqrt(numPilots / avgNumParticipants);
   const Pn = Pn_tmp > Pn_max ? Pn_max : Pn_tmp;
 
-  // 1 task: 0.5, 2 tasks: 0.8, 3 tasks: 1.0
-  const Ta3 = 1.0;
-  const Ta2 = 0.8;
-  const Ta1 = 0.5;
-  const compRanking = Pq * Pn * Ta3;
-  const Pplacing = (numPilots - 1 + 1) / numPilots;
-  const Pp = Math.max(Pplacing ** (1 + Pq), Pplacing ** 2);
-  const WPR = +(100 * Pp * Pq * Pn * Ta3).toFixed(2); // *Td
-  const wprDeval0_8 = +(100 * Pp * Pq * Pn * Ta2).toFixed(2); // *Td
-  const wprDeval0_5 = +(100 * Pp * Pq * Pn * Ta1).toFixed(2); // *Td
+  const compRanking = Pq * Pn;
+  // const Pplacing = (numPilots - 1 + 1) / numPilots;
+  // const Pp = Math.max(Pplacing ** (1 + Pq), Pplacing ** 2);
+  const factors = calcPilotPointFactors(numPilots, Pq);
 
-  console.log("🚀 ~ WPRS:", WPR);
+  const WPRS = factors.map((factor) => calcWPR(factor, Pq, Pn));
+
+  // const WPR = +(100 * Pp * Pq * Pn * Ta3).toFixed(2); // *Td
+  // const wprDeval0_8 = +(100 * Pp * Pq * Pn * Ta2).toFixed(2); // *Td
+  // const wprDeval0_5 = +(100 * Pp * Pq * Pn * Ta1).toFixed(2); // *Td
+
   return {
     compTitle: pilots[0]?.compTitle,
     worldRankingDate: worldRankingDate,
@@ -177,10 +173,30 @@ async function calculateWPRS(
     Pq_srtp: +Pq_srtp.toFixed(3),
     Pn: +Pn.toFixed(3),
     compRanking: +compRanking.toFixed(3),
-    Pp,
-    WPR,
-    wprDeval0_8,
-    wprDeval0_5,
+    WPRS,
+  };
+}
+
+function calcPilotPointFactors(numOfPilots: number, Pq: number) {
+  const data: number[] = [];
+  for (let i = 1; i <= numOfPilots; i++) {
+    const pp = (numOfPilots - i + 1) / numOfPilots;
+    data.push(+Math.max(pp ** (1 + Pq), pp ** 2).toFixed(3));
+  }
+  return data;
+}
+
+function calcWPR(factor: number, Pq: number, Pn: number) {
+  // 1 task: 0.5, 2 tasks: 0.8, 3 tasks: 1.0
+  const success = [0.5, 0.8, 1] as const;
+
+  const formula = (success: number, factor: number) =>
+    +(100 * factor * Pq * Pn * success).toFixed(1);
+
+  return {
+    Ta1: +formula(success[0], factor),
+    Ta2: +formula(success[1], factor),
+    Ta3: +formula(success[2], factor),
   };
 }
 
