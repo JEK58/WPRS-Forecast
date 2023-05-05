@@ -6,6 +6,7 @@ export async function getSwissleaguePilots(url: string) {
   const body = await response.text();
 
   const $ = load(body, { xmlMode: true });
+  const compTitle = $("h1").text();
 
   const content = $(".mwc-datatable");
 
@@ -35,6 +36,7 @@ export async function getSwissleaguePilots(url: string) {
       const civlID = await getCivlId(name);
 
       return {
+        compTitle,
         name,
         nationality: el.country,
         civlID,

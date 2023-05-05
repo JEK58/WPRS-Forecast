@@ -1,4 +1,5 @@
 import type { Pilot } from "@/utils/calculate-wprs";
+import { load } from "cheerio";
 
 interface AirtribunePilot
   extends Omit<Pilot, "civlID" | "wing" | "nationality"> {
@@ -12,6 +13,13 @@ export async function getAirtribunePilots(url: string) {
     const response = await fetch(url);
     const body = await response.text();
 
+    // Find competition name
+    const $ = load(body, { xmlMode: true });
+    const compTitle = $('meta[property="og:title"]')
+      .attr("content")
+      ?.replace("Pilots | ", "");
+
+    // Find pilots
     const jsonRegex = /window\.ATDATA\.pilots\s*=\s*({[\s\S]*?});/;
     const match = body.match(jsonRegex);
 
@@ -26,6 +34,7 @@ export async function getAirtribunePilots(url: string) {
           wing: el.glider_model,
           status: el.status,
           confirmed: isConfirmed(el.status),
+          compTitle,
         };
       });
       return pilots;
