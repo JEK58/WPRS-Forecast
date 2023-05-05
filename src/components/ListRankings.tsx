@@ -1,16 +1,18 @@
-import { type ApiResponse } from "@/utils/calculate-wprs";
+import { type GetWPRS } from "@/utils/calculate-wprs";
 
-export function ListRankings({ data }: { data: ApiResponse }) {
+export function ListRankings({ data }: { data: GetWPRS }) {
   const listRanking = () => {
-    return data.confirmed.WPRS.map((el, i) => {
+    if (!data.confirmed?.WPRS.length) return;
+    return data?.confirmed?.WPRS.map((el, i) => {
       return (
-        <tr key={el.Ta3} className="">
+        <tr key={i} className="">
           <td>{i + 1}</td>
           <td className="text-[hsl(125,50%,56%)]">{el.Ta3}</td>
         </tr>
       );
     });
   };
+
   return (
     <>
       <div className="collapse-arrow rounded-box collapse mt-3 border ">
