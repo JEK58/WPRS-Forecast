@@ -1,24 +1,30 @@
-import { type NextPage } from "next";
+import { type InferGetServerSidePropsType } from "next";
+import { prisma } from "@/server/db";
+import { sanitizeUrl } from "@braintree/sanitize-url";
+
 import Head from "next/head";
 
-import { api } from "@/utils/api";
+const Stats = (
+  props: InferGetServerSidePropsType<typeof getServerSideProps>
+) => {
+  const stats = props.data;
 
-const Stats: NextPage = () => {
-  const stats = api.wprs.getStats.useQuery();
-
-  const listStats = stats.data ? (
-    stats.data?.map((stat) => (
+  const listStats = stats?.map((stat) => {
+    if (!stat.compTitle) return;
+    return (
       <tr key={stat.id}>
-        <td>{stat.wprs}</td>
-        <td>{stat.compUrl}</td>
+        <td className="text-right">{stat.wprs} -</td>
+        <td>
+          <a
+            className="text-[hsl(125,50%,56%)] hover:underline hover:decoration-dotted"
+            href={sanitizeUrl(stat.compUrl)}
+          >
+            {stat.compTitle}
+          </a>
+        </td>
       </tr>
-    ))
-  ) : (
-    <tr>
-      <td></td>
-      <td></td>
-    </tr>
-  );
+    );
+  });
 
   return (
     <>
@@ -34,12 +40,6 @@ const Stats: NextPage = () => {
           </h1>
 
           <table className="table-auto text-white">
-            <thead>
-              <tr>
-                <td>WPRS</td>
-                <td>Comp</td>
-              </tr>
-            </thead>
             <tbody>{listStats}</tbody>
           </table>
         </div>
@@ -48,4 +48,20 @@ const Stats: NextPage = () => {
   );
 };
 
+export const getServerSideProps = async () => {
+  // await new Promise((resolve) => setTimeout(resolve, 2000));
+  try {
+    const data = await prisma.usage.findMany({
+      orderBy: { createdAt: "desc" },
+      select: { wprs: true, compUrl: true, id: true, compTitle: true },
+    });
+    return {
+      props: {
+        data,
+      },
+    };
+  } catch (error) {
+    console.log(error);
+  }
+};
 export default Stats;

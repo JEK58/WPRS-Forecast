@@ -1,4 +1,5 @@
 import { getCivlId } from "@/utils/get-civl-id";
+import { load } from "cheerio";
 
 interface PWCApiResponse {
   subscriptions?: PilotDetails[];
@@ -33,6 +34,12 @@ export interface PilotDetails {
 }
 
 export async function getPwcPilots(url: string) {
+  const response = await fetch(url);
+  const body = await response.text();
+
+  const $ = load(body, { xmlMode: true });
+  const compTitle = $('h2[class="title"]').text();
+
   const apiUrl = url.replace("pwca.org", "pwca.org/api");
   const femaleApiUrl = apiUrl + "?gender=female";
 
@@ -60,6 +67,7 @@ export async function getPwcPilots(url: string) {
       const civlID = await getCivlId(name);
 
       return {
+        compTitle,
         name,
         nationality: el.country,
         civlID,

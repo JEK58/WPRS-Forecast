@@ -19,6 +19,7 @@ export interface Pilot {
   wing?: string;
   status?: string;
   confirmed?: boolean;
+  compTitle?: string;
 }
 
 export interface CompForecast {
@@ -33,16 +34,18 @@ export interface CompForecast {
   WPR: number;
   wprDeval0_8: number;
   wprDeval0_5: number;
+  compTitle?: string;
 }
 
-export interface ApiResponse {
-  all: CompForecast;
-  confirmed: CompForecast;
+export interface GetWPRS {
+  all?: CompForecast;
+  confirmed?: CompForecast;
 }
+
 // Minimum required confirmed pilots in a comp
 const MIN_PILOTS = 25;
 
-export async function getWprs(url: string) {
+export async function getWprs(url: string): Promise<GetWPRS | 0> {
   console.log("🚀 ~ url:", url);
   if (isAirtibuneLink(url)) {
     const compUrl = generateAirtribuneCompUrl(url);
@@ -80,6 +83,7 @@ export async function getWprs(url: string) {
       confirmed: await calculateWPRS(pilots.filter((p) => p.confirmed)),
     };
   }
+  return 0;
 }
 export function isAirtibuneLink(url: string) {
   return url.includes("airtribune.com/");
@@ -96,8 +100,10 @@ export function isSwissleagueLink(url: string) {
   return url.includes("swissleague.ch/");
 }
 
-async function calculateWPRS(pilots: Pilot[]) {
-  if (pilots.length < 2) return {};
+async function calculateWPRS(
+  pilots: Pilot[]
+): Promise<CompForecast | undefined> {
+  if (pilots.length < 2) return undefined;
   let worldRankingDate = new Date();
   const numPilots = pilots.length;
 
@@ -163,13 +169,14 @@ async function calculateWPRS(pilots: Pilot[]) {
 
   console.log("🚀 ~ WPRS:", WPR);
   return {
+    compTitle: pilots[0]?.compTitle,
     worldRankingDate: worldRankingDate,
     numPilots,
-    Pq: Pq.toFixed(3),
-    Pq_srp: Pq_srp.toFixed(3),
-    Pq_srtp: Pq_srtp.toFixed(3),
-    Pn: Pn.toFixed(3),
-    compRanking: compRanking.toFixed(3),
+    Pq: +Pq.toFixed(3),
+    Pq_srp: +Pq_srp.toFixed(3),
+    Pq_srtp: +Pq_srtp.toFixed(3),
+    Pn: +Pn.toFixed(3),
+    compRanking: +compRanking.toFixed(3),
     Pp,
     WPR,
     wprDeval0_8,

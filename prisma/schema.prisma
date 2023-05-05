@@ -28,4 +28,5 @@ model Usage {
     updatedAt DateTime @updatedAt
     compUrl   String
     wprs      Float?
+    compTitle String?
 }
