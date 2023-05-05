@@ -189,7 +189,7 @@ const Home: NextPage = () => {
                 pilots and their CIVL rankings. The calculation will become more
                 accurate as the competition date approaches.
               </p>
-              <ListRankings data={data} />
+              {data.confirmed?.WPRS.length && <ListRankings data={data} />}
             </div>
           )}
         </div>
