@@ -5,7 +5,7 @@ export function ListRankings({ data }: { data: GetWPRS }) {
     if (!data.confirmed?.WPRS.length) return;
     return data?.confirmed?.WPRS.map((el, i) => {
       return (
-        <tr key={el.Ta3 + i} className="">
+        <tr key={i} className="">
           <td>{i + 1}</td>
           <td className="text-[hsl(125,50%,56%)]">{el.Ta3}</td>
         </tr>
