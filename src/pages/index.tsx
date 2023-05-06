@@ -142,8 +142,8 @@ const Home: NextPage = () => {
               <div className="mt-2 text-white md:max-w-3xl ">
                 <span className="text-[hsl(125,50%,56%)]">Note: </span>This only
                 works for paragliding competitions. Make sure to paste the
-                correct link from the platform that actually hosts the comp even
-                if civlcomps.org lists them all.
+                correct link from the platform that actually hosts the comp -
+                even if civlcomps.org lists them all.
               </div>
             </div>
           )}
