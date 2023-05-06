@@ -3,7 +3,7 @@ import { createTRPCRouter, publicProcedure } from "@/server/api/trpc";
 import { prisma } from "@/server/db";
 import { sanitizeUrl } from "@braintree/sanitize-url";
 import { isValidUrl } from "@/utils/check-valid-url";
-import { getWprs } from "@/utils/calculate-wprs";
+import { type GetWPRS, getWprs } from "@/utils/calculate-wprs";
 import { TRPCError } from "@trpc/server";
 
 export const wprsRouter = createTRPCRouter({
@@ -27,7 +27,7 @@ async function calcWprs(inputUrl: string) {
   let queryID: string | undefined = undefined;
   let wprs: number | undefined;
   let compTitle: string | undefined;
-
+  let forecast: GetWPRS | 0 | undefined = undefined;
   try {
     const res = await prisma.usage.create({ data: { compUrl: inputUrl } });
     queryID = res.id;
@@ -44,34 +44,35 @@ async function calcWprs(inputUrl: string) {
     });
 
   try {
-    const forecast = await getWprs(url);
-    if (forecast == 0)
-      throw new TRPCError({
-        code: "BAD_REQUEST",
-        message: "Not enough pilots in this comp",
-      });
-
-    // Save result to usage DB
-    try {
-      wprs = forecast?.confirmed?.WPRS?.[0]?.Ta3;
-      compTitle = forecast?.confirmed?.compTitle;
-      if (queryID && wprs) {
-        await prisma.usage.update({
-          where: { id: queryID },
-          data: { wprs, compTitle },
-        });
-      }
-    } catch (error) {
-      console.log(error);
-    }
-
-    if (forecast) return forecast;
-    else throw new Error(`Could not calculate WPRS from URL: ${url}`);
+    forecast = await getWprs(url);
   } catch (error) {
     console.log(error);
-    throw new TRPCError({
-      code: "INTERNAL_SERVER_ERROR",
-      message: "Ooops… something went wrong",
-    });
   }
+
+  if (forecast == 0)
+    throw new TRPCError({
+      code: "BAD_REQUEST",
+      message: "Not enough pilots in this comp",
+    });
+
+  // Save result to usage DB
+  try {
+    wprs = forecast?.confirmed?.WPRS?.[0]?.Ta3;
+    compTitle = forecast?.confirmed?.compTitle;
+    if (queryID && wprs) {
+      await prisma.usage.update({
+        where: { id: queryID },
+        data: { wprs, compTitle },
+      });
+    }
+  } catch (error) {
+    console.log(error);
+  }
+
+  if (forecast) return forecast;
+
+  throw new TRPCError({
+    code: "INTERNAL_SERVER_ERROR",
+    message: "Ooops… something went wrong",
+  });
 }

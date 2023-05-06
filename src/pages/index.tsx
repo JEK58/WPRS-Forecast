@@ -75,7 +75,7 @@ const Home: NextPage = () => {
       </Head>
 
       <main className="flex min-h-screen flex-col items-center bg-gradient-to-b from-[#2e026d] to-[#15162c]">
-        <div className="container flex flex-grow flex-col items-center gap-8 px-4 py-16 ">
+        <div className="container flex flex-grow flex-col items-center gap-8 px-4 py-16">
           <h1 className="text-5xl font-extrabold tracking-tight text-white sm:text-[5rem]">
             WPRS <span className="text-[hsl(125,50%,56%)]">Forecast</span>{" "}
             <span className="block text-right text-sm tracking-normal sm:inline sm:text-left">
@@ -83,12 +83,12 @@ const Home: NextPage = () => {
             </span>
           </h1>
           {!data && (
-            <>
+            <div>
               <form
-                className="mt-5 w-full justify-center gap-3 sm:flex"
+                className="mt-5 w-full max-w-3xl justify-center gap-3 sm:flex"
                 onSubmit={handleSubmit}
               >
-                <div className="md:w-100 mb-3 w-full sm:mb-0  md:max-w-xl">
+                <div className="mb-3 w-full sm:mb-0 ">
                   <div className="relative">
                     <input
                       type="text"
@@ -97,9 +97,10 @@ const Home: NextPage = () => {
                       onChange={onUrlChange}
                       placeholder="Link to comp (CIVL, PWC, Airtribune or Swissleague)"
                     />
+                    {/* Clear button */}
                     {url.length > 0 && !isFetching && (
                       <button
-                        className="absolute right-0 top-0 mr-2 mt-3 rounded-full bg-indigo-600 px-2 py-1 text-white hover:bg-gray-400 hover:bg-indigo-700 focus:bg-gray-400 focus:outline-none"
+                        className="absolute right-0 top-0 mr-2 mt-3 rounded-full bg-indigo-600 px-2 py-1 text-white hover:bg-indigo-700 focus:bg-gray-400 focus:outline-none"
                         type="button"
                         onClick={clearInput}
                       >
@@ -120,6 +121,7 @@ const Home: NextPage = () => {
                     )}
                   </div>
                 </div>
+                {/* Calculate button */}
                 <div className="w-full sm:w-auto md:w-40">
                   <button
                     type="submit"
@@ -131,15 +133,21 @@ const Home: NextPage = () => {
                   </button>
                 </div>
               </form>
-              <div className="text-red-500">
+              <div className="mt-4 text-red-500">
                 {!isValidLink && url.length > 0 && (
                   <p>This is not a valid link</p>
                 )}
-                <p>{error?.message}</p>
+                {error?.message && <p>{error?.message}</p>}
               </div>
-            </>
+              <div className="mt-2 text-white md:max-w-3xl ">
+                <span className="text-[hsl(125,50%,56%)]">Note: </span>This only
+                works for paragliding competitions. Make sure to paste the
+                correct link from the platform that actually hosts the comp even
+                if civlcomps.org lists them all.
+              </div>
+            </div>
           )}
-
+          {/* Forecast view */}
           {data && (
             <div className="flex max-w-lg flex-col gap-4 rounded-xl bg-white/10 p-4 text-white">
               <div className="justify-content-between flex items-start ">
