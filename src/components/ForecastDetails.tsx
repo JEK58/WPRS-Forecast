@@ -4,7 +4,7 @@ export function ForecastDetails({ data }: { data: GetWPRS }) {
   return (
     <ul>
       <li>
-        WPRS if all registered pilots would be confirmed:{" "}
+        WPRS if the top 150 registered pilots would be confirmed:{" "}
         <span className="text-[hsl(125,50%,56%)]">
           {data?.all?.WPRS[0]?.Ta3}
         </span>

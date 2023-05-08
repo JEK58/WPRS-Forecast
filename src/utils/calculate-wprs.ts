@@ -11,6 +11,7 @@ import { env } from "@/env.mjs";
 
 const redis = new Redis({ host: env.REDIS_URL });
 const EXP_TIME = 60 * 60; // 1 h
+const MAX_PILOTS_CIVL = 150;
 
 export interface Pilot {
   name?: string;
@@ -49,7 +50,7 @@ export async function getWprs(url: string) {
     const pilots = await getAirtribunePilots(compUrl);
     if (pilots.length < MIN_PILOTS) return 0;
     return {
-      all: await calculateWPRS(pilots),
+      all: await calculateWPRS(pilots, MAX_PILOTS_CIVL),
       confirmed: await calculateWPRS(pilots.filter((p) => p.confirmed)),
     };
   }
@@ -58,7 +59,7 @@ export async function getWprs(url: string) {
     const pilots = await getCivlcompPilots(compUrl);
     if (pilots.length < MIN_PILOTS) return 0;
     return {
-      all: await calculateWPRS(pilots),
+      all: await calculateWPRS(pilots, MAX_PILOTS_CIVL),
       confirmed: await calculateWPRS(pilots.filter((p) => p.confirmed)),
     };
   }
@@ -67,7 +68,7 @@ export async function getWprs(url: string) {
     const pilots = await getPwcPilots(compUrl);
     if (pilots.length < MIN_PILOTS) return 0;
     return {
-      all: await calculateWPRS(pilots),
+      all: await calculateWPRS(pilots, MAX_PILOTS_CIVL),
       confirmed: await calculateWPRS(pilots.filter((p) => p.confirmed)),
     };
   }
@@ -76,7 +77,7 @@ export async function getWprs(url: string) {
     const pilots = await getSwissleaguePilots(compUrl);
     if (pilots.length < MIN_PILOTS) return 0;
     return {
-      all: await calculateWPRS(pilots),
+      all: await calculateWPRS(pilots, MAX_PILOTS_CIVL),
       confirmed: await calculateWPRS(pilots.filter((p) => p.confirmed)),
     };
   }
@@ -98,11 +99,12 @@ export function isSwissleagueLink(url: string) {
 }
 
 async function calculateWPRS(
-  pilots: Pilot[]
+  pilots: Pilot[],
+  maxPilots?: number
 ): Promise<CompForecast | undefined> {
   if (pilots.length < 2) return undefined;
   let worldRankingDate = new Date();
-  const numPilots = pilots.length;
+  const numPilots = maxPilots ?? pilots.length;
 
   let Pq_srtp = 0;
 

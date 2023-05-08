@@ -1,6 +1,12 @@
 
 # Changelog
 
+### 2023-05-08
+
+**Improvements:**
+
+- Potential WPRS hard-caped to 150 pilots
+
 ### 2023-05-06
 
 **Improvements:**
