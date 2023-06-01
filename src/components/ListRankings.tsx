@@ -8,8 +8,6 @@ export function ListRankings({ data }: { data: GetWPRS }) {
         <tr key={i} className="">
           <td>{i + 1}</td>
           <td className="text-[hsl(125,50%,56%)]">{el.Ta3}</td>
-          <td className="text-slate-400">{el.Ta2}</td>
-          <td className="text-slate-400">{el.Ta1}</td>
         </tr>
       );
     });
@@ -29,8 +27,6 @@ export function ListRankings({ data }: { data: GetWPRS }) {
                 <tr>
                   <th>Rank</th>
                   <th>Points</th>
-                  <th className="text-sm text-slate-400">2 Tasks</th>
-                  <th className="text-sm text-slate-400">1 Task</th>
                 </tr>
               </thead>
               <tbody>{listRanking()}</tbody>

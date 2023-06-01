@@ -1,6 +1,12 @@
 
 # Changelog
 
+### 2023-06-01
+
+**Improvements:**
+
+- Added points for two or one valid task only to the points list.
+
 ### 2023-05-08
 
 **Improvements:**
