@@ -1,0 +1,19 @@
+name: Deploy WPRS-Forecast
+on: workflow_dispatch
+jobs:
+  build:
+    name: Deploy
+    runs-on: ubuntu-latest
+    steps:
+      - name: Login via SSH, pull changes from "main", build docker images and check afterwards the log
+        uses: appleboy/ssh-action@master
+        with:
+          host: ${{ secrets.SSH_HOST }}
+          username: ${{ secrets.SSH_USER }}
+          key: ${{ secrets.SSH_KEY }}
+          port: ${{ secrets.SSH_PORT }}
+          script: |
+            cd ~/wprs-forecast
+            git pull
+            docker compose up --force-recreate --build
+            docker logs -n 10 wprs-forecast
