@@ -20,6 +20,7 @@ jobs:
           key: ${{ secrets.SSH_KEY }}
           port: ${{ secrets.SSH_PORT }}
           script: |
+            set -e
             cd ~/wprs-forecast
             git pull
             docker compose up -d --build
