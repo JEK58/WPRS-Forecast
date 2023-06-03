@@ -3,7 +3,7 @@ import { Spinner } from "@/components/Spinner";
 import { type NextPage } from "next";
 import Head from "next/head";
 import Link from "next/link";
-import { useEffect, useState, type ChangeEvent } from "react";
+import { useEffect, useState, type ChangeEvent, useCallback } from "react";
 import { Footer } from "@/components/Footer";
 import { isValidUrl } from "@/utils/check-valid-url";
 import { useRouter } from "next/router";
@@ -63,6 +63,13 @@ const Home: NextPage = () => {
 
   const resetCompData = () => setUrl("");
 
+  // Autofocus input textbox
+  const inputUrl = useCallback((inputElement: HTMLInputElement) => {
+    if (inputElement) {
+      inputElement.focus();
+    }
+  }, []);
+
   return (
     <>
       <Head>
@@ -91,6 +98,8 @@ const Home: NextPage = () => {
                 <div className="mb-3 w-full sm:mb-0 ">
                   <div className="relative">
                     <input
+                      autoFocus
+                      ref={inputUrl}
                       type="text"
                       value={url}
                       className="h-12 w-full items-center space-x-3 rounded-lg border border-gray-300 bg-white px-4 text-left text-slate-600 shadow-sm  ring-1 ring-slate-900/10 hover:ring-slate-300 focus:outline-none focus:ring-2 focus:ring-[hsl(125,50%,56%)]"
