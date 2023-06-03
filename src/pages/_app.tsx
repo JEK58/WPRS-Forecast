@@ -5,7 +5,6 @@ import { api } from "@/utils/api";
 import "@/styles/globals.css";
 
 const MyApp: AppType = ({ Component, pageProps }) => {
-  // @ts-expect-error TODO: Check why this error exists in first place…
   return <Component {...pageProps} />;
 };
 
