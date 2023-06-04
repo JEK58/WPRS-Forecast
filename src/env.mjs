@@ -10,6 +10,7 @@ const server = z.object({
   NODE_ENV: z.enum(["development", "test", "production"]),
   API_KEY: z.string(),
   REDIS_URL: z.string(),
+  OPENAI_API_KEY: z.string(),
 });
 
 /**
@@ -32,6 +33,7 @@ const processEnv = {
   NODE_ENV: process.env.NODE_ENV,
   API_KEY: process.env.API_KEY,
   REDIS_URL: process.env.REDIS_URL,
+  OPENAI_API_KEY: process.env.OPENAI_API_KEY,
   // NEXT_PUBLIC_CLIENTVAR: process.env.NEXT_PUBLIC_CLIENTVAR,
 };
 

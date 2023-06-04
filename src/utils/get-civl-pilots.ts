@@ -1,7 +1,22 @@
 import { load } from "cheerio";
 import { getCivlId } from "@/utils/get-civl-id";
 
-export async function getCivlcompPilots(url: string) {
+async function getMaxPilots(url: string) {
+  const response = await fetch(url);
+  const body = await response.text();
+
+  const $ = load(body, { xmlMode: true });
+
+  const description = $(".wrapper-info").find(".count").eq(1).text();
+
+  if (!description) return 0;
+
+  const num = parseInt(description);
+  return isNaN(num) ? 0 : num;
+}
+
+export async function getCivlcompPilots(url: string, detailsUrl: string) {
+  const maxPilots = await getMaxPilots(detailsUrl);
   const response = await fetch(url);
   const body = await response.text();
 
@@ -37,6 +52,7 @@ export async function getCivlcompPilots(url: string) {
       return {
         compTitle,
         name,
+        maxPilots,
         nationality: el.country,
         civlID,
         wing: el.glider,

@@ -19,15 +19,22 @@ export async function getAirtribunePilots(url: string) {
       .attr("content")
       ?.replace("Pilots | ", "");
 
-    // Find pilots
     const jsonRegex = /window\.ATDATA\.pilots\s*=\s*({[\s\S]*?});/;
     const match = body.match(jsonRegex);
 
     if (match && typeof match[1] == "string") {
-      const jsonData = JSON.parse(match[1]) as { pilots: AirtribunePilot[] };
+      const jsonData = JSON.parse(match[1]) as {
+        pilots: AirtribunePilot[];
+        allowed2: string;
+      };
+
+      // Convert number of max pilots to int
+      const num = parseInt(jsonData.allowed2);
+      const maxPilots = isNaN(num) ? 0 : num;
 
       const pilots = jsonData.pilots.map((el) => {
         return {
+          maxPilots,
           name: el.name,
           nationality: el.country.ioc_code,
           civlID: parseInt(el.civl_id ?? "99999", 10),

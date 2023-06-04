@@ -33,6 +33,9 @@ export interface PilotDetails {
   qualification_letters?: string;
 }
 
+// https://pwca.org/storage/3539/PWCA-Competition-Rules-2023.pdf
+const MAX_PILOTS = 125;
+
 export async function getPwcPilots(url: string) {
   const response = await fetch(url);
   const body = await response.text();
@@ -68,6 +71,7 @@ export async function getPwcPilots(url: string) {
 
       return {
         compTitle,
+        maxPilots: MAX_PILOTS,
         name,
         nationality: el.country,
         civlID,

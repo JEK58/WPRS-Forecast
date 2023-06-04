@@ -11,9 +11,11 @@ import { env } from "@/env.mjs";
 
 const redis = new Redis({ host: env.REDIS_URL });
 const EXP_TIME = 60 * 60; // 1 h
-const MAX_PILOTS_CIVL = 150;
+const MAX_PILOTS = 120; // Typical number of max pilots in a comp
+const MIN_PILOTS = 25; // Minimum required confirmed pilots in a comp
 
 export interface Pilot {
+  maxPilots: number;
   name?: string;
   nationality?: string;
   civlID?: number;
@@ -24,6 +26,7 @@ export interface Pilot {
 }
 
 export interface CompForecast {
+  maxPilots: number;
   worldRankingDate: Date;
   numPilots: number;
   Pq: number;
@@ -36,30 +39,39 @@ export interface CompForecast {
 }
 
 export interface GetWPRS {
+  maxPilots: number;
   all?: CompForecast;
   confirmed?: CompForecast;
 }
 
-// Minimum required confirmed pilots in a comp
-const MIN_PILOTS = 25;
-
 export async function getWprs(url: string) {
-  console.log("🚀 ~ url:", url);
   if (isAirtibuneLink(url)) {
     const compUrl = generateAirtribuneCompUrl(url);
     const pilots = await getAirtribunePilots(compUrl);
     if (pilots.length < MIN_PILOTS) return 0;
+    const maxPilots =
+      !pilots[0]?.maxPilots || pilots[0]?.maxPilots == 0
+        ? MAX_PILOTS
+        : pilots[0]?.maxPilots;
+
     return {
-      all: await calculateWPRS(pilots, MAX_PILOTS_CIVL),
+      maxPilots,
+      all: await calculateWPRS(pilots, maxPilots),
       confirmed: await calculateWPRS(pilots.filter((p) => p.confirmed)),
     };
   }
   if (isCivlLink(url)) {
     const compUrl = generateCivlCompUrl(url);
-    const pilots = await getCivlcompPilots(compUrl);
+    const detailsUrl = generateCivlDetailsUrl(url);
+    const pilots = await getCivlcompPilots(compUrl, detailsUrl);
     if (pilots.length < MIN_PILOTS) return 0;
+    const maxPilots =
+      !pilots[0]?.maxPilots || pilots[0]?.maxPilots == 0
+        ? MAX_PILOTS
+        : pilots[0]?.maxPilots;
     return {
-      all: await calculateWPRS(pilots, MAX_PILOTS_CIVL),
+      maxPilots,
+      all: await calculateWPRS(pilots, maxPilots),
       confirmed: await calculateWPRS(pilots.filter((p) => p.confirmed)),
     };
   }
@@ -67,17 +79,28 @@ export async function getWprs(url: string) {
     const compUrl = generatePwcCompUrl(url);
     const pilots = await getPwcPilots(compUrl);
     if (pilots.length < MIN_PILOTS) return 0;
+    const maxPilots =
+      !pilots[0]?.maxPilots || pilots[0]?.maxPilots == 0
+        ? MAX_PILOTS
+        : pilots[0]?.maxPilots;
     return {
-      all: await calculateWPRS(pilots, MAX_PILOTS_CIVL),
+      maxPilots,
+      all: await calculateWPRS(pilots, maxPilots),
       confirmed: await calculateWPRS(pilots.filter((p) => p.confirmed)),
     };
   }
   if (isSwissleagueLink(url)) {
     const compUrl = generateSwissleagueCompUrl(url);
-    const pilots = await getSwissleaguePilots(compUrl);
+    const detailsUrl = generateSwissleagueDetailsUrl(url);
+    const pilots = await getSwissleaguePilots(compUrl, detailsUrl);
     if (pilots.length < MIN_PILOTS) return 0;
+    const maxPilots =
+      !pilots[0]?.maxPilots || pilots[0]?.maxPilots == 0
+        ? MAX_PILOTS
+        : pilots[0]?.maxPilots;
     return {
-      all: await calculateWPRS(pilots, MAX_PILOTS_CIVL),
+      maxPilots,
+      all: await calculateWPRS(pilots, maxPilots),
       confirmed: await calculateWPRS(pilots.filter((p) => p.confirmed)),
     };
   }
@@ -167,6 +190,7 @@ async function calculateWPRS(
   // const wprDeval0_5 = +(100 * Pp * Pq * Pn * Ta1).toFixed(2); // *Td
 
   return {
+    maxPilots: pilots[0]?.maxPilots ?? MAX_PILOTS,
     compTitle: pilots[0]?.compTitle,
     worldRankingDate: worldRankingDate,
     numPilots,
@@ -209,6 +233,9 @@ function getPosition(string: string, subString: string, index: number) {
 function generateCivlCompUrl(url: string) {
   return url.slice(0, getPosition(url, "/", 5)) + "/participants";
 }
+function generateCivlDetailsUrl(url: string) {
+  return url.slice(0, getPosition(url, "/", 5));
+}
 
 function generateAirtribuneCompUrl(url: string) {
   return url.slice(0, getPosition(url, "/", 4)) + "/pilots";
@@ -219,4 +246,7 @@ function generatePwcCompUrl(url: string) {
 }
 function generateSwissleagueCompUrl(url: string) {
   return url.slice(0, getPosition(url, "/", 7)) + "/pilots";
+}
+function generateSwissleagueDetailsUrl(url: string) {
+  return url.slice(0, getPosition(url, "/", 7)) + "/";
 }

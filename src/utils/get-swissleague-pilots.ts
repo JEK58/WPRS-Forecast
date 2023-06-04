@@ -1,7 +1,21 @@
 import { load } from "cheerio";
 import { getCivlId } from "@/utils/get-civl-id";
+import { getMaxPilotsFromDescription } from "@/utils/get-max-pilots-from-description";
 
-export async function getSwissleaguePilots(url: string) {
+// Gets the description of the comp and asks GPT to analyze it as this information
+// is never found at the same spot like on airtribune or civlcomps
+async function getMaxPilots(url: string) {
+  const response = await fetch(url);
+  const body = await response.text();
+
+  const $ = load(body, { xmlMode: true });
+
+  const description = $(".bordered-section").text();
+  const maxPilots = await getMaxPilotsFromDescription(description);
+  return maxPilots;
+}
+
+export async function getSwissleaguePilots(url: string, detailsUrl: string) {
   const response = await fetch(url);
   const body = await response.text();
 
@@ -9,8 +23,9 @@ export async function getSwissleaguePilots(url: string) {
   const compTitle = $("h1").text();
 
   const content = $(".mwc-datatable");
-
   const rows = content.find("tr");
+
+  const maxPilots = await getMaxPilots(detailsUrl);
 
   interface RowData {
     [key: string]: string;
@@ -37,6 +52,7 @@ export async function getSwissleaguePilots(url: string) {
 
       return {
         compTitle,
+        maxPilots,
         name,
         nationality: el.country,
         civlID,
