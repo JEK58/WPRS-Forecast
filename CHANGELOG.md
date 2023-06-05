@@ -1,6 +1,12 @@
 
 # Changelog
 
+### 2023-06-04
+
+**Improvements:**
+
+- Added the actual number of max allowed pilots in a comp to the forecast details. 
+
 ### 2023-06-01
 
 **Improvements:**

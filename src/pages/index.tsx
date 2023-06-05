@@ -162,7 +162,7 @@ const Home: NextPage = () => {
               <div className="justify-content-between flex items-start ">
                 <div className="flex-grow">
                   <h2 className="text-lg font-bold text-white sm:text-2xl">
-                    {data.confirmed?.compTitle}
+                    {data.compTitle}
                   </h2>
                 </div>
 

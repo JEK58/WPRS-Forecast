@@ -1,10 +1,11 @@
 import { type GetWPRS } from "@/utils/calculate-wprs";
 
 export function ForecastDetails({ data }: { data: GetWPRS }) {
+  if (data === 0) return <></>;
   return (
     <ul>
       <li>
-        WPRS if the top 150 registered pilots would be confirmed:{" "}
+        WPRS if the top {data.maxPilots} registered pilots would be confirmed:{" "}
         <span className="text-[hsl(125,50%,56%)]">
           {data?.all?.WPRS[0]?.Ta3}
         </span>
@@ -33,6 +34,10 @@ export function ForecastDetails({ data }: { data: GetWPRS }) {
       <li>
         Comp ranking:{" "}
         <span className="text-slate-400">{data?.confirmed?.compRanking}</span>
+      </li>
+      <li>
+        Max number of pilots:{" "}
+        <span className="text-slate-400">{data.maxPilots}</span>
       </li>
       <li>
         Number of pilots:{" "}

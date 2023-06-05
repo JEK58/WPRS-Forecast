@@ -1,17 +1,18 @@
 // https://www.fai.org/sites/default/files/civl/documents/sporting_code_s7_e_-_wprs_2022.pdf
 
 import { prisma } from "@/server/db";
-import { getAirtribunePilots } from "@/utils/get-airtribune-pilots";
-import { getCivlcompPilots } from "@/utils/get-civl-pilots";
-import { getPwcPilots } from "./get-pwc-pilots";
-import { getSwissleaguePilots } from "./get-swissleague-pilots";
+import { getAirtribuneComp } from "@/utils/get-airtribune-comp";
+import { getCivlcompsComp } from "@/utils/get-civl-comp";
+import { getPwcComp } from "./get-pwc-comp";
+import { getSwissleagueComp } from "./get-swissleague-comp";
 import Redis from "ioredis";
 import { type Ranking } from "@prisma/client";
 import { env } from "@/env.mjs";
 
 const redis = new Redis({ host: env.REDIS_URL });
+
 const EXP_TIME = 60 * 60; // 1 h
-const MAX_PILOTS_CIVL = 150;
+const MIN_PILOTS = 25; // Minimum required confirmed pilots in a comp
 
 export interface Pilot {
   name?: string;
@@ -20,7 +21,6 @@ export interface Pilot {
   wing?: string;
   status?: string;
   confirmed?: boolean;
-  compTitle?: string;
 }
 
 export interface CompForecast {
@@ -32,53 +32,59 @@ export interface CompForecast {
   Pn: number;
   compRanking: number;
   WPRS: { Ta1: number; Ta2: number; Ta3: number }[];
-  compTitle?: string;
 }
-
-export interface GetWPRS {
-  all?: CompForecast;
-  confirmed?: CompForecast;
-}
-
-// Minimum required confirmed pilots in a comp
-const MIN_PILOTS = 25;
+type PromiseReturnType<T> = T extends Promise<infer R> ? R : never;
+export type GetWPRS = PromiseReturnType<ReturnType<typeof getWprs>>;
 
 export async function getWprs(url: string) {
-  console.log("🚀 ~ url:", url);
   if (isAirtibuneLink(url)) {
     const compUrl = generateAirtribuneCompUrl(url);
-    const pilots = await getAirtribunePilots(compUrl);
-    if (pilots.length < MIN_PILOTS) return 0;
+    const comp = await getAirtribuneComp(compUrl);
+    if (!comp || comp?.pilots.length < MIN_PILOTS) return 0;
+
     return {
-      all: await calculateWPRS(pilots, MAX_PILOTS_CIVL),
-      confirmed: await calculateWPRS(pilots.filter((p) => p.confirmed)),
+      maxPilots: comp.maxPilots,
+      compTitle: comp.compTitle,
+      all: await calculateWPRS(comp.pilots, comp.maxPilots),
+      confirmed: await calculateWPRS(comp.pilots.filter((p) => p.confirmed)),
     };
   }
   if (isCivlLink(url)) {
     const compUrl = generateCivlCompUrl(url);
-    const pilots = await getCivlcompPilots(compUrl);
-    if (pilots.length < MIN_PILOTS) return 0;
+    const detailsUrl = generateCivlDetailsUrl(url);
+    const comp = await getCivlcompsComp(compUrl, detailsUrl);
+    if (!comp || comp.pilots?.length < MIN_PILOTS) return 0;
+
     return {
-      all: await calculateWPRS(pilots, MAX_PILOTS_CIVL),
-      confirmed: await calculateWPRS(pilots.filter((p) => p.confirmed)),
+      maxPilots: comp.maxPilots,
+      compTitle: comp.compTitle,
+      all: await calculateWPRS(comp.pilots, comp.maxPilots),
+      confirmed: await calculateWPRS(comp.pilots.filter((p) => p.confirmed)),
     };
   }
   if (isPwcLink(url)) {
     const compUrl = generatePwcCompUrl(url);
-    const pilots = await getPwcPilots(compUrl);
-    if (pilots.length < MIN_PILOTS) return 0;
+    const comp = await getPwcComp(compUrl);
+    if (!comp || comp.pilots?.length < MIN_PILOTS) return 0;
+
     return {
-      all: await calculateWPRS(pilots, MAX_PILOTS_CIVL),
-      confirmed: await calculateWPRS(pilots.filter((p) => p.confirmed)),
+      maxPilots: comp.maxPilots,
+      compTitle: comp.compTitle,
+      all: await calculateWPRS(comp.pilots, comp.maxPilots),
+      confirmed: await calculateWPRS(comp.pilots.filter((p) => p.confirmed)),
     };
   }
   if (isSwissleagueLink(url)) {
     const compUrl = generateSwissleagueCompUrl(url);
-    const pilots = await getSwissleaguePilots(compUrl);
-    if (pilots.length < MIN_PILOTS) return 0;
+    const detailsUrl = generateSwissleagueDetailsUrl(url);
+    const comp = await getSwissleagueComp(compUrl, detailsUrl);
+    if (!comp || comp?.pilots?.length < MIN_PILOTS) return 0;
+
     return {
-      all: await calculateWPRS(pilots, MAX_PILOTS_CIVL),
-      confirmed: await calculateWPRS(pilots.filter((p) => p.confirmed)),
+      maxPilots: comp.maxPilots,
+      compTitle: comp.compTitle,
+      all: await calculateWPRS(comp.pilots, comp.maxPilots),
+      confirmed: await calculateWPRS(comp.pilots.filter((p) => p.confirmed)),
     };
   }
   return 0;
@@ -156,19 +162,13 @@ async function calculateWPRS(
   const Pn = Pn_tmp > Pn_max ? Pn_max : Pn_tmp;
 
   const compRanking = Pq * Pn;
-  // const Pplacing = (numPilots - 1 + 1) / numPilots;
-  // const Pp = Math.max(Pplacing ** (1 + Pq), Pplacing ** 2);
+
   const factors = calcPilotPointFactors(numPilots, Pq);
 
   const WPRS = factors.map((factor) => calcWPR(factor, Pq, Pn));
 
-  // const WPR = +(100 * Pp * Pq * Pn * Ta3).toFixed(2); // *Td
-  // const wprDeval0_8 = +(100 * Pp * Pq * Pn * Ta2).toFixed(2); // *Td
-  // const wprDeval0_5 = +(100 * Pp * Pq * Pn * Ta1).toFixed(2); // *Td
-
   return {
-    compTitle: pilots[0]?.compTitle,
-    worldRankingDate: worldRankingDate,
+    worldRankingDate,
     numPilots,
     Pq: +Pq.toFixed(3),
     Pq_srp: +Pq_srp.toFixed(3),
@@ -209,6 +209,9 @@ function getPosition(string: string, subString: string, index: number) {
 function generateCivlCompUrl(url: string) {
   return url.slice(0, getPosition(url, "/", 5)) + "/participants";
 }
+function generateCivlDetailsUrl(url: string) {
+  return url.slice(0, getPosition(url, "/", 5));
+}
 
 function generateAirtribuneCompUrl(url: string) {
   return url.slice(0, getPosition(url, "/", 4)) + "/pilots";
@@ -219,4 +222,7 @@ function generatePwcCompUrl(url: string) {
 }
 function generateSwissleagueCompUrl(url: string) {
   return url.slice(0, getPosition(url, "/", 7)) + "/pilots";
+}
+function generateSwissleagueDetailsUrl(url: string) {
+  return url.slice(0, getPosition(url, "/", 7)) + "/";
 }
