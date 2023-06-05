@@ -58,7 +58,7 @@ async function calcWprs(inputUrl: string) {
   // Save result to usage DB
   try {
     wprs = forecast?.confirmed?.WPRS?.[0]?.Ta3;
-    compTitle = forecast?.confirmed?.compTitle;
+    compTitle = forecast?.compTitle;
     if (queryID && wprs) {
       await prisma.usage.update({
         where: { id: queryID },

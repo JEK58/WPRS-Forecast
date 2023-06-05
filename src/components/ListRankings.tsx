@@ -1,6 +1,7 @@
 import { type GetWPRS } from "@/utils/calculate-wprs";
 
 export function ListRankings({ data }: { data: GetWPRS }) {
+  if (data === 0) return <></>;
   const listRanking = () => {
     if (!data.confirmed?.WPRS.length) return;
     return data?.confirmed?.WPRS.map((el, i) => {
