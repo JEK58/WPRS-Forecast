@@ -1,6 +1,7 @@
 import { load } from "cheerio";
 import { getCivlId } from "@/utils/get-civl-id";
 import { getMaxPilotsFromDescription } from "@/utils/get-max-pilots-from-description";
+import { evalMaxPilots } from "./eval-max-pilots";
 
 // Gets the description of the comp and asks GPT to analyze it as this information
 // is never found at the same spot like on airtribune or civlcomps
@@ -12,10 +13,10 @@ async function getMaxPilots(url: string) {
 
   const description = $(".bordered-section").text();
   const maxPilots = await getMaxPilotsFromDescription(description);
-  return maxPilots;
+  return evalMaxPilots(maxPilots);
 }
 
-export async function getSwissleaguePilots(url: string, detailsUrl: string) {
+export async function getSwissleagueComp(url: string, detailsUrl: string) {
   const response = await fetch(url);
   const body = await response.text();
 
@@ -51,8 +52,6 @@ export async function getSwissleaguePilots(url: string, detailsUrl: string) {
       const civlID = await getCivlId(name);
 
       return {
-        compTitle,
-        maxPilots,
         name,
         nationality: el.country,
         civlID,
@@ -63,7 +62,7 @@ export async function getSwissleaguePilots(url: string, detailsUrl: string) {
     })
   );
 
-  return pilots;
+  return { pilots, compTitle, maxPilots };
 }
 
 function isConfirmed(status?: string) {

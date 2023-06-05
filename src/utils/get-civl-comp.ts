@@ -1,5 +1,6 @@
 import { load } from "cheerio";
 import { getCivlId } from "@/utils/get-civl-id";
+import { evalMaxPilots } from "./eval-max-pilots";
 
 async function getMaxPilots(url: string) {
   const response = await fetch(url);
@@ -12,10 +13,10 @@ async function getMaxPilots(url: string) {
   if (!description) return 0;
 
   const num = parseInt(description);
-  return isNaN(num) ? 0 : num;
+  return evalMaxPilots(isNaN(num) ? 0 : num);
 }
 
-export async function getCivlcompPilots(url: string, detailsUrl: string) {
+export async function getCivlcompsComp(url: string, detailsUrl: string) {
   const maxPilots = await getMaxPilots(detailsUrl);
   const response = await fetch(url);
   const body = await response.text();
@@ -50,9 +51,7 @@ export async function getCivlcompPilots(url: string, detailsUrl: string) {
       const civlID = await getCivlId(name);
 
       return {
-        compTitle,
         name,
-        maxPilots,
         nationality: el.country,
         civlID,
         wing: el.glider,
@@ -62,7 +61,7 @@ export async function getCivlcompPilots(url: string, detailsUrl: string) {
     })
   );
 
-  return pilots;
+  return { compTitle, maxPilots, pilots };
 }
 
 function isConfirmed(status?: string) {

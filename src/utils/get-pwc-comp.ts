@@ -36,7 +36,7 @@ export interface PilotDetails {
 // https://pwca.org/storage/3539/PWCA-Competition-Rules-2023.pdf
 const MAX_PILOTS = 125;
 
-export async function getPwcPilots(url: string) {
+export async function getPwcComp(url: string) {
   const response = await fetch(url);
   const body = await response.text();
 
@@ -51,7 +51,7 @@ export async function getPwcPilots(url: string) {
     await fetch(femaleApiUrl),
   ]);
 
-  if (maleRes.status == 404 || femaleRes.status == 404) return [];
+  if (maleRes.status == 404 || femaleRes.status == 404) return;
 
   const male = (await maleRes.json()) as PWCApiResponse;
   const female = (await femaleRes.json()) as PWCApiResponse;
@@ -61,7 +61,7 @@ export async function getPwcPilots(url: string) {
     ...(female.subscriptions ?? []),
   ];
 
-  if (!mergedData.length) return [];
+  if (!mergedData.length) return;
 
   const pilots = await Promise.all(
     mergedData.map(async (el) => {
@@ -70,8 +70,6 @@ export async function getPwcPilots(url: string) {
       const civlID = await getCivlId(name);
 
       return {
-        compTitle,
-        maxPilots: MAX_PILOTS,
         name,
         nationality: el.country,
         civlID,
@@ -82,7 +80,11 @@ export async function getPwcPilots(url: string) {
     })
   );
 
-  return pilots;
+  return {
+    compTitle,
+    maxPilots: MAX_PILOTS,
+    pilots,
+  };
 }
 
 function isConfirmed(status?: string) {

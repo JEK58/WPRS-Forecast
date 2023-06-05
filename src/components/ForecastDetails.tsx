@@ -1,6 +1,7 @@
 import { type GetWPRS } from "@/utils/calculate-wprs";
 
 export function ForecastDetails({ data }: { data: GetWPRS }) {
+  if (data === 0) return <></>;
   return (
     <ul>
       <li>
