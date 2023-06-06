@@ -27,11 +27,15 @@ const Home: NextPage = () => {
   );
 
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
-    if (!isValidLink) return;
-    event.preventDefault();
-    await utils.wprs.invalidate();
-    setIsLoading(true);
-    await router.replace("/");
+    try {
+      if (!isValidLink) return;
+      event.preventDefault();
+      await utils.wprs.invalidate();
+      setIsLoading(true);
+      await router.replace("/");
+    } catch (error) {
+      console.log(error);
+    }
   };
 
   // Validate link on input change
@@ -55,10 +59,14 @@ const Home: NextPage = () => {
   }
 
   async function clearInput() {
-    setIsLoading(false);
-    setUrl("");
-    await router.replace("/");
-    await utils.wprs.invalidate();
+    try {
+      setIsLoading(false);
+      setUrl("");
+      await router.replace("/");
+      await utils.wprs.invalidate();
+    } catch (error) {
+      console.log(error);
+    }
   }
 
   const resetCompData = () => setUrl("");
@@ -93,7 +101,7 @@ const Home: NextPage = () => {
             <div>
               <form
                 className="mt-5 w-full max-w-3xl justify-center gap-3 sm:flex"
-                onSubmit={handleSubmit}
+                onSubmit={void handleSubmit}
               >
                 <div className="mb-3 w-full sm:mb-0 ">
                   <div className="relative">
@@ -111,7 +119,7 @@ const Home: NextPage = () => {
                       <button
                         className="absolute right-0 top-0 mr-2 mt-3 rounded-full bg-indigo-600 px-2 py-1 text-white hover:bg-indigo-700 focus:bg-gray-400 focus:outline-none"
                         type="button"
-                        onClick={clearInput}
+                        onClick={void clearInput}
                       >
                         <svg
                           className="h-4 w-4 fill-current"
