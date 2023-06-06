@@ -29,5 +29,5 @@
     "**/*.cjs",
     "**/*.mjs"
   ],
-  "exclude": ["node_modules", "playground", "import"]
+  "exclude": ["node_modules"]
 }
