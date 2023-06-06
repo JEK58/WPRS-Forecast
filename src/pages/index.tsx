@@ -101,7 +101,7 @@ const Home: NextPage = () => {
             <div>
               <form
                 className="mt-5 w-full max-w-3xl justify-center gap-3 sm:flex"
-                onSubmit={void handleSubmit}
+                onSubmit={handleSubmit}
               >
                 <div className="mb-3 w-full sm:mb-0 ">
                   <div className="relative">
@@ -119,7 +119,7 @@ const Home: NextPage = () => {
                       <button
                         className="absolute right-0 top-0 mr-2 mt-3 rounded-full bg-indigo-600 px-2 py-1 text-white hover:bg-indigo-700 focus:bg-gray-400 focus:outline-none"
                         type="button"
-                        onClick={void clearInput}
+                        onClick={clearInput}
                       >
                         <svg
                           className="h-4 w-4 fill-current"
