@@ -5,13 +5,7 @@ export function Footer() {
   return (
     <footer className="mb-3 p-2 text-xs  text-gray-400 dark:text-slate-400">
       <div className="mb-2 flex items-center justify-center gap-2">
-        <a
-          href="https://www.stephanschoepe.de/impressum"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Impressum
-        </a>
+        <a href="https://www.stephanschoepe.de/impressum">Impressum</a>
         <span>|</span>
         <Link href="/stats">Recent queries</Link>
       </div>

@@ -21,6 +21,8 @@ const Stats = (
           <a
             className="text-[hsl(125,50%,56%)] hover:underline hover:decoration-dotted"
             href={sanitizeUrl(stat.compUrl)}
+            target="_blank"
+            rel="noopener noreferrer"
           >
             {stat.compTitle}
           </a>
