@@ -13,6 +13,7 @@ const redis = new Redis({ host: env.REDIS_URL });
 
 const EXP_TIME = 60 * 60; // 1 h
 const MIN_PILOTS = 25; // Minimum required confirmed pilots in a comp
+const AVG_NUM_PARTICIPANTS = 76; // June 2022-June 2023
 
 export interface Pilot {
   name?: string;
@@ -155,10 +156,9 @@ async function calculateWPRS(
   const Pq_min = 0.2;
   const Pq = (Pq_srp / Pq_srtp) * (1 - Pq_min) + Pq_min;
 
-  const avgNumParticipants = 69;
   const Pn_max = 1.2;
 
-  const Pn_tmp = Math.sqrt(numPilots / avgNumParticipants);
+  const Pn_tmp = Math.sqrt(numPilots / AVG_NUM_PARTICIPANTS);
   const Pn = Pn_tmp > Pn_max ? Pn_max : Pn_tmp;
 
   const compRanking = Pq * Pn;
