@@ -9,8 +9,10 @@ import { isValidUrl } from "@/utils/check-valid-url";
 import { useRouter } from "next/router";
 import { api } from "@/utils/api";
 import { ListRankings } from "@/components/ListRankings";
+import RecentQueries from "@/components/RecentQueries";
+import { prisma } from "@/server/db";
 
-const Home: NextPage = () => {
+const Home = (props: RecentQueriesProps) => {
   const [isLoading, setIsLoading] = useState(false);
   const [url, setUrl] = useState<string>("");
   const [isValidLink, setIsValidLink] = useState(false);
@@ -156,6 +158,12 @@ const Home: NextPage = () => {
                 )}
                 {error?.message && <p>{error?.message}</p>}
               </div>
+              <div className="flex w-full flex-col border-opacity-50">
+                <div className="divider text-white ">OR</div>
+              </div>
+              {/* Select queries */}
+              <RecentQueries {...props} />
+
               <div className="mt-2 text-white md:max-w-3xl ">
                 <span className="text-[hsl(125,50%,56%)]">Note: </span>This only
                 works for paragliding competitions. Make sure to paste the
@@ -225,6 +233,30 @@ const Home: NextPage = () => {
       </main>
     </>
   );
+};
+
+import { type InferGetServerSidePropsType } from "next";
+export type RecentQueriesProps = InferGetServerSidePropsType<
+  typeof getServerSideProps
+>;
+
+export const getServerSideProps = async () => {
+  try {
+    const data = await prisma.usage.findMany({
+      orderBy: { createdAt: "desc" },
+      where: {
+        wprs: { not: null },
+        compTitle: { not: null },
+      },
+      select: { wprs: true, compUrl: true, id: true, compTitle: true },
+      take: 20,
+    });
+    return {
+      props: { data },
+    };
+  } catch (error) {
+    console.log(error);
+  }
 };
 
 export default Home;
