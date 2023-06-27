@@ -107,12 +107,13 @@ const Home = (props: RecentQueriesProps) => {
               >
                 <div className="mb-3 w-full sm:mb-0 ">
                   <div className="relative">
+                    {/* URL input */}
                     <input
                       autoFocus
                       ref={inputUrl}
                       type="text"
                       value={url}
-                      className="h-12 w-full items-center space-x-3 rounded-lg border border-gray-300 bg-white px-4 text-left text-slate-600 shadow-sm  ring-1 ring-slate-900/10 hover:ring-slate-300 focus:outline-none focus:ring-2 focus:ring-[hsl(125,50%,56%)]"
+                      className="input h-12 w-full items-center space-x-3 rounded-lg border border-gray-300 bg-white px-4 text-left text-slate-600 shadow-sm  ring-1 ring-slate-900/10 hover:ring-slate-300 focus:outline-none focus:ring-2 focus:ring-[hsl(125,50%,56%)]"
                       onChange={onUrlChange}
                       placeholder="Link to comp (CIVL, PWC, Airtribune or Swissleague)"
                     />
@@ -139,6 +140,9 @@ const Home = (props: RecentQueriesProps) => {
                       </button>
                     )}
                   </div>
+
+                  {/* Select queries */}
+                  <RecentQueries {...props} />
                 </div>
                 {/* Calculate button */}
                 <div className="w-full sm:w-auto md:w-40">
@@ -158,11 +162,6 @@ const Home = (props: RecentQueriesProps) => {
                 )}
                 {error?.message && <p>{error?.message}</p>}
               </div>
-              <div className="flex w-full flex-col border-opacity-50">
-                <div className="divider text-white ">OR</div>
-              </div>
-              {/* Select queries */}
-              <RecentQueries {...props} />
 
               <div className="mt-2 text-white md:max-w-3xl ">
                 <span className="text-[hsl(125,50%,56%)]">Note: </span>This only
@@ -249,7 +248,7 @@ export const getServerSideProps = async () => {
         compTitle: { not: null },
       },
       select: { wprs: true, compUrl: true, id: true, compTitle: true },
-      take: 20,
+      take: 30,
     });
     return {
       props: { data },
