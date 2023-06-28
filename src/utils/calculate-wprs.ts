@@ -48,6 +48,7 @@ export async function getWprs(url: string) {
       compTitle: comp.compTitle,
       all: await calculateWPRS(comp.pilots, comp.maxPilots),
       confirmed: await calculateWPRS(comp.pilots.filter((p) => p.confirmed)),
+      compUrl: url,
     };
   }
   if (isCivlLink(url)) {
@@ -61,6 +62,7 @@ export async function getWprs(url: string) {
       compTitle: comp.compTitle,
       all: await calculateWPRS(comp.pilots, comp.maxPilots),
       confirmed: await calculateWPRS(comp.pilots.filter((p) => p.confirmed)),
+      compUrl: url,
     };
   }
   if (isPwcLink(url)) {
@@ -73,6 +75,7 @@ export async function getWprs(url: string) {
       compTitle: comp.compTitle,
       all: await calculateWPRS(comp.pilots, comp.maxPilots),
       confirmed: await calculateWPRS(comp.pilots.filter((p) => p.confirmed)),
+      compUrl: url,
     };
   }
   if (isSwissleagueLink(url)) {
@@ -86,6 +89,7 @@ export async function getWprs(url: string) {
       compTitle: comp.compTitle,
       all: await calculateWPRS(comp.pilots, comp.maxPilots),
       confirmed: await calculateWPRS(comp.pilots.filter((p) => p.confirmed)),
+      compUrl: url,
     };
   }
   return 0;
