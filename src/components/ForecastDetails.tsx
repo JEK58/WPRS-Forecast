@@ -6,9 +6,7 @@ export function ForecastDetails({ data }: { data: GetWPRS }) {
     <ul>
       <li>
         WPRS if the top {data.maxPilots} registered pilots would be confirmed:{" "}
-        <span className="text-[hsl(125,50%,56%)]">
-          {data?.all?.WPRS[0]?.Ta3}
-        </span>
+        <span className="text-primary">{data?.all?.WPRS[0]?.Ta3}</span>
       </li>
       <li>
         WPRS two valid tasks:{" "}

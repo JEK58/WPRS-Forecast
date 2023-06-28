@@ -9,9 +9,14 @@ async function getMaxPilots(url: string) {
   const response = await fetch(url);
   const body = await response.text();
 
-  const $ = load(body, { xmlMode: true });
+  const $ = load(body);
 
-  const description = $(".bordered-section").text();
+  const description = $(".fixed-section")
+    .find(".dashboard")
+    .remove()
+    .end()
+    .text();
+
   const maxPilots = await getMaxPilotsFromDescription(description);
   return evalMaxPilots(maxPilots);
 }

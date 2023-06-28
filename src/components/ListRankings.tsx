@@ -8,7 +8,7 @@ export function ListRankings({ data }: { data: GetWPRS }) {
       return (
         <tr key={i} className="">
           <td>{i + 1}</td>
-          <td className="text-[hsl(125,50%,56%)]">{el.Ta3}</td>
+          <td className="text-primary">{el.Ta3}</td>
           <td className="text-slate-400">{el.Ta2}</td>
           <td className="text-slate-400">{el.Ta1}</td>
         </tr>

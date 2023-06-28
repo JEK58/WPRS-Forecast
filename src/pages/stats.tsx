@@ -19,7 +19,7 @@ const Stats = (
         <td className="align-top">-</td>
         <td className="max-w-md whitespace-pre-line">
           <a
-            className="text-[hsl(125,50%,56%)] hover:underline hover:decoration-dotted"
+            className="text-primary hover:underline hover:decoration-dotted"
             href={sanitizeUrl(stat.compUrl)}
             target="_blank"
             rel="noopener noreferrer"

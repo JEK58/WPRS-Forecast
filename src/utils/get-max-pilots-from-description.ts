@@ -21,7 +21,7 @@ export async function getMaxPilotsFromDescription(input: string) {
         {
           role: "user",
           content:
-            "How many pilots are allowed in this comp? The number can only be between 30 and 150. In any other case return 0. Also if there is no answer just return 0. Answer only a single number, not a sentence. It's about the number of allowed or accepted pilots, not the number of registered pilots" +
+            "How many pilots (max pilots accepted) are allowed in this comp? The number can only be between 30 and 150. In any other case return 0. Also if there is no answer just return 0. Answer only a single number, not a sentence. It's about the number of allowed or accepted pilots, not the number of registered pilots" +
             input,
         },
       ],

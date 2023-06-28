@@ -27,7 +27,7 @@ const RecentQueries = (props: RecentQueriesProps) => {
 
   return (
     <select
-      className="select my-3 h-12 w-full  items-center space-x-3 rounded-lg border border-gray-300 bg-white px-4 text-left text-slate-600 shadow-sm  ring-1 ring-slate-900/10 hover:ring-slate-300 focus:outline-none focus:ring-2 focus:ring-[hsl(125,50%,56%)]"
+      className="select mt-3 h-12 w-full items-center space-x-3 rounded-lg border border-gray-300 bg-white text-left text-slate-600 shadow-sm  ring-1 ring-slate-900/10 hover:ring-slate-300 focus:outline-none focus:ring-2 focus:ring-primary"
       onChange={handleSelect}
       defaultValue="DEFAULT"
     >
