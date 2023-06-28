@@ -1,6 +1,13 @@
 
 # Changelog
 
+### 2023-06-28
+
+**Improvements:**
+
+- Recent queries select element added
+- Link to comp added in forecast view
+
 ### 2023-06-04
 
 **Improvements:**
