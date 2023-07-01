@@ -7,7 +7,7 @@ import fs from "fs";
 
 const CIVL_URL = "https://civlcomps.org/ranking/paragliding-xc/pilots";
 const DOWNLOAD_URL =
-  "https://civlcomps.org/ranking/export-new?rankingId=1557&type=export_pilots_ranking&format=xlsx&async=1";
+  "https://civlcomps.org/ranking/export-new?rankingId=1589&type=export_pilots_ranking&format=xlsx&async=1";
 const FILE_PATH = "./tmp/input.xlsx";
 
 export async function updateWorldRanking() {
@@ -102,6 +102,7 @@ async function downloadExcel() {
 
   if (!dateEl) throw new Error("World ranking date not found");
   const date = new Date(dateEl.trim());
+  console.log("🚀 ~ date:", date);
 
   const cookies = res.headers
     .get("set-cookie")
