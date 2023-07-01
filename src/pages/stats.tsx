@@ -15,6 +15,10 @@ const Stats = (
     if (!stat.compTitle) return;
     return (
       <tr key={stat.id}>
+        <td className="pr-2 text-right align-top text-slate-400">
+          {stat.createdAt}
+        </td>
+
         <td className="text-right align-top">{stat.wprs}</td>
         <td className="align-top">-</td>
         <td className="max-w-md whitespace-pre-line">
@@ -69,14 +73,31 @@ export const getServerSideProps = async () => {
         wprs: { not: null },
         compTitle: { not: null },
       },
-      select: { wprs: true, compUrl: true, id: true, compTitle: true },
-      take: 20,
+      select: {
+        wprs: true,
+        compUrl: true,
+        id: true,
+        compTitle: true,
+        createdAt: true,
+      },
+      take: 150,
     });
+
+    const modifiedCreatedAt = data.map((item) => ({
+      ...item,
+      createdAt: new Date(item.createdAt).toLocaleDateString("de-DE", {
+        // year: "2-digit",
+        month: "2-digit",
+        day: "2-digit",
+      }),
+    }));
+
     return {
-      props: { data },
+      props: { data: modifiedCreatedAt },
     };
   } catch (error) {
     console.log(error);
+    return { props: { data: [] } };
   }
 };
 export default Stats;
