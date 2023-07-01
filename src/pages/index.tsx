@@ -155,6 +155,10 @@ const Home = (props: RecentQueriesProps) => {
                 from the platform that actually hosts the comp - even if
                 civlcomps.org lists them all.
               </div>
+
+              <div className="mt-2 text-white md:max-w-3xl ">
+                It will not give correct results for past events.
+              </div>
             </div>
           )}
           {/* Forecast view */}
