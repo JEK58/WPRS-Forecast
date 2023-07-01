@@ -159,6 +159,10 @@ const Home = (props: RecentQueriesProps) => {
               <div className="mt-2 text-white md:max-w-3xl ">
                 It will not give correct results for past events.
               </div>
+              <div className="mt-2 text-primary md:max-w-3xl ">
+                There was a bug that caused all calculations done in June to be
+                slightly off. It's fixed now, sorry 😬{" "}
+              </div>
             </div>
           )}
           {/* Forecast view */}
