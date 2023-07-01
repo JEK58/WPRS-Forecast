@@ -161,7 +161,7 @@ const Home = (props: RecentQueriesProps) => {
               </div>
               <div className="mt-2 text-primary md:max-w-3xl ">
                 There was a bug that caused all calculations done in June to be
-                slightly off. It's fixed now, sorry 😬{" "}
+                slightly off. It is fixed now, sorry 😬{" "}
               </div>
             </div>
           )}
