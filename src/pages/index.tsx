@@ -183,7 +183,7 @@ export const getServerSideProps = async () => {
         compTitle: { not: null },
       },
       select: { wprs: true, compUrl: true, id: true, compTitle: true },
-      take: 40,
+      take: 50,
     });
     return { props: { data } };
   } catch (error) {
