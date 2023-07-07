@@ -6,8 +6,7 @@ import { load } from "cheerio";
 import fs from "fs";
 
 const CIVL_URL = "https://civlcomps.org/ranking/paragliding-xc/pilots";
-const DOWNLOAD_URL =
-  "https://civlcomps.org/ranking/export-new?rankingId=1589&type=export_pilots_ranking&format=xlsx&async=1";
+const CIVL_DOWNLOAD_ENDPOINT = "https://civlcomps.org/ranking/export-new";
 const FILE_PATH = "./tmp/input.xlsx";
 
 export async function updateWorldRanking() {
@@ -95,6 +94,12 @@ async function downloadExcel() {
   const res = await fetch(CIVL_URL);
   const body = await res.text();
 
+  const match = body.match(new RegExp(CIVL_DOWNLOAD_ENDPOINT + ".*"));
+
+  if (!match) throw new Error("No download link found");
+
+  const excelDownloadLink = match[0];
+
   const $ = load(body, { xmlMode: true });
 
   const csrfToken = $('meta[name="csrf-token"]').attr("content");
@@ -111,7 +116,7 @@ async function downloadExcel() {
     .join("; ");
 
   const reqOptions = {
-    url: DOWNLOAD_URL,
+    url: excelDownloadLink,
     method: "POST",
     headers: {
       "x-csrf-token": csrfToken,
@@ -130,7 +135,7 @@ async function downloadExcel() {
     throw new Error("Error while generating download file hash");
 
   const hash = resHash?.data.hash;
-  const fileUrl = DOWNLOAD_URL + "&hash=" + hash;
+  const fileUrl = excelDownloadLink + "&hash=" + hash;
 
   let fileReady = false;
   let link = "";
