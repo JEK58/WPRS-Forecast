@@ -157,9 +157,12 @@ const Home = (props: RecentQueriesProps) => {
               </div>
 
               <div className="mt-2 text-primary md:max-w-3xl">
-                It will not give correct results for past events. PWC events may
-                currently not give correct results. I have to adapt to the new
-                events page.
+                It will not give correct results for past events.
+              </div>
+
+              <div className="mt-2 text-primary md:max-w-3xl">
+                PWC events may currently not give correct results. I have to
+                adapt to the new events page.
               </div>
             </div>
           )}
