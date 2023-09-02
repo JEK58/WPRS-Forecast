@@ -111,11 +111,12 @@ export function isSwissleagueLink(url: string) {
 
 async function calculateWPRS(
   pilots: Pilot[],
-  maxPilots?: number
+  maxPilots?: number,
 ): Promise<CompForecast | undefined> {
   if (pilots.length < 2) return undefined;
   let worldRankingDate = new Date();
-  const numPilots = maxPilots ?? pilots.length;
+  const numPilots =
+    maxPilots === 0 || maxPilots === undefined ? pilots.length : maxPilots;
 
   let Pq_srtp = 0;
 
@@ -128,6 +129,7 @@ async function calculateWPRS(
     if (topPilots.length) Pq_srtp += topPilots[i]?.points ?? 0;
   }
 
+  console.log("🚀 ~ numPilots:", numPilots);
   const compPilotsWprs: number[] = [];
 
   // sum ranking-points of the top 1/2 ranked participants

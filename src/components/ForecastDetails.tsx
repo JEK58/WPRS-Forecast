@@ -4,10 +4,12 @@ export function ForecastDetails({ data }: { data: GetWPRS }) {
   if (data === 0) return <></>;
   return (
     <ul>
-      <li>
-        WPRS if the top {data.maxPilots} registered pilots would be confirmed:{" "}
-        <span className="text-primary">{data?.all?.WPRS[0]?.Ta3}</span>
-      </li>
+      {data.maxPilots > 0 && (
+        <li>
+          WPRS if the top {data.maxPilots} registered pilots would be confirmed:{" "}
+          <span className="text-primary">{data?.all?.WPRS[0]?.Ta3}</span>
+        </li>
+      )}
       <li>
         WPRS two valid tasks:{" "}
         <span className="text-slate-400">{data?.confirmed?.WPRS[0]?.Ta2}</span>
@@ -35,7 +37,9 @@ export function ForecastDetails({ data }: { data: GetWPRS }) {
       </li>
       <li>
         Max number of pilots:{" "}
-        <span className="text-slate-400">{data.maxPilots}</span>
+        <span className="text-slate-400">
+          {data.maxPilots === 0 ? "?" : data.maxPilots}
+        </span>
       </li>
       <li>
         Number of pilots:{" "}
