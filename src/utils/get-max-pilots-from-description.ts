@@ -1,15 +1,14 @@
-import { Configuration, OpenAIApi } from "openai";
+import OpenAI from "openai";
 import { env } from "@/env.mjs";
 
-const configuration = new Configuration({
+const openai = new OpenAI({
   apiKey: env.OPENAI_API_KEY,
 });
-const openai = new OpenAIApi(configuration);
 
 export async function getMaxPilotsFromDescription(input: string) {
   if (input.length < 40) return 0;
   try {
-    const completion = await openai.createChatCompletion({
+    const completion = await openai.chat.completions.create({
       model: "gpt-3.5-turbo",
       messages: [
         {
@@ -26,7 +25,7 @@ export async function getMaxPilotsFromDescription(input: string) {
         },
       ],
     });
-    const result = completion.data.choices[0]?.message?.content;
+    const result = completion.choices[0]?.message?.content;
     if (!result) return 0;
 
     const num = parseInt(result);
