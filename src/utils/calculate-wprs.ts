@@ -129,7 +129,6 @@ async function calculateWPRS(
     if (topPilots.length) Pq_srtp += topPilots[i]?.points ?? 0;
   }
 
-  console.log("🚀 ~ numPilots:", numPilots);
   const compPilotsWprs: number[] = [];
 
   // sum ranking-points of the top 1/2 ranked participants
