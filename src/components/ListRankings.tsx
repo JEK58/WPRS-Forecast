@@ -1,7 +1,6 @@
-import { type GetWPRS } from "@/utils/calculate-wprs";
+import { type Forecast } from "@/utils/calculate-wprs";
 
-export function ListRankings({ data }: { data: GetWPRS }) {
-  if (data === 0 || data === 2) return <></>;
+export function ListRankings({ data }: { data: Forecast }) {
   const listRanking = () => {
     if (!data.confirmed?.WPRS.length) return;
     return data?.confirmed?.WPRS.map((el, i) => {

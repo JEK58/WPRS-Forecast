@@ -1,10 +1,9 @@
-import { type GetWPRS } from "@/utils/calculate-wprs";
+import { type Forecast } from "@/utils/calculate-wprs";
 
-export function ForecastDetails({ data }: { data: GetWPRS }) {
-  if (data === 0 || data === 2) return <></>;
+export function ForecastDetails({ data }: { data: Forecast }) {
   return (
     <ul>
-      {data.maxPilots > 0 && (
+      {data.maxPilots && data.maxPilots > 0 && (
         <li>
           WPRS if the top {data.maxPilots} registered pilots would be confirmed:{" "}
           <span className="text-primary">{data?.all?.WPRS[0]?.Ta3}</span>
