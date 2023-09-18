@@ -2,14 +2,21 @@ import { load } from "cheerio";
 import { getCivlId } from "@/utils/get-civl-id";
 import { getMaxPilotsFromDescription } from "@/utils/get-max-pilots-from-description";
 import { evalMaxPilots } from "./eval-max-pilots";
+import { getStartAndEndDateFromRange } from "./get-start-and-end-date-from-range";
 
 // Gets the description of the comp and asks GPT to analyze it as this information
 // is never found at the same spot like on airtribune or civlcomps
-async function getMaxPilots(url: string) {
+async function getCompDetails(url: string) {
   const response = await fetch(url);
   const body = await response.text();
 
   const $ = load(body);
+
+  const compDate = $("h2").text();
+  const dates = await getStartAndEndDateFromRange(compDate);
+
+  const startDate = dates?.startDate;
+  const endDate = dates?.endDate;
 
   const description = $(".fixed-section")
     .find(".dashboard")
@@ -18,20 +25,22 @@ async function getMaxPilots(url: string) {
     .text();
 
   const maxPilots = await getMaxPilotsFromDescription(description);
-  return evalMaxPilots(maxPilots);
+  return {
+    maxPilots: evalMaxPilots(maxPilots),
+    compDate: { startDate, endDate },
+  };
 }
 
 export async function getSwissleagueComp(url: string, detailsUrl: string) {
   const response = await fetch(url);
   const body = await response.text();
-
   const $ = load(body, { xmlMode: true });
   const compTitle = $("h1").text();
 
   const content = $(".mwc-datatable");
   const rows = content.find("tr");
 
-  const maxPilots = await getMaxPilots(detailsUrl);
+  const compDetails = await getCompDetails(detailsUrl);
 
   interface RowData {
     [key: string]: string;
@@ -64,10 +73,18 @@ export async function getSwissleagueComp(url: string, detailsUrl: string) {
         status: el.status,
         confirmed: isConfirmed(el.status),
       };
-    })
+    }),
   );
 
-  return { pilots, compTitle, maxPilots };
+  return {
+    pilots,
+    compTitle,
+    maxPilots: compDetails.maxPilots,
+    compDate: {
+      startDate: compDetails.compDate.startDate,
+      endDate: compDetails.compDate.endDate,
+    },
+  };
 }
 
 function isConfirmed(status?: string) {

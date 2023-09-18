@@ -1,6 +1,7 @@
 import type { Pilot } from "@/utils/calculate-wprs";
 import { load } from "cheerio";
 import { evalMaxPilots } from "./eval-max-pilots";
+import { getStartAndEndDateFromRange } from "./get-start-and-end-date-from-range";
 
 interface AirtribunePilot
   extends Omit<Pilot, "civlID" | "wing" | "nationality"> {
@@ -21,7 +22,24 @@ export async function getAirtribuneComp(url: string) {
 
   const jsonRegex = /window\.ATDATA\.pilots\s*=\s*({[\s\S]*?});/;
   const match = body.match(jsonRegex);
+  const dateRegex = /window\.ATDATA\.meta\s*=\s*({[^;]+});/;
 
+  const dateMatch = body.match(dateRegex);
+
+  let startDate: Date | undefined;
+  let endDate: Date | undefined;
+
+  if (dateMatch && typeof dateMatch[1] == "string") {
+    const jsonData = JSON.parse(dateMatch[1]) as {
+      info: { description: string };
+    };
+    const info = jsonData.info.description;
+
+    const dates = await getStartAndEndDateFromRange(info);
+
+    startDate = dates?.startDate;
+    endDate = dates?.endDate;
+  }
   if (match && typeof match[1] == "string") {
     const jsonData = JSON.parse(match[1]) as {
       pilots: AirtribunePilot[];
@@ -46,6 +64,7 @@ export async function getAirtribuneComp(url: string) {
       pilots,
       compTitle,
       maxPilots,
+      compDate: { startDate, endDate },
     };
   } else {
     console.log("No JSON data found");

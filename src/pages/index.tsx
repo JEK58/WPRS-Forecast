@@ -30,6 +30,7 @@ const Home = (props: RecentQueriesProps) => {
       cacheTime: 60 * 1000, // 1 minute
       refetchOnWindowFocus: false,
       onSuccess: () => setIsLoading(false),
+      retry: (_, error) => !(error.data?.code == "BAD_REQUEST"),
     },
   );
 
@@ -162,7 +163,7 @@ const Home = (props: RecentQueriesProps) => {
               </div>
 
               <div className="mt-2 text-primary md:max-w-3xl">
-                It will not give correct results for past events.
+                It will not work for past events.
               </div>
             </div>
           )}

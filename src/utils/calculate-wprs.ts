@@ -43,6 +43,12 @@ export async function getWprs(url: string) {
     const comp = await getAirtribuneComp(compUrl);
     if (!comp || comp?.pilots.length < MIN_PILOTS) return 0;
 
+    if (
+      comp.compDate.endDate &&
+      isDateFromPreviousMonthOrOlder(comp.compDate.endDate)
+    )
+      return 2;
+
     return {
       maxPilots: comp.maxPilots,
       compTitle: comp.compTitle,
@@ -57,6 +63,12 @@ export async function getWprs(url: string) {
     const comp = await getCivlcompsComp(compUrl, detailsUrl);
     if (!comp || comp.pilots?.length < MIN_PILOTS) return 0;
 
+    if (
+      comp.compDate.endDate &&
+      isDateFromPreviousMonthOrOlder(comp.compDate.endDate)
+    )
+      return 2;
+
     return {
       maxPilots: comp.maxPilots,
       compTitle: comp.compTitle,
@@ -69,6 +81,12 @@ export async function getWprs(url: string) {
     const compUrl = generatePwcCompUrl(url);
     const comp = await getPwcComp(compUrl);
     if (!comp || comp.pilots?.length < MIN_PILOTS) return 0;
+
+    if (
+      comp.compDate.endDate &&
+      isDateFromPreviousMonthOrOlder(comp.compDate.endDate)
+    )
+      return 2;
 
     return {
       maxPilots: comp.maxPilots,
@@ -84,6 +102,11 @@ export async function getWprs(url: string) {
     const comp = await getSwissleagueComp(compUrl, detailsUrl);
     if (!comp || comp?.pilots?.length < MIN_PILOTS) return 0;
 
+    if (
+      comp.compDate.endDate &&
+      isDateFromPreviousMonthOrOlder(comp.compDate.endDate)
+    )
+      return 2;
     return {
       maxPilots: comp.maxPilots,
       compTitle: comp.compTitle,
@@ -230,4 +253,23 @@ function generateSwissleagueCompUrl(url: string) {
 }
 function generateSwissleagueDetailsUrl(url: string) {
   return url.slice(0, getPosition(url, "/", 7)) + "/";
+}
+
+function isDateFromPreviousMonthOrOlder(dateToCompare: Date): boolean {
+  const currentDate = new Date();
+
+  const currentMonth = currentDate.getMonth();
+  const currentYear = currentDate.getFullYear();
+
+  const targetMonth = dateToCompare.getMonth();
+  const targetYear = dateToCompare.getFullYear();
+
+  if (
+    currentYear > targetYear ||
+    (currentYear === targetYear && currentMonth > targetMonth)
+  ) {
+    return true;
+  } else {
+    return false;
+  }
 }

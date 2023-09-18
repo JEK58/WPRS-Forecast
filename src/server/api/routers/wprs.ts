@@ -54,6 +54,11 @@ async function calcWprs(inputUrl: string) {
       code: "BAD_REQUEST",
       message: "Not enough pilots in this comp",
     });
+  if (forecast == 2)
+    throw new TRPCError({
+      code: "BAD_REQUEST",
+      message: "Competition date is in the past.",
+    });
 
   // Save result to usage DB
   try {
