@@ -1,7 +1,7 @@
 import { type GetWPRS } from "@/utils/calculate-wprs";
 
 export function ListRankings({ data }: { data: GetWPRS }) {
-  if (data === 0) return <></>;
+  if (data === 0 || data === 2) return <></>;
   const listRanking = () => {
     if (!data.confirmed?.WPRS.length) return;
     return data?.confirmed?.WPRS.map((el, i) => {
@@ -18,7 +18,7 @@ export function ListRankings({ data }: { data: GetWPRS }) {
 
   return (
     <>
-      <div className="collapse-arrow rounded-box collapse mt-3 border ">
+      <div className="collapse collapse-arrow rounded-box mt-3 border ">
         <input type="checkbox" />
         <div className="collapse-title font-medium">
           Show points for every position

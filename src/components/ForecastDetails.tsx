@@ -1,7 +1,7 @@
 import { type GetWPRS } from "@/utils/calculate-wprs";
 
 export function ForecastDetails({ data }: { data: GetWPRS }) {
-  if (data === 0) return <></>;
+  if (data === 0 || data === 2) return <></>;
   return (
     <ul>
       {data.maxPilots > 0 && (
