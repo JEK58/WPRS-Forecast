@@ -6,6 +6,9 @@ describe("Get WPRS for Swissleague comps", () => {
       "https://www.swissleague.ch/comp-league/competitions/details/ghdqCEUMuYYnu6AU1UMfyE";
     const res = await getWprs(url);
 
-    expect(res).toBe(2);
-  }, 10000);
+    expect(res).toHaveProperty("error");
+    if ("error" in res) {
+      expect(res.error).toBe("PAST_EVENT");
+    }
+  });
 });
