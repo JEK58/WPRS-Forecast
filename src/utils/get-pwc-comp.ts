@@ -1,5 +1,6 @@
 import { getCivlId } from "@/utils/get-civl-id";
 import { load } from "cheerio";
+import { getStartAndEndDateFromRange } from "./get-start-and-end-date-from-range";
 
 interface PWCApiResponse {
   subscriptions?: PilotDetails[];
@@ -42,6 +43,12 @@ export async function getPwcComp(url: string) {
 
   const $ = load(body, { xmlMode: true });
   const compTitle = $('h2[class="title"]').text();
+  const compDate = $(".information").text();
+
+  const dates = await getStartAndEndDateFromRange(compDate);
+
+  const startDate = dates?.startDate;
+  const endDate = dates?.endDate;
 
   const apiUrl = url.replace("pwca.org", "pwca.org/api");
   const femaleApiUrl = apiUrl + "?gender=female";
@@ -77,13 +84,14 @@ export async function getPwcComp(url: string) {
         status: el.status,
         confirmed: isConfirmed(el.status_key),
       };
-    })
+    }),
   );
 
   return {
     compTitle,
     maxPilots: MAX_PILOTS,
     pilots,
+    compDate: { startDate, endDate },
   };
 }
 

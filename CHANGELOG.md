@@ -1,6 +1,12 @@
 
 # Changelog
 
+### 2023-09-19
+
+**Improvements:**
+
+- Show an error when a user enters a comp in the past.
+
 ### 2023-06-28
 
 **Improvements:**

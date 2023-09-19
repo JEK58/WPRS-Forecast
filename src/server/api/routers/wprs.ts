@@ -3,7 +3,7 @@ import { createTRPCRouter, publicProcedure } from "@/server/api/trpc";
 import { prisma } from "@/server/db";
 import { sanitizeUrl } from "@braintree/sanitize-url";
 import { isValidUrl } from "@/utils/check-valid-url";
-import { type GetWPRS, getWprs } from "@/utils/calculate-wprs";
+import { getWprs as calculateWprs } from "@/utils/calculate-wprs";
 import { TRPCError } from "@trpc/server";
 
 export const wprsRouter = createTRPCRouter({
@@ -16,18 +16,15 @@ export const wprsRouter = createTRPCRouter({
           message: "No link submitted",
         });
       }
-      return await calcWprs(input.url);
+      return await getForecast(input.url);
     }),
   getStats: publicProcedure.query(({ ctx }) => {
     return ctx.prisma.usage.findMany();
   }),
 });
 
-async function calcWprs(inputUrl: string) {
+async function getForecast(inputUrl: string) {
   let queryID: string | undefined = undefined;
-  let wprs: number | undefined;
-  let compTitle: string | undefined;
-  let forecast: GetWPRS | 0 | undefined = undefined;
   try {
     const res = await prisma.usage.create({ data: { compUrl: inputUrl } });
     queryID = res.id;
@@ -40,25 +37,39 @@ async function calcWprs(inputUrl: string) {
   if (!isValidUrl(url))
     throw new TRPCError({
       code: "BAD_REQUEST",
-      message: "No valid URL submitted",
+      message: "No valid URL submitted.",
     });
 
-  try {
-    forecast = await getWprs(url);
-  } catch (error) {
-    console.log(error);
-  }
+  const forecast = await calculateWprs(url);
 
-  if (forecast == 0)
+  if ("error" in forecast) {
+    if (forecast?.error === "NOT_ENOUGH_PILOTS")
+      throw new TRPCError({
+        code: "BAD_REQUEST",
+        message: "Not enough pilots in this comp.",
+      });
+
+    if (forecast?.error === "PAST_EVENT")
+      throw new TRPCError({
+        code: "BAD_REQUEST",
+        message: "Competition date is in the past.",
+      });
+
+    if (forecast?.error === "UNSUPPORTED_PLATFORM")
+      throw new TRPCError({
+        code: "BAD_REQUEST",
+        message: "No valid URL submitted.",
+      });
+
     throw new TRPCError({
       code: "BAD_REQUEST",
-      message: "Not enough pilots in this comp",
+      message: "Something went wrong.",
     });
+  }
 
-  // Save result to usage DB
   try {
-    wprs = forecast?.confirmed?.WPRS?.[0]?.Ta3;
-    compTitle = forecast?.compTitle;
+    const wprs = forecast?.confirmed?.WPRS?.[0]?.Ta3;
+    const compTitle = forecast?.compTitle;
     if (queryID && wprs) {
       await prisma.usage.update({
         where: { id: queryID },
@@ -69,10 +80,5 @@ async function calcWprs(inputUrl: string) {
     console.log(error);
   }
 
-  if (forecast) return forecast;
-
-  throw new TRPCError({
-    code: "INTERNAL_SERVER_ERROR",
-    message: "Ooops… something went wrong",
-  });
+  return forecast;
 }

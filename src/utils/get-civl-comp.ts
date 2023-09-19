@@ -1,6 +1,7 @@
 import { load } from "cheerio";
 import { getCivlId } from "@/utils/get-civl-id";
 import { evalMaxPilots } from "./eval-max-pilots";
+import { getStartAndEndDateFromRange } from "./get-start-and-end-date-from-range";
 
 async function getMaxPilots(url: string) {
   const response = await fetch(url);
@@ -23,8 +24,14 @@ export async function getCivlcompsComp(url: string, detailsUrl: string) {
 
   const $ = load(body, { xmlMode: true });
   const compTitle = $("h1").text();
+  const compDate = $(".date-event").text();
   const content = $(".participants-item");
   const rows = content.find("tr");
+
+  const dates = await getStartAndEndDateFromRange(compDate);
+
+  const startDate = dates?.startDate;
+  const endDate = dates?.endDate;
 
   interface RowData {
     [key: string]: string;
@@ -58,10 +65,10 @@ export async function getCivlcompsComp(url: string, detailsUrl: string) {
         status: el.status,
         confirmed: isConfirmed(el.status),
       };
-    })
+    }),
   );
 
-  return { compTitle, maxPilots, pilots };
+  return { compTitle, maxPilots, pilots, compDate: { startDate, endDate } };
 }
 
 function isConfirmed(status?: string) {

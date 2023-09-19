@@ -11,7 +11,7 @@ import { env } from "@/env.mjs";
 
 const redis = new Redis({ host: env.REDIS_URL });
 
-const EXP_TIME = 60 * 60; // 1 h
+const REDIS_EXP_TIME = 60 * 60; // 1 h
 const MIN_PILOTS = 25; // Minimum required confirmed pilots in a comp
 const AVG_NUM_PARTICIPANTS = 76; // June 2022-June 2023
 
@@ -34,14 +34,37 @@ export interface CompForecast {
   compRanking: number;
   WPRS: { Ta1: number; Ta2: number; Ta3: number }[];
 }
-type PromiseReturnType<T> = T extends Promise<infer R> ? R : never;
-export type GetWPRS = PromiseReturnType<ReturnType<typeof getWprs>>;
 
-export async function getWprs(url: string) {
+type Error = "NOT_ENOUGH_PILOTS" | "PAST_EVENT" | "UNSUPPORTED_PLATFORM";
+
+export type Forecast = {
+  maxPilots: number;
+  compTitle?: string;
+  all?: CompForecast;
+  confirmed?: CompForecast;
+  compUrl: string;
+};
+
+type GetForecastError = {
+  error: Error;
+};
+
+export async function getWprs(
+  url: string,
+): Promise<Forecast | GetForecastError> {
+  // Airtribune
   if (isAirtibuneLink(url)) {
     const compUrl = generateAirtribuneCompUrl(url);
     const comp = await getAirtribuneComp(compUrl);
-    if (!comp || comp?.pilots.length < MIN_PILOTS) return 0;
+
+    if (!comp || comp?.pilots.length < MIN_PILOTS)
+      return { error: "NOT_ENOUGH_PILOTS" };
+
+    if (
+      comp.compDate.endDate &&
+      isDateFromPreviousMonthOrOlder(comp.compDate.endDate)
+    )
+      return { error: "PAST_EVENT" };
 
     return {
       maxPilots: comp.maxPilots,
@@ -51,11 +74,20 @@ export async function getWprs(url: string) {
       compUrl: url,
     };
   }
+
+  // CIVL
   if (isCivlLink(url)) {
     const compUrl = generateCivlCompUrl(url);
     const detailsUrl = generateCivlDetailsUrl(url);
     const comp = await getCivlcompsComp(compUrl, detailsUrl);
-    if (!comp || comp.pilots?.length < MIN_PILOTS) return 0;
+    if (!comp || comp.pilots?.length < MIN_PILOTS)
+      return { error: "NOT_ENOUGH_PILOTS" };
+
+    if (
+      comp.compDate.endDate &&
+      isDateFromPreviousMonthOrOlder(comp.compDate.endDate)
+    )
+      return { error: "PAST_EVENT" };
 
     return {
       maxPilots: comp.maxPilots,
@@ -65,10 +97,19 @@ export async function getWprs(url: string) {
       compUrl: url,
     };
   }
+
+  // PWC
   if (isPwcLink(url)) {
     const compUrl = generatePwcCompUrl(url);
     const comp = await getPwcComp(compUrl);
-    if (!comp || comp.pilots?.length < MIN_PILOTS) return 0;
+    if (!comp || comp.pilots?.length < MIN_PILOTS)
+      return { error: "NOT_ENOUGH_PILOTS" };
+
+    if (
+      comp.compDate.endDate &&
+      isDateFromPreviousMonthOrOlder(comp.compDate.endDate)
+    )
+      return { error: "PAST_EVENT" };
 
     return {
       maxPilots: comp.maxPilots,
@@ -78,12 +119,20 @@ export async function getWprs(url: string) {
       compUrl: url,
     };
   }
+
+  // Swissleague
   if (isSwissleagueLink(url)) {
     const compUrl = generateSwissleagueCompUrl(url);
     const detailsUrl = generateSwissleagueDetailsUrl(url);
     const comp = await getSwissleagueComp(compUrl, detailsUrl);
-    if (!comp || comp?.pilots?.length < MIN_PILOTS) return 0;
+    if (!comp || comp?.pilots?.length < MIN_PILOTS)
+      return { error: "NOT_ENOUGH_PILOTS" };
 
+    if (
+      comp.compDate.endDate &&
+      isDateFromPreviousMonthOrOlder(comp.compDate.endDate)
+    )
+      return { error: "PAST_EVENT" };
     return {
       maxPilots: comp.maxPilots,
       compTitle: comp.compTitle,
@@ -92,8 +141,9 @@ export async function getWprs(url: string) {
       compUrl: url,
     };
   }
-  return 0;
+  return { error: "UNSUPPORTED_PLATFORM" };
 }
+
 export function isAirtibuneLink(url: string) {
   return url.includes("airtribune.com/");
 }
@@ -145,7 +195,12 @@ async function calculateWPRS(
     if (cachedPilot) pilot = JSON.parse(cachedPilot) as Ranking;
     else {
       pilot = await prisma.ranking.findUnique({ where: { id: civl } });
-      await redis.set(`civl:${civl}`, JSON.stringify(pilot), "EX", EXP_TIME);
+      await redis.set(
+        `civl:${civl}`,
+        JSON.stringify(pilot),
+        "EX",
+        REDIS_EXP_TIME,
+      );
     }
 
     if (pilot) {
@@ -230,4 +285,23 @@ function generateSwissleagueCompUrl(url: string) {
 }
 function generateSwissleagueDetailsUrl(url: string) {
   return url.slice(0, getPosition(url, "/", 7)) + "/";
+}
+
+function isDateFromPreviousMonthOrOlder(dateToCompare: Date): boolean {
+  const currentDate = new Date();
+
+  const currentMonth = currentDate.getMonth();
+  const currentYear = currentDate.getFullYear();
+
+  const targetMonth = dateToCompare.getMonth();
+  const targetYear = dateToCompare.getFullYear();
+
+  if (
+    currentYear > targetYear ||
+    (currentYear === targetYear && currentMonth > targetMonth)
+  ) {
+    return true;
+  } else {
+    return false;
+  }
 }

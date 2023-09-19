@@ -17,13 +17,15 @@ export const ForecastView: React.FC<Props> = ({ data, onResetCompData }) => {
           <h2 className="text-lg font-bold text-white sm:text-2xl">
             {data.compTitle}
           </h2>
-          <Link
-            className="flex items-center text-sm text-primary hover:underline hover:decoration-dotted"
-            target="_blank"
-            href={data.compUrl}
-          >
-            Visit comp website
-          </Link>
+          {data.compUrl && (
+            <Link
+              className="flex items-center text-sm text-primary hover:underline hover:decoration-dotted"
+              target="_blank"
+              href={data.compUrl}
+            >
+              Visit comp website
+            </Link>
+          )}
         </div>
 
         <button
