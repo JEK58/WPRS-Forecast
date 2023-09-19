@@ -31,7 +31,7 @@ export async function getStartAndEndDateFromRange(input?: string) {
     const [startDate, endDate] = result.split(",");
 
     if (!startDate || !endDate)
-      throw new Error("OpenAi answer dows not look plausible");
+      throw new Error("OpenAi answer does not look plausible");
 
     return {
       startDate: new Date(startDate),
