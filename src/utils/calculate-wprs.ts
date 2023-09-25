@@ -5,11 +5,9 @@ import { getAirtribuneComp } from "@/utils/get-airtribune-comp";
 import { getCivlcompsComp } from "@/utils/get-civl-comp";
 import { getPwcComp } from "./get-pwc-comp";
 import { getSwissleagueComp } from "./get-swissleague-comp";
-import Redis from "ioredis";
-import { type Ranking } from "@prisma/client";
-import { env } from "@/env.mjs";
+import { kv } from "@vercel/kv";
 
-const redis = new Redis({ host: env.REDIS_URL });
+import { type Ranking } from "@prisma/client";
 
 const REDIS_EXP_TIME = 60 * 60; // 1 h
 const MIN_PILOTS = 25; // Minimum required confirmed pilots in a comp
@@ -190,17 +188,14 @@ async function calculateWPRS(
     if (!civl || isNaN(civl) || civl > 99999) continue;
 
     let pilot: Ranking | null;
-    const cachedPilot = await redis.get(`civl:${civl}`);
+    const cachedPilot = await kv.get<string>(`civl:${civl}`);
 
     if (cachedPilot) pilot = JSON.parse(cachedPilot) as Ranking;
     else {
       pilot = await prisma.ranking.findUnique({ where: { id: civl } });
-      await redis.set(
-        `civl:${civl}`,
-        JSON.stringify(pilot),
-        "EX",
-        REDIS_EXP_TIME,
-      );
+      await kv.set(`civl:${civl}`, JSON.stringify(pilot), {
+        ex: REDIS_EXP_TIME,
+      });
     }
 
     if (pilot) {

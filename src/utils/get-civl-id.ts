@@ -1,8 +1,5 @@
 import axios from "axios";
-import Redis from "ioredis";
-import { env } from "@/env.mjs";
-
-const redis = new Redis({ host: env.REDIS_URL });
+import { kv } from "@vercel/kv";
 
 const CIVL_PLACEHOLDER_ID = 99999;
 const REDIS_ID_EXPIRE_TIME = 30 * 24 * 60 * 60; // 30 days
@@ -16,15 +13,18 @@ export async function getCivlId(name: string) {
   const redisKey = `name:${name.toLowerCase()}`;
 
   try {
-    const cachedId = await redis.get(redisKey);
+    const cachedId = await kv.get(redisKey);
     if (cachedId) return +cachedId;
 
     const id = await lookUpCivlId(name);
 
     // If a placeholder id is returned the CIVL ID may change in the future
     // and therefore gets an expiry of 30 days
-    if (id != CIVL_PLACEHOLDER_ID) await redis.set(redisKey, id);
-    else await redis.set(redisKey, id, "EX", REDIS_ID_EXPIRE_TIME);
+    if (id != CIVL_PLACEHOLDER_ID) await kv.set(redisKey, id);
+    else
+      await kv.set(redisKey, id, {
+        ex: REDIS_ID_EXPIRE_TIME,
+      });
     return id;
   } catch (error) {
     console.log(error);
@@ -97,7 +97,7 @@ async function lookUpCivlId(name: string) {
         return CIVL_PLACEHOLDER_ID;
       }
       console.log(
-        `☑️ ~ Multiple results for ${name}. Picked: ${bestMatch.text}`
+        `☑️ ~ Multiple results for ${name}. Picked: ${bestMatch.text}`,
       );
       return bestMatch.id;
     }

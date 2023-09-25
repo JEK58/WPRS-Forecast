@@ -9,7 +9,7 @@ const server = z.object({
   SUBMIT_RATE_LIMIT: z.string(),
   NODE_ENV: z.enum(["development", "test", "production"]),
   API_KEY: z.string(),
-  REDIS_URL: z.string(),
+  // REDIS_URL: z.string(),
   OPENAI_API_KEY: z.string(),
 });
 
@@ -32,7 +32,7 @@ const processEnv = {
   SUBMIT_RATE_LIMIT: process.env.SUBMIT_RATE_LIMIT,
   NODE_ENV: process.env.NODE_ENV,
   API_KEY: process.env.API_KEY,
-  REDIS_URL: process.env.REDIS_URL,
+  // REDIS_URL: process.env.REDIS_URL,
   OPENAI_API_KEY: process.env.OPENAI_API_KEY,
   // NEXT_PUBLIC_CLIENTVAR: process.env.NEXT_PUBLIC_CLIENTVAR,
 };
@@ -60,7 +60,7 @@ if (!!process.env.SKIP_ENV_VALIDATION == false) {
   if (parsed.success === false) {
     console.error(
       "❌ Invalid environment variables:",
-      parsed.error.flatten().fieldErrors
+      parsed.error.flatten().fieldErrors,
     );
     throw new Error("Invalid environment variables");
   }
@@ -74,7 +74,7 @@ if (!!process.env.SKIP_ENV_VALIDATION == false) {
         throw new Error(
           process.env.NODE_ENV === "production"
             ? "❌ Attempted to access a server-side environment variable on the client"
-            : `❌ Attempted to access server-side environment variable '${prop}' on the client`
+            : `❌ Attempted to access server-side environment variable '${prop}' on the client`,
         );
       return target[/** @type {keyof typeof target} */ (prop)];
     },
