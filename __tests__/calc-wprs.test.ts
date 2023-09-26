@@ -1,22 +1,29 @@
 import { getCivlcompsComp } from "@/utils/get-civl-comp";
 import { getCivlId } from "@/utils/get-civl-id";
+import { env } from "@/env.mjs";
+import Redis from "ioredis";
 
-// it("should reject a comp that lies in the past", async () => {
-//   const startTime = performance.now();
-//   console.log("⏱️ ~ ", "Timer started");
+const redis = new Redis({ host: env.REDIS_URL });
+// beforeAll(async () => await redis.flushall());
 
-//   const url = "https://civlcomps.org/event/german-open-2023/participants";
+it("should find the correct amount of registered pilots", async () => {
+  const expectedNumOfPilots = 293;
+  const startTime = performance.now();
+  console.log("⏱️ ~ ", "Timer started");
 
-//   const detailsUrl = "https://civlcomps.org/event/german-open-2023";
-//   const res = await getCivlcompsComp(url, detailsUrl);
-//   console.log("🚀 ~ res:", res.maxPilots);
+  // Test
+  const url = "https://civlcomps.org/event/german-open-2023/participants";
 
-//   const endTime = performance.now();
-//   const elapsedTime = endTime - startTime;
-//   console.log("⏱️ ~ ", (elapsedTime / 1000).toFixed(2), "seconds");
+  const detailsUrl = "https://civlcomps.org/event/german-open-2023";
+  const res = await getCivlcompsComp(url, detailsUrl);
 
-//   expect(true).toBe(true);
-// }, 10000);
+  //
+  const endTime = performance.now();
+  const elapsedTime = endTime - startTime;
+  console.log("⏱️ ~ ", (elapsedTime / 1000).toFixed(2), "seconds");
+
+  expect(res.pilots.length).toBe(expectedNumOfPilots);
+}, 30000);
 
 it("should find the correct CIVL ID for a pilot", async () => {
   // Perfomance timer

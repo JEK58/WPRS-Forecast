@@ -18,15 +18,15 @@ export async function getCivlId(name: string) {
   const redisKey = `name:${name.toLowerCase()}`;
 
   try {
-    // const cachedId = await redis.get(redisKey);
-    // if (cachedId) return +cachedId;
+    const cachedId = await redis.get(redisKey);
+    if (cachedId) return +cachedId;
 
     const id = await lookUpCivlId(name);
 
     // If a placeholder id is returned the CIVL ID may change in the future
     // and therefore gets an expiry of 30 days
-    // if (id != CIVL_PLACEHOLDER_ID) await redis.set(redisKey, id);
-    // else await redis.set(redisKey, id, "EX", REDIS_ID_EXPIRE_TIME);
+    if (id != CIVL_PLACEHOLDER_ID) await redis.set(redisKey, id);
+    else await redis.set(redisKey, id, "EX", REDIS_ID_EXPIRE_TIME);
     return id;
   } catch (error) {
     console.log(error);
