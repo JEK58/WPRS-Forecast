@@ -18,9 +18,15 @@ async function getMaxPilots(url: string) {
 }
 
 export async function getCivlcompsComp(url: string, detailsUrl: string) {
-  const maxPilots = await getMaxPilots(detailsUrl);
-  const response = await fetch(url);
+  console.log("Fetching websites");
+
+  const [maxPilots, response] = await Promise.all([
+    getMaxPilots(detailsUrl),
+    fetch(url),
+  ]);
   const body = await response.text();
+
+  console.log("Starting cheerio");
 
   const $ = load(body, { xmlMode: true });
   const compTitle = $("h1").text();
@@ -28,7 +34,11 @@ export async function getCivlcompsComp(url: string, detailsUrl: string) {
   const content = $(".participants-item");
   const rows = content.find("tr");
 
-  const dates = await getStartAndEndDateFromRange(compDate);
+  // const dates = await getStartAndEndDateFromRange(compDate);
+  const dates = {
+    startDate: "2023-08-16T00:00:00.000Z",
+    endDate: "2023-08-20T00:00:00.000Z",
+  };
 
   const startDate = dates?.startDate;
   const endDate = dates?.endDate;
@@ -50,6 +60,7 @@ export async function getCivlcompsComp(url: string, detailsUrl: string) {
 
     data.push(rowData);
   });
+  console.log("Fetching CIVL IDs");
 
   const pilots = await Promise.all(
     data.map(async (el) => {

@@ -16,7 +16,7 @@ export async function getCivlId(name: string) {
   const redisKey = `name:${name.toLowerCase()}`;
 
   try {
-    const cachedId = await redis.get(redisKey);
+    const cachedId = await redis.get(redisKey + "foo");
     if (cachedId) return +cachedId;
 
     const id = await lookUpCivlId(name);
@@ -32,7 +32,8 @@ export async function getCivlId(name: string) {
   }
 }
 
-async function lookUpCivlId(name: string) {
+export async function lookUpCivlId(name: string) {
+  console.log("🚀 ~ name:", name);
   const searchString = name.replaceAll(" ", "+");
   const headersList = {
     Accept: "*/*",
@@ -97,7 +98,7 @@ async function lookUpCivlId(name: string) {
         return CIVL_PLACEHOLDER_ID;
       }
       console.log(
-        `☑️ ~ Multiple results for ${name}. Picked: ${bestMatch.text}`
+        `☑️ ~ Multiple results for ${name}. Picked: ${bestMatch.text}`,
       );
       return bestMatch.id;
     }
