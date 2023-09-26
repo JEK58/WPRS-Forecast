@@ -18,9 +18,15 @@ async function getMaxPilots(url: string) {
 }
 
 export async function getCivlcompsComp(url: string, detailsUrl: string) {
-  const maxPilots = await getMaxPilots(detailsUrl);
-  const response = await fetch(url);
+  console.log("Fetching websites");
+
+  const [maxPilots, response] = await Promise.all([
+    getMaxPilots(detailsUrl),
+    fetch(url),
+  ]);
   const body = await response.text();
+
+  console.log("Starting cheerio");
 
   const $ = load(body, { xmlMode: true });
   const compTitle = $("h1").text();
@@ -50,6 +56,7 @@ export async function getCivlcompsComp(url: string, detailsUrl: string) {
 
     data.push(rowData);
   });
+  console.log("Fetching CIVL IDs");
 
   const pilots = await Promise.all(
     data.map(async (el) => {
