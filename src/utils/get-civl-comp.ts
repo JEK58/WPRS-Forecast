@@ -1,5 +1,5 @@
 import { load } from "cheerio";
-import { getCivlId } from "@/utils/get-civl-id";
+import { getCivlId, getCookie } from "@/utils/get-civl-id";
 import { evalMaxPilots } from "./eval-max-pilots";
 import { getStartAndEndDateFromRange } from "./get-start-and-end-date-from-range";
 
@@ -58,11 +58,15 @@ export async function getCivlcompsComp(url: string, detailsUrl: string) {
   });
   console.log("Fetching CIVL IDs");
 
+  // Get CIVL cookies
+  const cookies = await getCookie();
+  if (!cookies) throw new Error("No cookies found");
+
   const pilots = await Promise.all(
     data.map(async (el) => {
       const input = el.name ?? "";
       const name = input.split(" (")[0] ?? "";
-      const civlID = await getCivlId(name);
+      const civlID = await getCivlId(name, cookies);
 
       return {
         name,

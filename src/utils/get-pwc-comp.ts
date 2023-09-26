@@ -1,4 +1,4 @@
-import { getCivlId } from "@/utils/get-civl-id";
+import { getCivlId, getCookie } from "@/utils/get-civl-id";
 import { load } from "cheerio";
 import { getStartAndEndDateFromRange } from "./get-start-and-end-date-from-range";
 
@@ -70,11 +70,15 @@ export async function getPwcComp(url: string) {
 
   if (!mergedData.length) return;
 
+  // Get CIVL cookies
+  const cookies = await getCookie();
+  if (!cookies) throw new Error("No cookies found");
+
   const pilots = await Promise.all(
     mergedData.map(async (el) => {
       const input = el.pilot ?? "";
       const name = input.split(" (")[0] ?? "";
-      const civlID = await getCivlId(name);
+      const civlID = await getCivlId(name, cookies);
 
       return {
         name,

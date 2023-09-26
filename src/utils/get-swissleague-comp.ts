@@ -1,5 +1,5 @@
 import { load } from "cheerio";
-import { getCivlId } from "@/utils/get-civl-id";
+import { getCivlId, getCookie } from "@/utils/get-civl-id";
 import { getMaxPilotsFromDescription } from "@/utils/get-max-pilots-from-description";
 import { evalMaxPilots } from "./eval-max-pilots";
 import { getStartAndEndDateFromRange } from "./get-start-and-end-date-from-range";
@@ -59,11 +59,14 @@ export async function getSwissleagueComp(url: string, detailsUrl: string) {
 
     data.push(rowData);
   });
+  // Get CIVL cookies
+  const cookies = await getCookie();
+  if (!cookies) throw new Error("No cookies found");
 
   const pilots = await Promise.all(
     data.map(async (el) => {
       const name = el.pilot ?? "";
-      const civlID = await getCivlId(name);
+      const civlID = await getCivlId(name, cookies);
 
       return {
         name,

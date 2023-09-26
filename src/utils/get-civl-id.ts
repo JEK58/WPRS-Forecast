@@ -13,15 +13,19 @@ interface CivlPilotLookup {
   id: number;
   text: string;
 }
+interface Cookies {
+  cookieString: string;
+  embeddedCsrfToken: string;
+}
 
-export async function getCivlId(name: string) {
+export async function getCivlId(name: string, cookies: Cookies) {
   const redisKey = `name:${name.toLowerCase()}`;
 
   try {
     const cachedId = await redis.get(redisKey);
     if (cachedId) return +cachedId;
 
-    const id = await lookUpCivlId(name);
+    const id = await lookUpCivlId(name, cookies);
 
     // If a placeholder id is returned the CIVL ID may change in the future
     // and therefore gets an expiry of 30 days
@@ -34,39 +38,21 @@ export async function getCivlId(name: string) {
   }
 }
 
-export async function lookUpCivlId(name: string) {
+export async function lookUpCivlId(name: string, cookies: Cookies) {
   const searchString = name.replaceAll(" ", "+");
 
   try {
-    // Create a new cookie jar
-    const cookieJar = new CookieJar();
-    const cookieUrl = "https://civlcomps.org/ranking/paragliding-xc/pilots";
-    const cookieResponse = await fetch(cookieUrl);
-
-    const body = await cookieResponse.text();
-
-    // Get embedded csrf-token
-    const $ = load(body, { xmlMode: true });
-    const embeddedCsrfToken = $('meta[name="csrf-token"]').attr("content");
-
-    // Get cookies
-    const cookies = cookieResponse.headers.getSetCookie();
-
-    cookies.forEach((cookieStr) => {
-      cookieJar.setCookieSync(cookieStr, "https://civlcomps.org"); // Store the cookie
-    });
-
     const searchUrl = "https://civlcomps.org/meta/search-profile";
 
     const headers = {
       "Content-Type": "application/x-www-form-urlencoded; charset=UTF-8",
-      Cookie: cookieJar.getCookieStringSync("https://civlcomps.org"),
+      Cookie: cookies.cookieString,
       Pragma: "no-cache",
       Accept: "application/json, text/javascript, */*; q=0.01",
       "Sec-Fetch-Site": "same-origin",
     };
 
-    const formData = `term=${searchString}&meta=true&_csrf=${embeddedCsrfToken}`;
+    const formData = `term=${searchString}&meta=true&_csrf=${cookies.embeddedCsrfToken}`;
 
     let res = await axios.post<CivlPilotLookup[]>(searchUrl, formData, {
       headers,
@@ -82,7 +68,7 @@ export async function lookUpCivlId(name: string) {
       const splitName = searchString.split("+");
       splitName.splice(1, 1);
       const newSearchString = splitName.join("+");
-      const newFormData = `term=${newSearchString}&meta=true&_csrf=${embeddedCsrfToken}`;
+      const newFormData = `term=${newSearchString}&meta=true&_csrf=${cookies.embeddedCsrfToken}`;
       res = await axios.post<CivlPilotLookup[]>(searchUrl, newFormData, {
         headers,
       });
@@ -141,4 +127,35 @@ export function normalizeName(name: string) {
     .normalize("NFD")
     .replace(/[\u0300-\u036f]/g, "")
     .toLowerCase();
+}
+
+export async function getCookie() {
+  try {
+    // Create a new cookie jar
+    const cookieJar = new CookieJar();
+    const cookieUrl = "https://civlcomps.org/ranking/paragliding-xc/pilots";
+    const cookieResponse = await fetch(cookieUrl);
+
+    const body = await cookieResponse.text();
+
+    // Get embedded csrf-token
+    const $ = load(body, { xmlMode: true });
+    const embeddedCsrfToken = $('meta[name="csrf-token"]').attr("content");
+
+    // Get cookies
+    const cookies = cookieResponse.headers.get("set-cookie");
+    if (!cookies || !embeddedCsrfToken) throw new Error("No cookies found");
+
+    const cookiesArray = cookies.split(",");
+
+    cookiesArray.forEach((cookieStr) => {
+      cookieJar.setCookieSync(cookieStr, "https://civlcomps.org"); // Store the cookie
+    });
+
+    const cookieString = cookieJar.getCookieStringSync("https://civlcomps.org");
+
+    return { cookieString, embeddedCsrfToken };
+  } catch (error) {
+    console.log(error);
+  }
 }
