@@ -34,11 +34,7 @@ export async function getCivlcompsComp(url: string, detailsUrl: string) {
   const content = $(".participants-item");
   const rows = content.find("tr");
 
-  // const dates = await getStartAndEndDateFromRange(compDate);
-  const dates = {
-    startDate: "2023-08-16T00:00:00.000Z",
-    endDate: "2023-08-20T00:00:00.000Z",
-  };
+  const dates = await getStartAndEndDateFromRange(compDate);
 
   const startDate = dates?.startDate;
   const endDate = dates?.endDate;

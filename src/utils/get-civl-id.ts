@@ -1,6 +1,8 @@
 import axios from "axios";
 import Redis from "ioredis";
 import { env } from "@/env.mjs";
+import { CookieJar } from "tough-cookie";
+import { load } from "cheerio";
 
 const redis = new Redis({ host: env.REDIS_URL });
 
@@ -16,15 +18,15 @@ export async function getCivlId(name: string) {
   const redisKey = `name:${name.toLowerCase()}`;
 
   try {
-    const cachedId = await redis.get(redisKey + "foo");
-    if (cachedId) return +cachedId;
+    // const cachedId = await redis.get(redisKey);
+    // if (cachedId) return +cachedId;
 
     const id = await lookUpCivlId(name);
 
     // If a placeholder id is returned the CIVL ID may change in the future
     // and therefore gets an expiry of 30 days
-    if (id != CIVL_PLACEHOLDER_ID) await redis.set(redisKey, id);
-    else await redis.set(redisKey, id, "EX", REDIS_ID_EXPIRE_TIME);
+    // if (id != CIVL_PLACEHOLDER_ID) await redis.set(redisKey, id);
+    // else await redis.set(redisKey, id, "EX", REDIS_ID_EXPIRE_TIME);
     return id;
   } catch (error) {
     console.log(error);
@@ -33,34 +35,58 @@ export async function getCivlId(name: string) {
 }
 
 export async function lookUpCivlId(name: string) {
-  console.log("🚀 ~ name:", name);
   const searchString = name.replaceAll(" ", "+");
-  const headersList = {
-    Accept: "*/*",
-    "Content-Type": "application/x-www-form-urlencoded",
-  };
-
-  const reqOptions = {
-    url: "https://civlcomps.org/meta/search-profile/",
-    method: "GET",
-    headers: headersList,
-    data: `term=${searchString}`,
-  };
 
   try {
-    let res = await axios.request<CivlPilotLookup[]>(reqOptions);
+    // Create a new cookie jar
+    const cookieJar = new CookieJar();
+    const cookieUrl = "https://civlcomps.org/ranking/paragliding-xc/pilots";
+    const cookieResponse = await fetch(cookieUrl);
+
+    const body = await cookieResponse.text();
+
+    // Get embedded csrf-token
+    const $ = load(body, { xmlMode: true });
+    const embeddedCsrfToken = $('meta[name="csrf-token"]').attr("content");
+
+    // Get cookies
+    const cookies = cookieResponse.headers.getSetCookie();
+
+    cookies.forEach((cookieStr) => {
+      cookieJar.setCookieSync(cookieStr, "https://civlcomps.org"); // Store the cookie
+    });
+
+    const searchUrl = "https://civlcomps.org/meta/search-profile";
+
+    const headers = {
+      "Content-Type": "application/x-www-form-urlencoded; charset=UTF-8",
+      Cookie: cookieJar.getCookieStringSync("https://civlcomps.org"),
+      Pragma: "no-cache",
+      Accept: "application/json, text/javascript, */*; q=0.01",
+      "Sec-Fetch-Site": "same-origin",
+    };
+
+    const formData = `term=${searchString}&meta=true&_csrf=${embeddedCsrfToken}`;
+
+    let res = await axios.post<CivlPilotLookup[]>(searchUrl, formData, {
+      headers,
+    });
     if (!res.data || !res.data.length) {
       /**
        * Try again with less information.
        * Sometimes the CIVL search does not find pilots if they have a middle name
        */
-
+      console.log(
+        `🤷 ~ CIVL lookup failed for ${name} => trying with less information`,
+      );
       const splitName = searchString.split("+");
       splitName.splice(1, 1);
       const newSearchString = splitName.join("+");
+      const newFormData = `term=${newSearchString}&meta=true&_csrf=${embeddedCsrfToken}`;
+      res = await axios.post<CivlPilotLookup[]>(searchUrl, newFormData, {
+        headers,
+      });
 
-      reqOptions.data = `term=${newSearchString}`;
-      res = await axios.request<CivlPilotLookup[]>(reqOptions);
       if (!res.data || !res.data.length) {
         console.log(`❗️ ~ No data for ${name}`);
         return CIVL_PLACEHOLDER_ID;

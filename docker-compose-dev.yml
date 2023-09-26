@@ -1,6 +1,6 @@
 version: '3.8'
 services:
-  cache:
+  redis:
     image: redis:6-alpine3.17
     restart: always
     ports:
