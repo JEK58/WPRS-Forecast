@@ -4,12 +4,8 @@ import { evalMaxPilots } from "./eval-max-pilots";
 import { getStartAndEndDateFromRange } from "./get-start-and-end-date-from-range";
 
 export async function getCivlcompsComp(url: string) {
-  console.log("Fetching websites");
-
   const response = await fetch(url);
   const body = await response.text();
-
-  console.log("Starting cheerio");
 
   const $ = load(body, { xmlMode: true });
 
@@ -29,7 +25,6 @@ export async function getCivlcompsComp(url: string) {
   interface RowData {
     [key: string]: string;
   }
-  console.log("Looping");
 
   const data: RowData[] = [];
   // Loop through table rows and find pilots
@@ -43,7 +38,6 @@ export async function getCivlcompsComp(url: string) {
     });
     data.push(rowData);
   });
-  console.log("Fetching CIVL IDs");
 
   // Create list of pilots
   const listOfPilots = data
