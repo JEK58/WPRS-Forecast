@@ -1,6 +1,4 @@
 export function isValidUrl(url: string) {
-  console.log(validateHttpsLink(url));
-
   if (!validateHttpsLink(url)) return false;
   return (
     (url.includes("airtribune.com/") ||
