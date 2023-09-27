@@ -3,48 +3,36 @@ import { getCivlIds, CIVL_PLACEHOLDER_ID } from "@/utils/get-civl-ids";
 import { evalMaxPilots } from "./eval-max-pilots";
 import { getStartAndEndDateFromRange } from "./get-start-and-end-date-from-range";
 
-async function getMaxPilots(url: string) {
-  const response = await fetch(url);
-  const body = await response.text();
-
-  const $ = load(body, { xmlMode: true });
-
-  const description = $(".wrapper-info").find(".count").eq(1).text();
-
-  if (!description) return 0;
-
-  const num = parseInt(description);
-  return evalMaxPilots(isNaN(num) ? 0 : num);
-}
-
-export async function getCivlcompsComp(url: string, detailsUrl: string) {
+export async function getCivlcompsComp(url: string) {
   console.log("Fetching websites");
 
-  const [maxPilots, response] = await Promise.all([
-    getMaxPilots(detailsUrl),
-    fetch(url),
-  ]);
+  const response = await fetch(url);
   const body = await response.text();
 
   console.log("Starting cheerio");
 
   const $ = load(body, { xmlMode: true });
+
+  // Find max num of pilots
+  const maxPilotsString = $(".wrapper-info").find(".count").eq(2).text();
+  const num = parseInt(maxPilotsString);
+  const maxPilots = evalMaxPilots(isNaN(num) ? 0 : num);
+
+  // Comp details
   const compTitle = $("h1").text();
-  const compDate = $(".date-event").text();
+  const compDateString = $(".date-event").text();
   const content = $(".participants-item");
   const rows = content.find("tr");
 
-  const dates = await getStartAndEndDateFromRange(compDate);
-
-  const startDate = dates?.startDate;
-  const endDate = dates?.endDate;
+  const compDate = await getStartAndEndDateFromRange(compDateString);
 
   interface RowData {
     [key: string]: string;
   }
+  console.log("Looping");
 
   const data: RowData[] = [];
-
+  // Loop through table rows and find pilots
   rows.each((_, row) => {
     const columns = $(row).find("td");
     const rowData: RowData = {};
@@ -57,6 +45,7 @@ export async function getCivlcompsComp(url: string, detailsUrl: string) {
   });
   console.log("Fetching CIVL IDs");
 
+  // Create list of pilots
   const listOfPilots = data
     .filter((el) => typeof el.name == "string")
     .map((el) => {
@@ -73,6 +62,7 @@ export async function getCivlcompsComp(url: string, detailsUrl: string) {
       };
     });
 
+  // Add CIVL IDs
   const civlIds = await getCivlIds(listOfPilots);
 
   const pilotsWithCivlId = listOfPilots.map((pilot) => {
@@ -84,7 +74,7 @@ export async function getCivlcompsComp(url: string, detailsUrl: string) {
     compTitle,
     maxPilots,
     pilots: pilotsWithCivlId,
-    compDate: { startDate, endDate },
+    compDate,
   };
 }
 

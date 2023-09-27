@@ -78,13 +78,12 @@ export async function getWprs(
   // CIVL
   if (isCivlLink(url)) {
     const compUrl = generateCivlCompUrl(url);
-    const detailsUrl = generateCivlDetailsUrl(url);
-    const comp = await getCivlcompsComp(compUrl, detailsUrl);
+    const comp = await getCivlcompsComp(compUrl);
     if (!comp || comp.pilots?.length < MIN_PILOTS)
       return { error: "NOT_ENOUGH_PILOTS" };
 
     if (
-      comp.compDate.endDate &&
+      comp.compDate?.endDate &&
       isDateFromPreviousMonthOrOlder(comp.compDate.endDate)
     )
       return { error: "PAST_EVENT" };
@@ -268,9 +267,6 @@ function getPosition(string: string, subString: string, index: number) {
 
 function generateCivlCompUrl(url: string) {
   return url.slice(0, getPosition(url, "/", 5)) + "/participants";
-}
-function generateCivlDetailsUrl(url: string) {
-  return url.slice(0, getPosition(url, "/", 5));
 }
 
 function generateAirtribuneCompUrl(url: string) {

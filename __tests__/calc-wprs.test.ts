@@ -3,8 +3,8 @@ import { getCivlIds, getCivlCookies } from "@/utils/get-civl-ids";
 import { env } from "@/env.mjs";
 import Redis from "ioredis";
 
-const redis = new Redis({ host: env.REDIS_URL });
-beforeAll(async () => await redis.flushall());
+// const redis = new Redis({ host: env.REDIS_URL });
+// beforeAll(async () => await redis.flushall());
 
 it("should find the correct amount of registered pilots", async () => {
   const expectedNumOfPilots = 291;
@@ -14,8 +14,7 @@ it("should find the correct amount of registered pilots", async () => {
   // Test
   const url = "https://civlcomps.org/event/german-open-2023/participants";
 
-  const detailsUrl = "https://civlcomps.org/event/german-open-2023";
-  const res = await getCivlcompsComp(url, detailsUrl);
+  const res = await getCivlcompsComp(url);
 
   //
   const endTime = performance.now();
