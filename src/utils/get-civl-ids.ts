@@ -7,7 +7,6 @@ import { load } from "cheerio";
 const redis = new Redis({ host: env.REDIS_URL });
 
 export const CIVL_PLACEHOLDER_ID = 99999;
-const REDIS_ID_EXPIRE_TIME = 30 * 24 * 60 * 60; // 30 days
 
 interface CivlPilotLookup {
   id: number;
@@ -31,15 +30,16 @@ export async function getCivlIds(listOfPilots: { name: string }[]) {
       const redisKey = `name:${name.toLowerCase()}`;
 
       try {
+        // Check cache
         const cachedId = await redis.get(redisKey);
         if (cachedId) return map.set(name, +cachedId);
 
+        // No cache hit => query CIVL
         const civlId = await lookUpCivlId(pilot.name, cookies);
 
-        // If a placeholder id is returned the CIVL ID may change in the future
-        // and therefore gets an expiry of 30 days
+        // Cache result
         if (civlId != CIVL_PLACEHOLDER_ID) await redis.set(redisKey, civlId);
-        else await redis.set(redisKey, civlId, "EX", REDIS_ID_EXPIRE_TIME);
+
         return map.set(name, civlId);
       } catch (error) {
         console.log(error);
@@ -49,7 +49,9 @@ export async function getCivlIds(listOfPilots: { name: string }[]) {
   );
 
   // Check the number of entries that have the CIVL placeholder value
-  // Log a warning if there are more than 5% missing TODO: Send an
+  // Log a warning if there are more than 5% missing
+  // TODO: Send an email
+
   let placeHolderCount = 0;
 
   map.forEach((item) => {
