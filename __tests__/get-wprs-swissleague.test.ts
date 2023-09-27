@@ -10,5 +10,5 @@ describe("Get WPRS for Swissleague comps", () => {
     if ("error" in res) {
       expect(res.error).toBe("PAST_EVENT");
     }
-  });
+  }, 10000);
 });

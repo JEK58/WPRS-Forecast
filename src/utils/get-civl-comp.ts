@@ -1,5 +1,5 @@
 import { load } from "cheerio";
-import { getCivlId, getCookie } from "@/utils/get-civl-id";
+import { getCivlIds, CIVL_PLACEHOLDER_ID } from "@/utils/get-civl-ids";
 import { evalMaxPilots } from "./eval-max-pilots";
 import { getStartAndEndDateFromRange } from "./get-start-and-end-date-from-range";
 
@@ -58,28 +58,33 @@ export async function getCivlcompsComp(url: string, detailsUrl: string) {
   });
   console.log("Fetching CIVL IDs");
 
-  // Get CIVL cookies
-  const cookies = await getCookie();
-  if (!cookies) throw new Error("No cookies found");
+  const listOfPilots = data.map((el) => {
+    const input = el.name ?? "";
+    const name = input.split(" (")[0] ?? "";
 
-  const pilots = await Promise.all(
-    data.map(async (el) => {
-      const input = el.name ?? "";
-      const name = input.split(" (")[0] ?? "";
-      const civlID = await getCivlId(name, cookies);
+    return {
+      name,
+      nationality: el.country,
+      civlID: CIVL_PLACEHOLDER_ID,
+      wing: el.glider,
+      status: el.status,
+      confirmed: isConfirmed(el.status),
+    };
+  });
 
-      return {
-        name,
-        nationality: el.country,
-        civlID,
-        wing: el.glider,
-        status: el.status,
-        confirmed: isConfirmed(el.status),
-      };
-    }),
-  );
+  const civlIds = await getCivlIds(listOfPilots);
 
-  return { compTitle, maxPilots, pilots, compDate: { startDate, endDate } };
+  const pilotsWithCivlId = listOfPilots.map((pilot) => {
+    pilot.civlID = civlIds.get(pilot.name) ?? CIVL_PLACEHOLDER_ID;
+    return pilot;
+  });
+
+  return {
+    compTitle,
+    maxPilots,
+    pilots: pilotsWithCivlId,
+    compDate: { startDate, endDate },
+  };
 }
 
 function isConfirmed(status?: string) {

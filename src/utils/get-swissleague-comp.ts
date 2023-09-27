@@ -1,5 +1,5 @@
 import { load } from "cheerio";
-import { getCivlId, getCookie } from "@/utils/get-civl-id";
+import { getCivlIds, CIVL_PLACEHOLDER_ID } from "@/utils/get-civl-ids";
 import { getMaxPilotsFromDescription } from "@/utils/get-max-pilots-from-description";
 import { evalMaxPilots } from "./eval-max-pilots";
 import { getStartAndEndDateFromRange } from "./get-start-and-end-date-from-range";
@@ -59,28 +59,29 @@ export async function getSwissleagueComp(url: string, detailsUrl: string) {
 
     data.push(rowData);
   });
-  // Get CIVL cookies
-  const cookies = await getCookie();
-  if (!cookies) throw new Error("No cookies found");
 
-  const pilots = await Promise.all(
-    data.map(async (el) => {
-      const name = el.pilot ?? "";
-      const civlID = await getCivlId(name, cookies);
+  const listOfPilots = data.map((el) => {
+    const name = el.pilot ?? "";
 
-      return {
-        name,
-        nationality: el.country,
-        civlID,
-        wing: el.glider,
-        status: el.status,
-        confirmed: isConfirmed(el.status),
-      };
-    }),
-  );
+    return {
+      name,
+      nationality: el.country,
+      civlID: CIVL_PLACEHOLDER_ID,
+      wing: el.glider,
+      status: el.status,
+      confirmed: isConfirmed(el.status),
+    };
+  });
+
+  const civlIds = await getCivlIds(listOfPilots);
+
+  const pilotsWithCivlId = listOfPilots.map((pilot) => {
+    pilot.civlID = civlIds.get(pilot.name) ?? CIVL_PLACEHOLDER_ID;
+    return pilot;
+  });
 
   return {
-    pilots,
+    pilots: pilotsWithCivlId,
     compTitle,
     maxPilots: compDetails.maxPilots,
     compDate: {

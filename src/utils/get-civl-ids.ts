@@ -6,7 +6,7 @@ import { load } from "cheerio";
 
 const redis = new Redis({ host: env.REDIS_URL });
 
-const CIVL_PLACEHOLDER_ID = 99999;
+export const CIVL_PLACEHOLDER_ID = 99999;
 const REDIS_ID_EXPIRE_TIME = 30 * 24 * 60 * 60; // 30 days
 
 interface CivlPilotLookup {
@@ -18,24 +18,50 @@ interface Cookies {
   embeddedCsrfToken: string;
 }
 
-export async function getCivlId(name: string, cookies: Cookies) {
-  const redisKey = `name:${name.toLowerCase()}`;
+export async function getCivlIds(listOfPilots: { name: string }[]) {
+  // Get CIVL session cookie
+  const cookies = await getCivlCookies();
+  if (!cookies) throw new Error("No cookies found");
 
-  try {
-    const cachedId = await redis.get(redisKey);
-    if (cachedId) return +cachedId;
+  const map = new Map<string, number>();
 
-    const id = await lookUpCivlId(name, cookies);
+  await Promise.all(
+    listOfPilots.map(async (pilot) => {
+      const name = pilot.name;
+      const redisKey = `name:${name.toLowerCase()}`;
 
-    // If a placeholder id is returned the CIVL ID may change in the future
-    // and therefore gets an expiry of 30 days
-    if (id != CIVL_PLACEHOLDER_ID) await redis.set(redisKey, id);
-    else await redis.set(redisKey, id, "EX", REDIS_ID_EXPIRE_TIME);
-    return id;
-  } catch (error) {
-    console.log(error);
-    return CIVL_PLACEHOLDER_ID;
-  }
+      try {
+        const cachedId = await redis.get(redisKey);
+        if (cachedId) return map.set(name, +cachedId);
+
+        const civlId = await lookUpCivlId(pilot.name, cookies);
+
+        // If a placeholder id is returned the CIVL ID may change in the future
+        // and therefore gets an expiry of 30 days
+        if (civlId != CIVL_PLACEHOLDER_ID) await redis.set(redisKey, civlId);
+        else await redis.set(redisKey, civlId, "EX", REDIS_ID_EXPIRE_TIME);
+        return map.set(name, civlId);
+      } catch (error) {
+        console.log(error);
+        return map.set(name, CIVL_PLACEHOLDER_ID);
+      }
+    }),
+  );
+
+  // Check the number of entries that have the CIVL placeholder value
+  // Log a warning if there are more than 5% missing TODO: Send an
+  let placeHolderCount = 0;
+
+  map.forEach((item) => {
+    if (item === CIVL_PLACEHOLDER_ID) placeHolderCount++;
+  });
+  if (placeHolderCount > listOfPilots.length / 20)
+    console.log(
+      "❗️ ~ Did not findMore than 5% of the pilots",
+      placeHolderCount,
+    );
+
+  return map;
 }
 
 export async function lookUpCivlId(name: string, cookies: Cookies) {
@@ -129,7 +155,7 @@ export function normalizeName(name: string) {
     .toLowerCase();
 }
 
-export async function getCookie() {
+export async function getCivlCookies() {
   try {
     // Create a new cookie jar
     const cookieJar = new CookieJar();
@@ -149,7 +175,7 @@ export async function getCookie() {
     const cookiesArray = cookies.split(",");
 
     cookiesArray.forEach((cookieStr) => {
-      cookieJar.setCookieSync(cookieStr, "https://civlcomps.org"); // Store the cookie
+      cookieJar.setCookieSync(cookieStr, "https://civlcomps.org");
     });
 
     const cookieString = cookieJar.getCookieStringSync("https://civlcomps.org");
