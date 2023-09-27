@@ -8,6 +8,7 @@ import { getSwissleagueComp } from "./get-swissleague-comp";
 import Redis from "ioredis";
 import { type Ranking } from "@prisma/client";
 import { env } from "@/env.mjs";
+import { load } from "cheerio";
 
 const redis = new Redis({ host: env.REDIS_URL });
 
@@ -99,7 +100,8 @@ export async function getWprs(
 
   // PWC
   if (isPwcLink(url)) {
-    const compUrl = generatePwcCompUrl(url);
+    const compUrl = await generatePwcCompUrl(url);
+
     const comp = await getPwcComp(compUrl);
     if (!comp || comp.pilots?.length < MIN_PILOTS)
       return { error: "NOT_ENOUGH_PILOTS" };
@@ -152,7 +154,7 @@ export function isCivlLink(url: string) {
 }
 
 export function isPwcLink(url: string) {
-  return url.includes("pwca.org/");
+  return url.includes("pwca.org/") || url.includes("pwca.events");
 }
 export function isSwissleagueLink(url: string) {
   return url.includes("swissleague.ch/");
@@ -273,8 +275,25 @@ function generateAirtribuneCompUrl(url: string) {
   return url.slice(0, getPosition(url, "/", 4)) + "/pilots";
 }
 
-function generatePwcCompUrl(url: string) {
-  return url.slice(0, getPosition(url, "/", 5)) + "/selection";
+async function generatePwcCompUrl(url: string) {
+  if (url.includes("pwca.org"))
+    return url.slice(0, getPosition(url, "/", 5)) + "/selection";
+
+  // If it's a running event using the new .events page: Create the legacy url from an h2
+  const response = await fetch(url);
+  const body = await response.text();
+
+  const $ = load(body, { xmlMode: true });
+
+  const h2 = $("h2")
+    .eq(0)
+    .text()
+    .toLocaleLowerCase()
+    .replaceAll(" ", "-")
+    .replaceAll(",", "");
+
+  const year = new Date().getFullYear();
+  return "https://pwca.org/events/" + year + "-" + h2 + "/selection";
 }
 function generateSwissleagueCompUrl(url: string) {
   return url.slice(0, getPosition(url, "/", 7)) + "/pilots";

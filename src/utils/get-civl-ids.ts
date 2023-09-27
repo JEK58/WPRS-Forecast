@@ -58,16 +58,16 @@ export async function getCivlIds(listOfPilots: { name: string }[]) {
     if (item === CIVL_PLACEHOLDER_ID) placeHolderCount++;
   });
   if (placeHolderCount > listOfPilots.length / 20)
-    console.log(
-      "❗️ ~ Did not findMore than 5% of the pilots",
-      placeHolderCount,
-    );
+    console.log("⚠️ ~ More than 5% with no CIVL ID!", placeHolderCount);
 
   return map;
 }
 
 export async function lookUpCivlId(name: string, cookies: Cookies) {
-  const searchString = name.replaceAll(" ", "+");
+  const searchString = name
+    .replaceAll(" ", "+")
+    .replaceAll("'", " ")
+    .replaceAll("-", " ");
 
   try {
     const searchUrl = "https://civlcomps.org/meta/search-profile";
@@ -147,7 +147,28 @@ export async function lookUpCivlId(name: string, cookies: Cookies) {
     if (data[0]) return data[0].id;
     else return CIVL_PLACEHOLDER_ID;
   } catch (error) {
-    console.log(error);
+    console.log("Error for name:", name);
+
+    if (axios.isAxiosError(error)) {
+      if (error.response) {
+        // The request was made and the server responded with a status code
+        // that falls out of the range of 2xx
+        console.log(error.response.config.data);
+        console.log(error.response.status);
+        // console.log(error.response.headers);
+      } else if (error.request) {
+        // The request was made but no response was received
+        // `error.request` is an instance of XMLHttpRequest in the browser and an instance of
+        // http.ClientRequest in node.js
+        console.log(error.request);
+      } else {
+        // Something happened in setting up the request that triggered an Error
+        console.log("Error", error.message);
+      }
+    } else {
+      console.log(error);
+    }
+
     return CIVL_PLACEHOLDER_ID;
   }
 }
