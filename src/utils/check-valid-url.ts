@@ -1,4 +1,6 @@
 export function isValidUrl(url: string) {
+  console.log(validateHttpsLink(url));
+
   if (!validateHttpsLink(url)) return false;
   return (
     (url.includes("airtribune.com/") ||
@@ -12,6 +14,6 @@ export function isValidUrl(url: string) {
 
 function validateHttpsLink(link: string) {
   const regex =
-    /^https:\/\/[a-z0-9]+([\-\.]{1}[a-z0-9]+)*\.[a-z]{2,5}(:[0-9]{1,5})?(\/.*)?$/;
+    /^https:\/\/[a-z0-9]+([\-\.]{1}[a-z0-9]+)*\.[a-z]{2,}(:[0-9]{1,5})?(\/.*)?$/;
   return regex.test(link);
 }
