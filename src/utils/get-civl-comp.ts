@@ -53,24 +53,25 @@ export async function getCivlcompsComp(url: string, detailsUrl: string) {
       const columnName = content.find("th").eq(j).text().trim().toLowerCase();
       rowData[columnName] = $(column).text().trim();
     });
-
     data.push(rowData);
   });
   console.log("Fetching CIVL IDs");
 
-  const listOfPilots = data.map((el) => {
-    const input = el.name ?? "";
-    const name = input.split(" (")[0] ?? "";
+  const listOfPilots = data
+    .filter((el) => typeof el.name == "string")
+    .map((el) => {
+      const input = el.name;
+      const name = input?.split(" (")[0] ?? "";
 
-    return {
-      name,
-      nationality: el.country,
-      civlID: CIVL_PLACEHOLDER_ID,
-      wing: el.glider,
-      status: el.status,
-      confirmed: isConfirmed(el.status),
-    };
-  });
+      return {
+        name,
+        nationality: el.country,
+        civlID: CIVL_PLACEHOLDER_ID,
+        wing: el.glider,
+        status: el.status,
+        confirmed: isConfirmed(el.status),
+      };
+    });
 
   const civlIds = await getCivlIds(listOfPilots);
 

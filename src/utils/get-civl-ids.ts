@@ -135,9 +135,11 @@ export async function lookUpCivlId(name: string, cookies: Cookies) {
         console.log(`❗️ ~ No data for ${name}`);
         return CIVL_PLACEHOLDER_ID;
       }
-      console.log(
-        `☑️ ~ Multiple results for ${name}. Picked: ${bestMatch.text}`,
-      );
+      // If the name of the best match does not match exactly log it for easier debugging
+      if (!bestMatch.text.includes(name))
+        console.log(
+          `☑️ ~ Multiple results for ${name}. Picked: ${bestMatch.text}`,
+        );
       return bestMatch.id;
     }
     if (data[0]) return data[0].id;

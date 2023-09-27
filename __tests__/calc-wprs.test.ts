@@ -7,7 +7,7 @@ const redis = new Redis({ host: env.REDIS_URL });
 beforeAll(async () => await redis.flushall());
 
 it("should find the correct amount of registered pilots", async () => {
-  const expectedNumOfPilots = 293;
+  const expectedNumOfPilots = 291;
   const startTime = performance.now();
   console.log("⏱️ ~ ", "Timer started");
 
