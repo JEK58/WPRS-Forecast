@@ -1,7 +1,8 @@
 import { load } from "cheerio";
-import { getCivlIds, CIVL_PLACEHOLDER_ID } from "@/utils/get-civl-ids";
+import { CIVL_PLACEHOLDER_ID } from "@/utils/get-civl-ids";
 import { evalMaxPilots } from "./eval-max-pilots";
 import { getStartAndEndDateFromRange } from "./get-start-and-end-date-from-range";
+import { type Pilot } from "./calculate-wprs";
 
 export async function getCivlcompsComp(url: string) {
   const response = await fetch(url);
@@ -22,52 +23,33 @@ export async function getCivlcompsComp(url: string) {
 
   const compDate = await getStartAndEndDateFromRange(compDateString);
 
-  interface RowData {
-    [key: string]: string;
-  }
-
-  const data: RowData[] = [];
   // Loop through table rows and find pilots
+  const pilots: Pilot[] = [];
   rows.each((_, row) => {
-    const columns = $(row).find("td");
-    const rowData: RowData = {};
+    const $row = $(row);
 
-    columns.each((j, column) => {
-      const columnName = content.find("th").eq(j).text().trim().toLowerCase();
-      rowData[columnName] = $(column).text().trim();
+    const name = $row.find('td[data-col="name"]').text().trim();
+    const nationality = $row.find('td[data-col="ioc"]').text().trim();
+    const civlID = $row.find('td[data-col="rank"] a').text().trim();
+    const status = $row.find('td[data-col="status"]').text().trim();
+    const wing = $row.find('td[data-col="wing_model"]').text().trim();
+
+    if (name == "") return;
+
+    pilots.push({
+      name,
+      nationality,
+      civlID: parseInt(civlID) ?? CIVL_PLACEHOLDER_ID,
+      wing,
+      status,
+      confirmed: isConfirmed(status),
     });
-    data.push(rowData);
-  });
-
-  // Create list of pilots
-  const listOfPilots = data
-    .filter((el) => typeof el.name == "string")
-    .map((el) => {
-      const input = el.name;
-      const name = input?.split(" (")[0] ?? "";
-
-      return {
-        name,
-        nationality: el.country,
-        civlID: CIVL_PLACEHOLDER_ID,
-        wing: el.glider,
-        status: el.status,
-        confirmed: isConfirmed(el.status),
-      };
-    });
-
-  // Add CIVL IDs
-  const civlIds = await getCivlIds(listOfPilots);
-
-  const pilotsWithCivlId = listOfPilots.map((pilot) => {
-    pilot.civlID = civlIds.get(pilot.name) ?? CIVL_PLACEHOLDER_ID;
-    return pilot;
   });
 
   return {
     compTitle,
     maxPilots,
-    pilots: pilotsWithCivlId,
+    pilots,
     compDate,
   };
 }
