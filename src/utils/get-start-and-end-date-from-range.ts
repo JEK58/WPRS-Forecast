@@ -1,12 +1,35 @@
 import OpenAI from "openai";
 import { env } from "@/env.mjs";
+import Redis from "ioredis";
 
 const openai = new OpenAI({
   apiKey: env.OPENAI_API_KEY,
 });
 
+const redis = new Redis({ host: env.REDIS_URL });
+interface RedisCompDate {
+  startDate: string;
+  endDate: string;
+}
+
 export async function getStartAndEndDateFromRange(input?: string) {
   if (!input) return;
+
+  // Check cache before asking GPT-3
+  const cachedDate = await redis.get(`compDate:${input}`);
+
+  if (cachedDate) {
+    try {
+      const date = JSON.parse(cachedDate) as RedisCompDate;
+      return {
+        startDate: new Date(date.startDate),
+        endDate: new Date(date.endDate),
+      };
+    } catch (error) {
+      console.error("Error parsing JSON:", error);
+    }
+  }
+
   try {
     const completion = await openai.chat.completions.create({
       model: "gpt-3.5-turbo",
@@ -33,10 +56,15 @@ export async function getStartAndEndDateFromRange(input?: string) {
     if (!startDate || !endDate)
       throw new Error("OpenAi answer does not look plausible");
 
-    return {
+    const compDate = {
       startDate: new Date(startDate),
       endDate: new Date(endDate),
     };
+
+    // Cache result
+    await redis.set(`compDate:${input}`, JSON.stringify(compDate));
+
+    return compDate;
   } catch (error) {
     console.log(error);
     return;
