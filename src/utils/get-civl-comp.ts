@@ -30,16 +30,23 @@ export async function getCivlcompsComp(url: string) {
 
     const name = $row.find('td[data-col="name"]').text().trim();
     const nationality = $row.find('td[data-col="ioc"]').text().trim();
-    const civlID = $row.find('td[data-col="rank"] a').text().trim();
+    const civlID = $row.attr("data-profile-id");
     const status = $row.find('td[data-col="status"]').text().trim();
     const wing = $row.find('td[data-col="wing_model"]').text().trim();
 
     if (name == "") return;
 
+    const convertToNumber = (str: string | undefined) => {
+      if (str == undefined) return undefined;
+      const num = parseInt(str);
+      if (isNaN(num)) return undefined;
+      else return num;
+    };
+
     pilots.push({
       name,
       nationality,
-      civlID: parseInt(civlID) ?? CIVL_PLACEHOLDER_ID,
+      civlID: convertToNumber(civlID) ?? CIVL_PLACEHOLDER_ID,
       wing,
       status,
       confirmed: isConfirmed(status),

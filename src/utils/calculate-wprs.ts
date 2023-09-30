@@ -166,9 +166,9 @@ async function calculateWPRS(
 ): Promise<CompForecast | undefined> {
   if (pilots.length < 2) return undefined;
   let worldRankingDate = new Date();
-  const numPilots =
-    maxPilots === 0 || maxPilots === undefined ? pilots.length : maxPilots;
 
+  const baseNumPilots = maxPilots || pilots.length;
+  const numPilots = Math.min(pilots.length, baseNumPilots);
   let Pq_srtp = 0;
 
   const topPilots = await prisma.ranking.findMany({
@@ -183,7 +183,6 @@ async function calculateWPRS(
   const compPilotsWprs: number[] = [];
 
   // sum ranking-points of the top 1/2 ranked participants
-
   for (let i = 0; i < numPilots; i++) {
     const element = pilots[i];
     if (!element) continue;
@@ -211,7 +210,7 @@ async function calculateWPRS(
   }
   const Pq_srp = compPilotsWprs
     .sort((a, b) => b - a)
-    .slice(0, numPilots / 2)
+    .slice(0, baseNumPilots / 2)
     .reduce((a, b) => a + b);
 
   const Pq_min = 0.2;
@@ -219,18 +218,18 @@ async function calculateWPRS(
 
   const Pn_max = 1.2;
 
-  const Pn_tmp = Math.sqrt(numPilots / AVG_NUM_PARTICIPANTS);
+  const Pn_tmp = Math.sqrt(baseNumPilots / AVG_NUM_PARTICIPANTS);
   const Pn = Pn_tmp > Pn_max ? Pn_max : Pn_tmp;
 
   const compRanking = Pq * Pn;
 
-  const factors = calcPilotPointFactors(numPilots, Pq);
+  const factors = calcPilotPointFactors(baseNumPilots, Pq);
 
   const WPRS = factors.map((factor) => calcWPR(factor, Pq, Pn));
 
   return {
     worldRankingDate,
-    numPilots,
+    numPilots: baseNumPilots,
     Pq: +Pq.toFixed(3),
     Pq_srp: +Pq_srp.toFixed(3),
     Pq_srtp: +Pq_srtp.toFixed(3),
