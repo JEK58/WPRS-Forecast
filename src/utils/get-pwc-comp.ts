@@ -43,7 +43,7 @@ export async function getPwcComp(url: string) {
 
   const $ = load(body, { xmlMode: true });
   const compTitle = $('h2[class="title"]').text();
-  const compDate = $(".information").text();
+  const compDate = $(".information").text().trim();
 
   const dates = await getStartAndEndDateFromRange(compDate);
 
