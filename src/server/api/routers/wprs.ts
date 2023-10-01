@@ -40,9 +40,25 @@ async function getForecast(inputUrl: string) {
       message: "No valid URL submitted.",
     });
 
+  // Calculate WPRS and measure processing time
+  const startTime = performance.now();
+
   const forecast = await calculateWprs(url);
 
+  const endTime = performance.now();
+  const processingTime = ((endTime - startTime) / 1000).toFixed(2);
+
   if ("error" in forecast) {
+    try {
+      if (queryID) {
+        await prisma.usage.update({
+          where: { id: queryID },
+          data: { error: forecast.error, processingTime },
+        });
+      }
+    } catch (error) {
+      console.log(error);
+    }
     if (forecast?.error === "NOT_ENOUGH_PILOTS")
       throw new TRPCError({
         code: "BAD_REQUEST",
@@ -73,7 +89,7 @@ async function getForecast(inputUrl: string) {
     if (queryID && wprs) {
       await prisma.usage.update({
         where: { id: queryID },
-        data: { wprs, compTitle },
+        data: { wprs, compTitle, processingTime },
       });
     }
   } catch (error) {
