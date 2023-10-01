@@ -29,6 +29,6 @@ model Usage {
     compUrl        String
     wprs           Float?
     compTitle      String?
-    processingTime String?
+    processingTime Float?
     error          String?
 }

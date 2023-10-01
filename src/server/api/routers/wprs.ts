@@ -46,7 +46,7 @@ async function getForecast(inputUrl: string) {
   const forecast = await calculateWprs(url);
 
   const endTime = performance.now();
-  const processingTime = ((endTime - startTime) / 1000).toFixed(2);
+  const processingTime = +((endTime - startTime) / 1000).toFixed(2);
 
   if ("error" in forecast) {
     try {
