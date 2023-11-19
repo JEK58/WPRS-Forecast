@@ -183,7 +183,7 @@ async function calculateWPRS(
   const compPilotsWprs: number[] = [];
 
   // sum ranking-points of the top 1/2 ranked participants
-  for (let i = 0; i < numPilots; i++) {
+  for (let i = 0; i < pilots.length; i++) {
     const element = pilots[i];
     if (!element) continue;
     const civl = element.civlID;
