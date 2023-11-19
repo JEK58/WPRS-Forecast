@@ -1,4 +1,5 @@
-<img width="773" alt="Screenshot 2023-06-02 at 18 43 20" src="https://github.com/JEK58/wprs-forecast/assets/35194489/5936e820-79d5-447f-8eeb-38d18ab89b31">
+
+<img width="832" alt="Screenshot 2023-11-19 at 12 25 06" src="https://github.com/JEK58/wprs-forecast/assets/35194489/8c7e2865-679b-42b2-b6e9-f9c89a238dff">
 
 # WPRS Forecast
 
