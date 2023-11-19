@@ -111,7 +111,9 @@ export default function Home(props: RecentQueriesProps) {
           <div className="mx-auto flex w-full flex-col space-y-4 p-6 md:max-w-3xl">
             {!data && (
               <Box>
-                <h2 className="text-lg font-bold">Link to Comp</h2>
+                <h2 className="text-lg font-bold dark:text-slate-200">
+                  Link to Comp
+                </h2>
                 <form
                   className="flex flex-col space-y-2 md:flex-row md:space-x-2 md:space-y-0"
                   onSubmit={handleSubmit}
@@ -182,9 +184,9 @@ export default function Home(props: RecentQueriesProps) {
                   {error?.message && <p>{error?.message}</p>}
                 </div>
                 {/* Notes */}
-                <div className="border-t border-gray-200 py-2">
+                <div className="border-t border-gray-200 py-2 dark:border-slate-600">
                   {/* <h3 className="text-lg font-semibold">Note:</h3> */}
-                  <ul className="list-outside list-disc px-4 text-gray-500">
+                  <ul className="list-outside list-disc px-4 text-gray-500 dark:text-inherit">
                     <li>This only works for paragliding competitions.</li>
                     <li>
                       Make sure to paste the correct link from the platform that

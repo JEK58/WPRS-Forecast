@@ -14,10 +14,12 @@ export const ForecastView: React.FC<Props> = ({ data, onResetCompData }) => {
     <>
       <div className="justify-content-between flex items-start ">
         <div className="flex-grow">
-          <h2 className="text-lg font-bold sm:text-2xl">{data.compTitle}</h2>
+          <h2 className="mb-2 text-lg font-bold dark:text-slate-200 sm:text-2xl">
+            {data.compTitle}
+          </h2>
           {data.compUrl && (
             <Link
-              className="flex items-center text-sm underline decoration-green-500 decoration-dotted hover:decoration-black"
+              className=" flex items-center text-sm underline decoration-green-500 decoration-dotted hover:decoration-black dark:text-slate-300"
               target="_blank"
               href={data.compUrl}
             >
@@ -32,13 +34,12 @@ export const ForecastView: React.FC<Props> = ({ data, onResetCompData }) => {
           onClick={() => onResetCompData()}
         >
           <svg
-            className="h-6 w-6 fill-current"
+            className="h-6 w-6 fill-current stroke-black dark:stroke-white"
             viewBox="0 0 20 20"
             xmlns="http://www.w3.org/2000/svg"
           >
             <path
               d="M6.4 6.4l7.2 7.2m0-7.2l-7.2 7.2"
-              stroke="black"
               strokeWidth="2"
               strokeLinecap="round"
               strokeLinejoin="round"

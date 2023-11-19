@@ -2,7 +2,7 @@ import Link from "next/link";
 
 export function Footer() {
   return (
-    <footer className="mt-auto w-full bg-gray-800 p-4 text-center text-sm text-white">
+    <footer className="mt-auto w-full bg-gray-800 p-4 text-center text-sm text-gray-300 dark:text-inherit">
       <div className="mx-auto max-w-7xl space-x-4 px-4 sm:px-6 lg:px-8">
         <Link
           className="hover:underline"

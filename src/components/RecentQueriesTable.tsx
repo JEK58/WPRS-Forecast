@@ -38,7 +38,7 @@ const RecentQueriesTable = ({
 
   const recentQueriesTableRows = uniqueQueries?.map((stat) => {
     return (
-      <TableRow key={stat.id}>
+      <TableRow key={stat.id} className="dark:border-slate-600">
         <TableCell>
           <a
             className="decoration-green-500 hover:underline hover:decoration-dotted"
@@ -83,11 +83,11 @@ const RecentQueriesTable = ({
 
   return (
     <>
-      <h2 className="text-lg font-bold">Recent Queries</h2>
+      <h2 className="text-lg font-bold dark:text-slate-200">Recent Queries</h2>
       <div className="w-full overflow-x-auto">
-        <Table className="w-full text-left">
+        <Table className="text-lef w-full">
           <TableHeader>
-            <TableRow>
+            <TableRow className="dark:border-slate-600">
               <TableHead></TableHead>
               <TableHead>WPRS</TableHead>
               <TableHead>Updated</TableHead>
