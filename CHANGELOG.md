@@ -1,5 +1,12 @@
-
 # Changelog
+
+### 2023-11-19
+
+**Improvements:**
+
+- UI facelift
+- New recent queries overview
+- Directly link to a comp forecast with this schema: `https://wprs-forecast.org?comp=COMP_URL`
 
 ### 2023-09-19
 
@@ -18,7 +25,7 @@
 
 **Improvements:**
 
-- Added the actual number of max allowed pilots in a comp to the forecast details. 
+- Added the actual number of max allowed pilots in a comp to the forecast details.
 
 ### 2023-06-01
 
@@ -47,7 +54,6 @@
 
 - WPRS list for each rank added
 
-
 ### 2023-04-24
 
 **Improvements:**
@@ -74,14 +80,12 @@
 
 - Automatic world ranking updating added
 
-
 ### 2023-03-22
 
 **Improvements:**
 
 - swissleague.ch added
 - CIVL lookup refined
-
 
 ### 2023-03-21
 
