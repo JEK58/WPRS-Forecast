@@ -1,27 +1,30 @@
+import { Input } from "@/components/ui/Input";
+import { Button } from "@/components/ui/Button";
+import Box from "@/components/ui/Box";
+import RecentQueriesTable from "@/components/RecentQueriesTable";
 import { Spinner } from "@/components/Spinner";
 import Head from "next/head";
-import { useEffect, useState, type ChangeEvent, useCallback } from "react";
-import { Footer } from "@/components/Footer";
+import { useEffect, useState, useCallback } from "react";
 import { isValidUrl } from "@/utils/check-valid-url";
-import { useRouter } from "next/router";
 import { api } from "@/utils/api";
-import RecentQueries from "@/components/RecentQueries";
 import { prisma } from "@/server/db";
 import { type InferGetServerSidePropsType } from "next";
 import { ForecastView } from "@/components/ForecastView";
-import { ClearButton } from "@/components/ClearButton";
+import { useRouter } from "next/router";
+import { Footer } from "@/components/Footer";
 
 export type RecentQueriesProps = InferGetServerSidePropsType<
   typeof getServerSideProps
 >;
 
-const Home = (props: RecentQueriesProps) => {
+export default function Home(props: RecentQueriesProps) {
   const [isLoading, setIsLoading] = useState(false);
-  const [url, setUrl] = useState<string>("");
-  const [isValidLink, setIsValidLink] = useState(false);
-  const utils = api.useContext();
+  const [url, setUrl] = useState("");
 
+  const utils = api.useUtils();
   const router = useRouter();
+
+  let isValidLink = isValidUrl(url);
 
   const { data, error, isFetching } = api.wprs.getWprs.useQuery(
     { url },
@@ -30,27 +33,46 @@ const Home = (props: RecentQueriesProps) => {
       cacheTime: 60 * 1000, // 1 minute
       refetchOnWindowFocus: false,
       onSuccess: () => setIsLoading(false),
+      onError: () => setIsLoading(false),
       retry: (_, error) => !(error.data?.code == "BAD_REQUEST"),
     },
   );
 
-  const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
-    try {
-      if (!isValidLink) return;
-      event.preventDefault();
-      await utils.wprs.invalidate();
-      setIsLoading(true);
-      await router.replace("/");
-    } catch (error) {
-      console.log(error);
-    }
+  // Handles the update button click in the recent queries table
+  const handleUpdate = async (url: string) => {
+    setUrl(url);
+    isValidLink = isValidUrl(url);
+    await handleSubmit();
   };
 
-  // Validate link on input change
+  const handleSubmit = async (event?: React.FormEvent<HTMLFormElement>) => {
+    event?.preventDefault();
+    await utils.wprs.invalidate().catch((error) => console.log(error));
+  };
+
   useEffect(() => {
-    if (isValidUrl(url)) setIsValidLink(true);
-    else setIsValidLink(false);
-  }, [url]);
+    if (isValidLink) setIsLoading(true);
+  }, [isValidLink]);
+
+  const handlePaste = async () => {
+    await navigator.clipboard
+      .readText()
+      .then((text) => setUrl(text))
+      .catch((error) => console.log(error));
+  };
+
+  async function clearInput() {
+    setUrl("");
+    setIsLoading(false);
+    await utils.wprs.invalidate().catch((error) => console.log(error));
+  }
+
+  const resetCompData = async () => {
+    await clearInput();
+
+    // Refresh props for updated recent queries
+    await router.replace(router.pathname);
+  };
 
   // Get comp from url
   useEffect(() => {
@@ -59,23 +81,6 @@ const Home = (props: RecentQueriesProps) => {
 
     if (comp) setUrl(comp);
   }, [router.asPath]);
-
-  function onUrlChange(event: ChangeEvent<HTMLInputElement>) {
-    setUrl(event.target.value);
-  }
-
-  async function clearInput() {
-    try {
-      setIsLoading(false);
-      setUrl("");
-      await router.replace("/");
-      await utils.wprs.invalidate();
-    } catch (error) {
-      console.log(error);
-    }
-  }
-
-  const resetCompData = () => setUrl("");
 
   // Autofocus input textbox
   const inputUrl = useCallback((inputElement: HTMLInputElement) => {
@@ -94,87 +99,134 @@ const Home = (props: RecentQueriesProps) => {
         />
         <link rel="icon" href="/favicon.ico" />
       </Head>
-
-      <main className="flex min-h-screen flex-col items-center bg-gradient-to-b from-[#2e026d] to-[#15162c]">
-        <div className="container flex flex-grow flex-col items-center gap-8 px-4 py-16">
-          <h1 className="text-5xl font-extrabold tracking-tight text-white sm:text-[5rem]">
-            WPRS <span className="text-primary">Forecast</span>{" "}
+      <div className="flex min-h-screen flex-col bg-gradient-to-r from-green-400 to-blue-500 pb-4">
+        <div className="flex flex-col items-center justify-center space-y-8 px-0 py-4 md:px-4">
+          <h1 className="mt-6 text-6xl font-bold text-white">
+            WPRS
+            <span className="text-green-300">Forecast</span>
             <span className="block text-right text-sm tracking-normal sm:inline sm:text-left">
               beta
             </span>
           </h1>
-          {!data && (
-            <div>
-              <form
-                className="mt-5 w-full max-w-3xl justify-center gap-3 md:flex"
-                onSubmit={handleSubmit}
-              >
-                <div className="mb-3 w-full md:mb-0 ">
-                  <div className="relative">
-                    {/* URL input */}
-                    <input
+          <div className="mx-auto flex w-full flex-col space-y-4 p-6 md:max-w-3xl">
+            {!data && (
+              <Box>
+                <h2 className="text-lg font-bold">Link to Comp</h2>
+                <form
+                  className="flex flex-col space-y-2 md:flex-row md:space-x-2 md:space-y-0"
+                  onSubmit={handleSubmit}
+                >
+                  <div className="relative flex-grow">
+                    <Input
                       autoFocus
                       ref={inputUrl}
                       type="text"
                       value={url}
-                      className="input h-12 w-full items-center space-x-3 rounded-lg border border-gray-300 bg-white px-4 text-left text-slate-600 shadow-sm ring-1 ring-slate-900/10 hover:ring-slate-300 focus:outline-none focus:ring-2 focus:ring-primary"
-                      onChange={onUrlChange}
-                      placeholder="Link to comp (CIVL, PWC, Airtribune or Swissleague)"
+                      onChange={(e) => setUrl(e.target.value)}
+                      className="h-12 w-full rounded-md border-2 border-gray-300 p-2 pr-10 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                      placeholder="CIVL, PWC, Airtribune or Swissleague"
                     />
-                    {/* Clear button */}
-                    {url.length > 0 && !isFetching && (
-                      <div onClick={clearInput}>
-                        <ClearButton />
-                      </div>
+                    {/* Paste/Clear button */}
+                    {url.length > 0 && !isFetching ? (
+                      <button
+                        onClick={clearInput}
+                        className="absolute right-2 top-1/2 -translate-y-1/2 transform rounded  px-2 py-1 font-bold text-gray-500 hover:text-green-500"
+                      >
+                        X
+                      </button>
+                    ) : (
+                      <Button
+                        className="absolute right-2 top-1/2 -translate-y-1/2 transform rounded bg-transparent px-2 py-1 font-bold text-gray-500 hover:text-gray-700"
+                        onClick={handlePaste}
+                      >
+                        <svg
+                          className=" h-4 w-4"
+                          fill="none"
+                          height="24"
+                          stroke="currentColor"
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          strokeWidth="2"
+                          viewBox="0 0 24 24"
+                          width="24"
+                          xmlns="http://www.w3.org/2000/svg"
+                        >
+                          <rect
+                            height="4"
+                            rx="1"
+                            ry="1"
+                            width="8"
+                            x="8"
+                            y="2"
+                          />
+                          <path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2" />
+                        </svg>
+                        <span className="sr-only">Paste from clipboard</span>
+                      </Button>
                     )}
                   </div>
-                  {/* Select queries */}
-                  {props.data.length > 0 && <RecentQueries {...props} />}
-                </div>
-                {/* Calculate button */}
-                <div className="w-full sm:w-auto md:w-40">
-                  <button
+                  <Button
+                    className="h-12 rounded bg-blue-500 px-4 py-2 font-bold text-white hover:bg-blue-700 md:self-center"
                     type="submit"
                     disabled={!isValidLink}
-                    className="flex h-12 w-full items-center justify-center rounded-md bg-indigo-600 px-4 py-2 font-medium text-white shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 enabled:hover:bg-indigo-700 md:h-full"
                   >
                     {isFetching && <Spinner />}{" "}
                     {isFetching ? "Calculating…" : "Calculate"}
-                  </button>
+                  </Button>
+                </form>
+                {/* Error message */}
+                <div className="text-sm text-red-500">
+                  {!isValidLink && url.length > 0 && (
+                    <p>This is not a valid link</p>
+                  )}
+                  {error?.message && <p>{error?.message}</p>}
                 </div>
-              </form>
-              <div className="mt-4 text-red-500">
-                {!isValidLink && url.length > 0 && (
-                  <p>This is not a valid link</p>
-                )}
-                {error?.message && <p>{error?.message}</p>}
-              </div>
-
-              <div className="mt-2 text-white md:max-w-3xl ">
-                <span className="text-primary">Note: </span>This only works for
-                paragliding competitions. Make sure to paste the correct link
-                from the platform that actually hosts the comp - even if
-                civlcomps.org lists them all.
-              </div>
-
-              <div className="mt-2 text-primary md:max-w-3xl">
-                ❗️PWC events may currently not give correct results or not work
-                at all. I have to adapt to the new events page.
-              </div>
-
-              <div className="mt-2 text-primary md:max-w-3xl">
-                It will not work for past events.
-              </div>
-            </div>
-          )}
-          {/* Forecast view */}
-          {data && <ForecastView data={data} onResetCompData={resetCompData} />}
+                {/* Notes */}
+                <div className="border-t border-gray-200 py-2">
+                  {/* <h3 className="text-lg font-semibold">Note:</h3> */}
+                  <ul className="list-outside list-disc px-4 text-gray-500">
+                    <li>This only works for paragliding competitions.</li>
+                    <li>
+                      Make sure to paste the correct link from the platform that
+                      actually hosts the comp - even if civlcomps.org lists them
+                      all.
+                    </li>
+                    <li>
+                      PWC events may currently not give correct results or not
+                      work at all. I have to adapt to the new events page.
+                    </li>
+                    <li>
+                      {" "}
+                      It will not work for past events. It&apos;s a forecast!
+                    </li>
+                  </ul>
+                </div>
+              </Box>
+            )}
+            {/* Forecast view */}
+            {data && (
+              <Box>
+                <ForecastView data={data} onResetCompData={resetCompData} />
+              </Box>
+            )}
+            {/* Recent queries */}
+            {props.recentQueries.length > 0 && !data && (
+              <Box>
+                <RecentQueriesTable
+                  recentQueries={props.recentQueries}
+                  onUpdateButtonClick={handleUpdate}
+                  disableUpdateButton={isLoading}
+                />
+              </Box>
+            )}
+          </div>
         </div>
+
         <Footer />
-      </main>
+      </div>
     </>
   );
-};
+}
 
 export const getServerSideProps = async () => {
   try {
@@ -182,16 +234,34 @@ export const getServerSideProps = async () => {
       orderBy: { createdAt: "desc" },
       where: {
         wprs: { not: null },
-        compTitle: { not: null },
+        NOT: [{ compTitle: null }, { compTitle: "" }],
       },
-      select: { wprs: true, compUrl: true, id: true, compTitle: true },
+      select: {
+        wprs: true,
+        compUrl: true,
+        id: true,
+        compTitle: true,
+        createdAt: true,
+      },
       take: 50,
     });
-    return { props: { data } };
+
+    const comps = data.map(({ createdAt, ...rest }) => {
+      const now = new Date();
+      const timeDiff = now.getTime() - createdAt.getTime(); // in milliseconds
+
+      // Calculate time differences in hours and days
+      const hoursDiff = Math.floor(timeDiff / (1000 * 60 * 60));
+
+      return {
+        ...rest,
+        ageInHours: hoursDiff,
+      };
+    });
+
+    return { props: { recentQueries: comps } };
   } catch (error) {
     console.log(error);
-    return { props: { data: [] } };
+    return { props: { recentQueries: [] } };
   }
 };
-
-export default Home;
