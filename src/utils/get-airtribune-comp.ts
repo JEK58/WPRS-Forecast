@@ -74,6 +74,8 @@ export async function getAirtribuneComp(url: string) {
 
 function isConfirmed(status?: string) {
   return (
-    status?.toLowerCase() == "confirmed" || status?.toLowerCase() == "wildcard"
+    status?.toLowerCase() == "confirmed" ||
+    status?.toLowerCase() == "wildcard" ||
+    status?.toLowerCase() == "team_pilot"
   );
 }
