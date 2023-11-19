@@ -101,9 +101,9 @@ export default function Home(props: RecentQueriesProps) {
       </Head>
       <div className="flex min-h-screen flex-col bg-gradient-to-r from-green-400 to-blue-500 pb-4">
         <div className="flex flex-col items-center justify-center space-y-8 px-0 py-4 md:px-4">
-          <h1 className="mt-6 text-6xl font-bold text-white">
+          <h1 className="mt-6 text-6xl font-bold text-white sm:text-center sm:text-[5rem] sm:leading-tight">
             WPRS
-            <span className="text-green-300">Forecast</span>
+            <span className="block text-green-300 sm:inline">Forecast</span>
             <span className="block text-right text-sm tracking-normal sm:inline sm:text-left">
               beta
             </span>
