@@ -125,7 +125,7 @@ export default function Home(props: RecentQueriesProps) {
                       type="text"
                       value={url}
                       onChange={(e) => setUrl(e.target.value)}
-                      className="h-12 w-full rounded-md border-2 border-gray-300 p-2 pr-10 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                      className="h-12 w-full rounded-md border-2 border-gray-300 p-2 pr-10 text-base focus:outline-none focus:ring-2 focus:ring-blue-500 "
                       placeholder="CIVL, PWC, Airtribune or Swissleague"
                     />
                     {/* Paste/Clear button */}
