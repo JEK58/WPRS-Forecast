@@ -8,6 +8,11 @@
 - New recent queries overview
 - Directly link to a comp forecast like this: `https://wprs-forecast.org?comp=COMP_URL`
 
+**Bugfixes**
+
+- Teampilots are now recognized as "confirmed" on airtribune.
+- Wrong WPRS calculation for the imaginary top 1xx confirmed pilots fixed.
+
 ### 2023-09-19
 
 **Improvements:**
