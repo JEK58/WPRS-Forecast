@@ -26,6 +26,7 @@ const RecentQueriesTable = ({
   const handleUpdate = (url: string) => {
     onUpdateButtonClick(url);
     animateScroll.scrollToTop({
+      delay: 100,
       duration: 500,
       smooth: true,
     });

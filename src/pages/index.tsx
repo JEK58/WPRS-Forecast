@@ -12,6 +12,7 @@ import { type InferGetServerSidePropsType } from "next";
 import { ForecastView } from "@/components/ForecastView";
 import { useRouter } from "next/router";
 import { Footer } from "@/components/Footer";
+import { Element, scroller, animateScroll } from "react-scroll";
 
 export type RecentQueriesProps = InferGetServerSidePropsType<
   typeof getServerSideProps
@@ -53,6 +54,23 @@ export default function Home(props: RecentQueriesProps) {
   useEffect(() => {
     if (isValidLink) setIsLoading(true);
   }, [isValidLink]);
+
+  // Used to scroll to the areas of interest
+  useEffect(() => {
+    if (data) {
+      scroller.scrollTo("forecastViewScroll", {
+        duration: 500,
+        delay: 100,
+        smooth: true,
+        offset: -50,
+      });
+    } else {
+      animateScroll.scrollToTop({
+        duration: 500,
+        smooth: true,
+      });
+    }
+  }, [data]);
 
   const handlePaste = async () => {
     await navigator.clipboard
@@ -208,6 +226,7 @@ export default function Home(props: RecentQueriesProps) {
             {/* Forecast view */}
             {data && (
               <Box>
+                <Element name="forecastViewScroll"></Element>
                 <ForecastView data={data} onResetCompData={resetCompData} />
               </Box>
             )}
