@@ -6,7 +6,7 @@
 
 - UI facelift
 - New recent queries overview
-- Directly link to a comp forecast with this schema: `https://wprs-forecast.org?comp=COMP_URL`
+- Directly link to a comp forecast like this: `https://wprs-forecast.org?comp=COMP_URL`
 
 ### 2023-09-19
 
