@@ -54,6 +54,7 @@ const RecentQueriesTable = ({
         <TableCell>{formatAge(stat.ageInHours)}</TableCell>
         <TableCell className="text-right">
           <Button
+            aria-label="Update"
             className="md:text-md rounded bg-green-500 px-2 py-1 font-bold text-white hover:bg-green-700 sm:text-xs"
             onClick={() => handleUpdate(stat.compUrl)}
             disabled={disableUpdateButton}
