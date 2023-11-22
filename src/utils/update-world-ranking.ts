@@ -34,6 +34,7 @@ export async function updateWorldRanking() {
     e4: string;
   }
 
+  XLSX.set_fs(fs);
   const workbook = XLSX.readFile(FILE_PATH);
   const sheetName = workbook.SheetNames[0];
   const worksheet = workbook.Sheets[sheetName ?? ""];
