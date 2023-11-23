@@ -9,18 +9,16 @@ on:
   pull_request:
     branches: ["main"]
 
-  
-
 jobs:
   build:
     runs-on: ubuntu-latest
 
-  env:
+    env:
       DATABASE_URL: ${{ secrets.DATABASE_URL }}
       API_KEY: ${{ secrets.API_KEY }}
       REDIS_URL: ${{ secrets.REDIS_URL }}
       OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
-      
+
     strategy:
       matrix:
         node-version: [18.x]
