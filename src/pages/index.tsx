@@ -226,6 +226,10 @@ export default function Home(props: RecentQueriesProps) {
                       all.
                     </li>
                     <li>
+                      The calculation will become more accurate as the
+                      competition date approaches.
+                    </li>
+                    <li>
                       PWC events may currently not give correct results or not
                       work at all. I have to adapt to the new events page.
                     </li>
