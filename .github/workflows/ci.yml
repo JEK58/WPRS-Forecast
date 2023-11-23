@@ -35,4 +35,4 @@ jobs:
         uses: supercharge/redis-github-action@1.7.0
 
       - run: yarn install
-      - run: yarn test
+      - run: yarn test:ci
