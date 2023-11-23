@@ -9,6 +9,12 @@ on:
   pull_request:
     branches: ["main"]
 
+  env:
+    DATABASE_URL: ${{ secrets.DATABASE_URL }}
+    API_KEY: ${{ secrets.API_KEY }}
+    REDIS_URL: ${{ secrets.REDIS_URL }}
+    OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+
 jobs:
   build:
     runs-on: ubuntu-latest
@@ -28,10 +34,8 @@ jobs:
         with:
           node-version: ${{ matrix.node-version }}
           cache: "npm"
-        env:
-          DATABASE_URL: ${{ secrets.DATABASE_URL }}
-          API_KEY: ${{ secrets.API_KEY }}
-          REDIS_URL: ${{ secrets.REDIS_URL }}
-          OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
-      - run: yarn install
-      - run: yarn test:ci
+
+      - name: Install dependencies and run tests
+        run: |
+          yarn install
+          yarn test:ci
