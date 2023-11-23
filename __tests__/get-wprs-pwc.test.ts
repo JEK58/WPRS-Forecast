@@ -1,4 +1,5 @@
 import { getWprs } from "@/utils/calculate-wprs";
+import { it, expect, describe } from "vitest";
 
 describe("Get WPRS for PWC comps", () => {
   it("should reject a comp that lies in the past", async () => {
@@ -16,12 +17,13 @@ describe("Get WPRS for PWC comps", () => {
     const res = await getWprs(url);
     if (!("error" in res)) expect(res.confirmed?.numPilots).toBe(97);
   }, 12000);
+  // Let's see how the new page develops
+  // it("should get the correct URL for the new events page", async () => {
+  //   const url = "https://pwca.events";
+  //   const res = await getWprs(url);
+  //   console.log("🚀 ~ res:", res);
 
-  it("should get the correct URL for the new events page", async () => {
-    const url = "https://pwca.events";
-    const res = await getWprs(url);
-
-    if ("all" in res) expect(res.confirmed?.numPilots).toBe(97);
-    else throw "No result found";
-  }, 12000);
+  //   if ("all" in res) expect(res.confirmed?.numPilots).toBe(97);
+  //   else throw "No result found";
+  // }, 12000);
 });

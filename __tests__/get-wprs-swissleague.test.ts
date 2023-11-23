@@ -1,4 +1,5 @@
 import { getWprs } from "@/utils/calculate-wprs";
+import { it, expect, describe } from "vitest";
 
 describe("Get WPRS for Swissleague comps", () => {
   it("should reject a comp that lies in the past", async () => {
