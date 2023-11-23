@@ -19,6 +19,9 @@ jobs:
         # See supported Node.js release schedule at https://nodejs.org/en/about/releases/
 
     steps:
+      - name: Start Redis
+        uses: supercharge/redis-github-action@1.7.0
+
       - uses: actions/checkout@v3
       - name: Use Node.js ${{ matrix.node-version }}
         uses: actions/setup-node@v3
@@ -30,9 +33,6 @@ jobs:
           API_KEY: ${{ secrets.API_KEY }}
           REDIS_URL: ${{ secrets.REDIS_URL }}
           OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
-      - run: echo $DATABASE_URL
-      - name: Start Redis
-        uses: supercharge/redis-github-action@1.7.0
 
       - run: yarn install
       - run: yarn test:ci
