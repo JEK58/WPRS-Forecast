@@ -1,4 +1,5 @@
 import { getWprs } from "@/utils/calculate-wprs";
+import { getAirtribuneComp } from "@/utils/get-airtribune-comp";
 
 describe("Get WPRS for Airtribune comp", () => {
   it("should reject a comp that lies in the past", async () => {
@@ -14,7 +15,9 @@ describe("Get WPRS for Airtribune comp", () => {
   it("should find the correct amount of max pilots", async () => {
     const expectedNumberOfMaxPilots = 80;
     const url = "https://airtribune.com/pre-world-cup-reunion-island-2023/info";
-    const res = await getWprs(url);
+    const res = await getAirtribuneComp(url);
+
+    if (!res) throw new Error("Unexpected result");
     if ("maxPilots" in res)
       expect(res.maxPilots).toBe(expectedNumberOfMaxPilots);
     else throw new Error("Unexpected result");
