@@ -273,6 +273,7 @@ export const getServerSideProps = async () => {
       },
       select: {
         wprs: true,
+        potentialWprs: true,
         compUrl: true,
         id: true,
         compTitle: true,

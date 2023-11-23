@@ -50,7 +50,15 @@ const RecentQueriesTable = ({
             {stat.compTitle ?? stat.compUrl}
           </a>
         </TableCell>
-        <TableCell>{stat.wprs}</TableCell>
+        <TableCell className="font-bold text-green-500">
+          {stat.wprs}
+          {stat.potentialWprs && (
+            <span className="font-normal text-gray-400">
+              {" "}
+              | {stat.potentialWprs}
+            </span>
+          )}
+        </TableCell>
         <TableCell>{formatAge(stat.ageInHours)}</TableCell>
         <TableCell className="text-right">
           <Button

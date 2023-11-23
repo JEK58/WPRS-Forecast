@@ -28,6 +28,7 @@ model Usage {
     updatedAt      DateTime @updatedAt
     compUrl        String
     wprs           Float?
+    potentialWprs  Float?
     compTitle      String?
     processingTime Float?
     error          String?
