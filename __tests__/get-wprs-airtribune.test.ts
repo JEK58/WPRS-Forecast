@@ -1,6 +1,5 @@
 import { getWprs } from "@/utils/calculate-wprs";
 import { getAirtribuneComp } from "@/utils/get-airtribune-comp";
-import { it, expect, describe } from "vitest";
 
 describe("Get WPRS for Airtribune comp", () => {
   it("should reject a comp that lies in the past", async () => {

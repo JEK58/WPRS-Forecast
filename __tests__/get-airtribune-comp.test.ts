@@ -1,5 +1,4 @@
 import { getAirtribuneComp } from "@/utils/get-airtribune-comp";
-import { it, expect, describe } from "vitest";
 
 describe("Airtribune", () => {
   it("finds the correct comp date", async () => {

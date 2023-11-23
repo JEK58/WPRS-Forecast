@@ -44,7 +44,8 @@ export async function getStartAndEndDateFromRange(input?: string) {
           role: "user",
           content:
             "Please provide the start and end date as iso strings without time just date from the given range:" +
-            input,
+            input +
+            "Always interpret dates as UTC, ignore any location information.",
         },
       ],
     });

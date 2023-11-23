@@ -1,6 +1,5 @@
 import { getCivlcompsComp } from "@/utils/get-civl-comp";
 import { getCivlIds, getCivlCookies } from "@/utils/get-civl-ids";
-import { it, expect } from "vitest";
 // import { env } from "@/env.mjs";
 // import Redis from "ioredis";
 
