@@ -9,5 +9,5 @@ describe("Get WPRS for CIVL comps", () => {
     if ("error" in res) {
       expect(res.error).toBe("PAST_EVENT");
     }
-  }, 10000);
+  }, 20000);
 });

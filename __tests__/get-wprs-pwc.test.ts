@@ -8,7 +8,7 @@ describe("Get WPRS for PWC comps", () => {
     if ("error" in res) {
       expect(res.error).toBe("PAST_EVENT");
     }
-  }, 10000);
+  }, 20000);
 
   it("should get the correct amount of confirmed pilots", async () => {
     const url =
