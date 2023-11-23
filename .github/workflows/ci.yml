@@ -33,6 +33,5 @@ jobs:
           API_KEY: ${{ secrets.API_KEY }}
           REDIS_URL: ${{ secrets.REDIS_URL }}
           OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
-      - run: echo "The DATABASE_URL is ${{ secrets.DATABASE_URL }}"
       - run: yarn install
       - run: yarn test:ci
