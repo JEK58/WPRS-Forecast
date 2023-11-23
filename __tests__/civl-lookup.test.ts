@@ -1,9 +1,4 @@
 import { getCivlIds, getCivlCookies } from "@/utils/get-civl-ids";
-import { env } from "@/env.mjs";
-import Redis from "ioredis";
-
-const redis = new Redis({ host: env.REDIS_URL });
-beforeAll(async () => await redis.flushall());
 
 it("should find the correct CIVL ID for a pilot", async () => {
   // Perfomance timer
