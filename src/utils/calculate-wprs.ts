@@ -169,13 +169,13 @@ async function calculateWPRS(
 
   const baseNumPilots = maxPilots || pilots.length;
   const numPilots = Math.min(pilots.length, baseNumPilots);
-  let Pq_srtp = 0;
+
+  let Pq_srtp = 0; //sum ranking-points of the top 1/2 ranked participants
 
   const topPilots = await prisma.ranking.findMany({
     orderBy: [{ rank: "asc" }],
     take: numPilots + 10,
   });
-  // sum ranking-points if they had been the top-ranked pilots of the world
   for (let i = 0; i < numPilots / 2; i++) {
     if (topPilots.length) Pq_srtp += topPilots[i]?.points ?? 0;
   }

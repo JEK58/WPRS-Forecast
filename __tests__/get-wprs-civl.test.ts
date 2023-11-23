@@ -16,6 +16,7 @@ describe("Get WPRS for CIVL comps", () => {
 
     expect(res.pilots.length).toBe(expectedNumOfPilots);
   }, 30000);
+
   it("should reject a comp that lies in the past", async () => {
     const url = "https://civlcomps.org/event/german-open-2023";
     const res = await getWprs(url);
