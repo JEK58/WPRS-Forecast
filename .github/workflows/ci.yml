@@ -30,7 +30,7 @@ jobs:
           API_KEY: ${{ secrets.API_KEY }}
           REDIS_URL: ${{ secrets.REDIS_URL }}
           OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
-
+      - run: echo $DATABASE_URL
       - name: Start Redis
         uses: supercharge/redis-github-action@1.7.0
 
