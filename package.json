@@ -9,7 +9,7 @@
     "postinstall": "prisma generate",
     "lint": "next lint",
     "test": "TZ=UTZ jest --watch",
-    "test:ci": "TZ=UTZ jest --ci --silent",
+    "test:ci": "TZ=UTZ jest --ci --silent --detectOpenHandles",
     "start": "next start"
   },
   "dependencies": {
