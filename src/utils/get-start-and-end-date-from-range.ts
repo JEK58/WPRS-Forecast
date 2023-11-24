@@ -69,5 +69,7 @@ export async function getStartAndEndDateFromRange(input?: string) {
   } catch (error) {
     console.log(error);
     return;
+  } finally {
+    await redis.quit();
   }
 }
