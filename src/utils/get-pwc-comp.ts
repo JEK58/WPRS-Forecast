@@ -20,7 +20,7 @@ type SubscriptionStatusKeys =
   | "cancelled"
   | "late_cancelled";
 
-export interface PilotDetails {
+interface PilotDetails {
   season_number?: number | string;
   pilot?: string;
   country?: string;

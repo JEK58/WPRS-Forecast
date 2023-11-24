@@ -1,4 +1,4 @@
-import type { Pilot } from "@/utils/calculate-wprs";
+import type { Pilot } from "@/types/common";
 import { load } from "cheerio";
 import { evalMaxPilots } from "./eval-max-pilots";
 import { getStartAndEndDateFromRange } from "./get-start-and-end-date-from-range";

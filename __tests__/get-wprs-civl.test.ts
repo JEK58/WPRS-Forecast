@@ -1,4 +1,4 @@
-import { getWprs } from "@/utils/calculate-wprs";
+import { getForecast } from "@/utils/get-forecast";
 import { getCivlcompsComp } from "@/utils/get-civl-comp";
 
 describe("Get WPRS for CIVL comps", () => {
@@ -19,7 +19,7 @@ describe("Get WPRS for CIVL comps", () => {
 
   it("should reject a comp that lies in the past", async () => {
     const url = "https://civlcomps.org/event/german-open-2023";
-    const res = await getWprs(url);
+    const res = await getForecast(url);
 
     expect(res).toHaveProperty("error");
     if ("error" in res) {

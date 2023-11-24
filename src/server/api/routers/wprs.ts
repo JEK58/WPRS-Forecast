@@ -3,7 +3,7 @@ import { createTRPCRouter, publicProcedure } from "@/server/api/trpc";
 import { prisma } from "@/server/db";
 import { sanitizeUrl } from "@braintree/sanitize-url";
 import { isValidUrl } from "@/utils/check-valid-url";
-import { getWprs as calculateWprs } from "@/utils/calculate-wprs";
+import { getForecast as calculateWprs } from "@/utils/get-forecast";
 import { TRPCError } from "@trpc/server";
 
 export const wprsRouter = createTRPCRouter({

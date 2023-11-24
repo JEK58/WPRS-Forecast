@@ -1,10 +1,10 @@
-import { getWprs } from "@/utils/calculate-wprs";
+import { getForecast } from "@/utils/get-forecast";
 import { getAirtribuneComp } from "@/utils/get-airtribune-comp";
 
 describe("Get WPRS for Airtribune comp", () => {
   it("should reject a comp that lies in the past", async () => {
     const url = "https://airtribune.com/palz-alsace-open-2023/results";
-    const res = await getWprs(url);
+    const res = await getForecast(url);
 
     expect(res).toHaveProperty("error");
     if ("error" in res) {

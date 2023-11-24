@@ -6,13 +6,13 @@ const openai = new OpenAI({
   apiKey: env.OPENAI_API_KEY,
 });
 
-const redis = new Redis({ host: env.REDIS_URL });
 interface RedisCompDate {
   startDate: string;
   endDate: string;
 }
 
 export async function getStartAndEndDateFromRange(input?: string) {
+  const redis = new Redis({ host: env.REDIS_URL });
   if (!input) return;
 
   // Check cache before asking GPT-3
