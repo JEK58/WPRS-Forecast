@@ -2,7 +2,7 @@ import { load } from "cheerio";
 import { CIVL_PLACEHOLDER_ID } from "@/utils/get-civl-ids";
 import { evalMaxPilots } from "./eval-max-pilots";
 import { getStartAndEndDateFromRange } from "./get-start-and-end-date-from-range";
-import { type Pilot } from "./calculate-wprs";
+import { type Pilot } from "@/types/common";
 
 export async function getCivlcompsComp(url: string) {
   const response = await fetch(url);

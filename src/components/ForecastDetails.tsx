@@ -1,4 +1,4 @@
-import { type Forecast } from "@/utils/calculate-wprs";
+import { type Forecast } from "@/types/common";
 
 export function ForecastDetails({ data }: { data: Forecast }) {
   const listClassName = "text-gray-500 dark:text-gray-300";

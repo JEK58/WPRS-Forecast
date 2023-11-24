@@ -10,6 +10,7 @@ datasource db {
     url      = env("DATABASE_URL")
 }
 
+// TODO: Type the gender column "F" | "M"
 model Ranking {
     id        Int      @id
     createdAt DateTime @default(now())

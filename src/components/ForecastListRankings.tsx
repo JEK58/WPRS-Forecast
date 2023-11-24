@@ -1,4 +1,4 @@
-import { type Forecast } from "@/utils/calculate-wprs";
+import { type Forecast } from "@/types/common";
 
 export function ListRankings({ data }: { data: Forecast }) {
   const listRanking = () => {
