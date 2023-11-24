@@ -109,7 +109,6 @@ async function getPq_srp(pilots: Pilot[], numberOfPilots: number) {
 
     compPilotsWprs.push(pilotRanking?.points ?? 0);
   }
-  await redis.quit();
   return compPilotsWprs
     .sort((a, b) => b - a)
     .slice(0, numberOfPilots / 2)

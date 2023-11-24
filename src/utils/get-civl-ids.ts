@@ -44,8 +44,6 @@ export async function getCivlIds(listOfPilots: { name: string }[]) {
       } catch (error) {
         console.log(error);
         return map.set(name, CIVL_PLACEHOLDER_ID);
-      } finally {
-        await redis.quit();
       }
     }),
   );

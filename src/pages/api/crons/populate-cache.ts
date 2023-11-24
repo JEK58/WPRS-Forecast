@@ -33,7 +33,6 @@ async function populateCache() {
   ]);
 
   await redis.mset(...keyValuePairs.flat());
-  await redis.quit();
 }
 
 export default handler;
