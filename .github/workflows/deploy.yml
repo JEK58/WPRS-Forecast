@@ -1,8 +1,13 @@
 name: Deploy WPRS-Forecast
 on:
   push:
-    branches:
-      - main
+    # branches:
+    #   - main
+  workflow_run:
+    workflows: ["ci"]
+    branches: [main]
+    types:
+      - completed
 
 jobs:
   build:
