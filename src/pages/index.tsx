@@ -126,6 +126,7 @@ export default function Home(props: RecentQueriesProps) {
           name="description"
           content="Enables you to forecast the potential world ranking points for paragliding competitions."
         />
+        <meta name="theme-color" content="#4ade80" />
         <link rel="icon" href="/favicon.ico" />
       </Head>
       <div className="flex min-h-screen flex-col bg-gradient-to-r from-green-400 to-blue-500 pb-4">
