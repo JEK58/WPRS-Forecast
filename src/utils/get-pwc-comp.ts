@@ -1,6 +1,7 @@
 import { getCivlIds, CIVL_PLACEHOLDER_ID } from "@/utils/get-civl-ids";
 import { load } from "cheerio";
 import { getStartAndEndDateFromRange } from "./get-start-and-end-date-from-range";
+import { writeFileSync } from "fs";
 
 interface PWCApiResponse {
   subscriptions?: PilotDetails[];

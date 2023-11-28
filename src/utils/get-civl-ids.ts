@@ -3,6 +3,10 @@ import Redis from "ioredis";
 import { env } from "@/env.mjs";
 import { CookieJar } from "tough-cookie";
 import { load } from "cheerio";
+import { _findPilot, findPilot } from "./find-ranking";
+import { prisma } from "@/server/db";
+import Fuse from "fuse.js";
+import { Ranking } from "@prisma/client";
 
 const redis = new Redis({ host: env.REDIS_URL });
 
@@ -21,24 +25,73 @@ export async function getCivlIds(listOfPilots: { name: string }[]) {
   // Get CIVL session cookie
   const cookies = await getCivlCookies();
   if (!cookies) throw new Error("No cookies found");
-
   const map = new Map<string, number>();
+
+  // New method
+  // Perfomance timer
+  // const startTime = performance.now();
+  // console.log("⏱️ ~ ", "Timer started");
+
+  // const names = listOfPilots.map((p) => p.name.toLocaleLowerCase());
+  // console.log("🚀 ~ names:", names.length);
+
+  // const pilots = await prisma.ranking.findMany({
+  //   where: {
+  //     name: { in: names, mode: "insensitive" },
+  //   },
+  // });
+
+  // const missing = names.filter(
+  //   (name) => !pilots.find((p) => p.name.toLocaleLowerCase() === name),
+  // );
+  // console.log("🚀 ~ missing:", missing.length);
+  // console.log("🚀 ~ pilots:", pilots.length);
+
+  // // for (const pilot of missing) {
+  // //   const res = fuse.search(
+  // //     {
+  // //       $and: [{ name: pilot }, { name: reverseFirstAndLast(pilot) }],
+  // //     },
+  // //     { limit: 1 },
+  // //   );
+
+  // //   const foo = res[0]?.item;
+  // //   if (foo) {
+  // //     map.set(pilot, foo.id);
+  // //     // console.log(foo.name);
+  // //   } else console.log("⛔️", pilot);
+  // // }
+
+  // for (const pilot of missing) {
+  //   const res = await _findPilot(pilot);
+  //   if (res) {
+  //     map.set(pilot, res.id);
+  //   } else console.log("⛔️", pilot);
+  // }
+
+  // console.log("🚀 ~ map:", map.size);
+  // // Performance Timer
+  // const endTime = performance.now();
+  // const elapsedTime = endTime - startTime;
+  // console.log("⏱️ ~ ", (elapsedTime / 1000).toFixed(2), "seconds");
 
   await Promise.all(
     listOfPilots.map(async (pilot) => {
       const name = pilot.name;
-      const redisKey = `name:${name.toLowerCase()}`;
+      // const redisKey = `name:${name.toLowerCase()}`;
 
       try {
-        // Check cache
-        const cachedId = await redis.get(redisKey);
-        if (cachedId) return map.set(name, +cachedId);
+        // // Check cache
+        // const cachedId = await redis.get(redisKey);
+        // if (cachedId) return map.set(name, +cachedId);
 
         // No cache hit => query CIVL
-        const civlId = await lookUpCivlId(pilot.name, cookies);
+        const res = await lookUpCivlId(pilot.name, cookies);
+
+        const civlId = res ?? CIVL_PLACEHOLDER_ID;
 
         // Cache result
-        if (civlId != CIVL_PLACEHOLDER_ID) await redis.set(redisKey, civlId);
+        // if (civlId != CIVL_PLACEHOLDER_ID) await redis.set(redisKey, civlId);
 
         return map.set(name, civlId);
       } catch (error) {
@@ -144,6 +197,8 @@ export async function lookUpCivlId(name: string, cookies: Cookies) {
         );
       return bestMatch.id;
     }
+    console.log(name, data[0]?.text);
+
     if (data[0]) return data[0].id;
     else return CIVL_PLACEHOLDER_ID;
   } catch (error) {
@@ -209,4 +264,21 @@ export async function getCivlCookies() {
   } catch (error) {
     console.log(error);
   }
+}
+
+function reverseFirstAndLast(inputString: string): string {
+  const words: string[] = inputString.split(" ");
+
+  if (words.length >= 2) {
+    const temp = words[0];
+
+    if (temp) {
+      const last = words[words.length - 1];
+      if (last) words[0] = last;
+
+      words[words.length - 1] = temp;
+    }
+  }
+
+  return words.join(" ");
 }

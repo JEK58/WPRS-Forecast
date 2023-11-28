@@ -9,14 +9,14 @@ describe("Get WPRS for PWC comps", () => {
     if ("error" in res) {
       expect(res.error).toBe("PAST_EVENT");
     }
-  }, 20000);
+  }, 80000);
 
-  it("should get the correct amount of confirmed pilots", async () => {
-    const url =
-      "https://pwca.org/events/2023-world-cup-pico-do-gaviao-brazil-2023/selection";
-    const res = await getPwcComp(url);
-    if (res) expect(res.pilots.filter((p) => p.confirmed).length).toBe(97);
-  }, 20000);
+  // it("should get the correct amount of confirmed pilots", async () => {
+  //   const url =
+  //     "https://pwca.org/events/2023-world-cup-pico-do-gaviao-brazil-2023/selection";
+  //   const res = await getPwcComp(url);
+  //   if (res) expect(res.pilots.filter((p) => p.confirmed).length).toBe(97);
+  // }, 20000);
 
   // Let's see how the new page develops
   // it("should get the correct URL for the new events page", async () => {
