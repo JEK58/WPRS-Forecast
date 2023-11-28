@@ -67,11 +67,11 @@ export async function updateWorldRanking() {
     .map((el) => {
       return newEntry.parse({
         id: el["CIVL ID"],
-        name: el.Name,
-        gender: el.Gender,
+        name: el.Name.trim(),
+        gender: el.Gender.trim(),
         points: el.Points,
         rank: el.Rank,
-        nation: el.Nation,
+        nation: el.Nation.trim(),
         date: worldRankingDate,
       });
     });
