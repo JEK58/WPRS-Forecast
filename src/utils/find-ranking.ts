@@ -1,159 +1,160 @@
 import { prisma } from "@/server/db";
 import { type Ranking } from "@prisma/client";
-import Fuse from "fuse.js";
-import { writeFileSync } from "fs";
+import MiniSearch from "minisearch";
+import algoliasearch from "algoliasearch";
+import Redis from "ioredis";
+import { env } from "@/env.mjs";
+import { normalizeName } from "./normalize-name";
 
+export const CIVL_PLACEHOLDER_ID = 99999;
+
+const redis = new Redis({ host: env.REDIS_URL });
+
+/**
+ * Looks up the CIVL ID for each pilot in the list.
+ * As some names will not have exact matches due to special
+ * characters like "é", typos, reversed order of firstname/lastname, or optional middlenames there are
+ * multiple steps involved:
+ *
+ * Check if...
+ * 1. the pilot is already in the cache
+ * 2. the pilot can be found in the DB
+ * 3. the pilot can be found fuzzysearch
+ * 4. the pilot can be found with algolia
+ *
+ * If a pilot still can't be found, a placeholder value is used for the CIVL ID.
+ */
 export async function getCivlIds(pilots: string[]) {
-  const map = new Map<string, number>();
+  const numberOfPilots = pilots.length;
+  const searchQueue = new Set(pilots.map((p) => p.toLowerCase()));
+  const civlIds = new Map<string, number>();
 
-  console.log("🚀 ~ Number of pilots:", pilots.length);
+  /**
+   * Lookup pilots in cache
+   */
 
-  const res = await prisma.ranking.findMany({
-    where: {
-      name: { in: pilots, mode: "insensitive" },
-    },
+  const search = [...searchQueue];
+  const redisPromises = search.map((pilot) => redis.get(`name:${pilot}`));
+  const cachedCivlIds = await Promise.all(redisPromises);
+
+  cachedCivlIds.forEach((id, index) => {
+    const name = search[index];
+    if (id && name) {
+      civlIds.set(name, Number(id));
+      searchQueue.delete(name);
+    }
   });
 
-  console.log("🚀 ~ Number of pilots found in DB:", res.length);
+  const missingInCache = searchQueue.size;
 
-  const pilotsNotFound = pilots.filter(
-    (name) => !res.find((p) => p.name.toLowerCase() === name.toLowerCase()),
-  );
+  /**
+   * Lookup pilots in DB
+   */
 
-  writeFileSync("pilotsNotFound.json", JSON.stringify(pilotsNotFound));
+  const pilotsFoundDb = await prisma.ranking.findMany({
+    where: {
+      name: {
+        in: [...searchQueue],
+        mode: "insensitive",
+      },
+    },
+    // take: searchQueue.size,
+    // distinct: ["name"],
+  });
 
-  console.log("🚀 ~ Number of pilots not found in DB:", pilotsNotFound.length);
+  for (const pilot of pilotsFoundDb) {
+    const name = pilot.name.toLowerCase();
+    civlIds.set(name, pilot.id);
+    searchQueue.delete(name);
 
-  //   Find missing pilots locally with Fuse.js
-
-  const options = {
-    includeScore: true,
-    keys: ["name"],
-  };
-  const myIndex = Fuse.createIndex(options.keys, res);
-
-  const fuse = new Fuse(res, options, myIndex);
-
-  const fakeList = ["Stephan Schöpe", "Schöpe Stephan", "David Polo"];
-
-  for (const pilot of pilotsNotFound) {
-    const res = findPilotWithFuse(fuse, pilot);
-
-    if (res) {
-      //   console.log(pilot, res.name);
-
-      map.set(pilot, res.id);
-      // console.log(foo.name);
-    } //else console.log(pilot, "not found with fuse");
+    await addToCache(name, pilot.id);
   }
 
-  console.log("🚀 ~ Pilots found with fuse:", map.size);
+  const missingInDB = searchQueue.size;
 
-  //   Find missing pilots with levenshtein distance
+  /**
+   * Find locally with fuzzysearch
+   */
+  // TODO: Only load and index if there are pilots left to search
+  const worldRanking = await prisma.ranking.findMany();
 
-  //   const foo = await findPilotsInDb(pilotsNotFound);
-  //   console.log("🚀 ~ Pilots found with levenshtein:", foo.length);
-}
+  const miniSearch = new MiniSearch({
+    fields: ["name"],
+    storeFields: ["id", "name"],
+    searchOptions: { fuzzy: 0.2 },
+  });
 
-export async function findPilotsInDb(names: string[]) {
-  const res = await prisma.$transaction(
-    names.map((name) => {
-      const reversed = reverseFirstAndLast(name);
-      return prisma.$queryRaw<Ranking[]>`
-        SELECT
-          *,
-          (distance1 + distance2) AS total_distance
-          FROM (
-              SELECT
-                  *,
-                  levenshtein(lower("name"), lower(${name})) AS distance1,
-                  levenshtein(lower("name"), lower(${reversed})) AS distance2
-              FROM
-                  "Ranking"
-          ) AS distances
-          ORDER BY
-          total_distance ASC
-          LIMIT 1;
-          `;
-    }),
-  );
+  // Index all documents
+  miniSearch.addAll(worldRanking);
 
-  return res.map((r) => r[0]);
-}
+  for (const pilot of [...searchQueue]) {
+    const res = miniSearch.search(pilot, {
+      combineWith: "AND",
+    })[0] as unknown as Pick<Ranking, "id" | "name">;
 
-export async function findPilotInDb(name: string) {
-  const reversed = reverseFirstAndLast(name);
-  const res = await prisma.$queryRaw<Ranking[]>`
-  SELECT
-    *,
-    (distance1 + distance2) AS total_distance
-    FROM (
-        SELECT
-            *,
-            levenshtein(lower("name"), lower(${name})) AS distance1,
-            levenshtein(lower("name"), lower(${reversed})) AS distance2
-        FROM
-            "Ranking"
-    ) AS distances
-    ORDER BY
-    total_distance ASC
-    LIMIT 1;
-    `;
-  if (res) return res[0];
-}
-
-function findPilotWithFuse(fuse: Fuse<Ranking>, name: string) {
-  const res = fuse.search(
-    {
-      $and: [{ name }, { name: reverseFirstAndLast(name) }],
-    },
-    { limit: 1 },
-  );
-  if (res[0]?.score && res[0]?.score > 0.3) return;
-  return res[0]?.item;
-}
-
-export function findPilot(name: string, pilots: Ranking[]) {
-  const options = {
-    includeScore: true,
-    keys: ["name"],
-  };
-
-  const fuse = new Fuse(pilots, options);
-
-  //   // Perfomance timer
-  //   const startTime = performance.now();
-  //   console.log("⏱️ ~ ", "Timer started");
-  const res = fuse.search(
-    {
-      $and: [{ name }, { name: reverseFirstAndLast(name) }],
-    },
-    { limit: 1 },
-  );
-
-  //   // Perfomance Timer
-  //   const endTime = performance.now();
-  //   const elapsedTime = endTime - startTime;
-  //   console.log("⏱️ ~ ", (elapsedTime / 1000).toFixed(2), "seconds");
-  //   console.log("🚀 ~ result:", result1);
-  //   console.log("🚀 ~ result:", result2);
-
-  return res[0]?.item; //result[0]?.item;
-}
-
-function reverseFirstAndLast(inputString: string): string {
-  const words: string[] = inputString.split(" ");
-
-  if (words.length >= 2) {
-    const temp = words[0];
-
-    if (temp) {
-      const last = words[words.length - 1];
-      if (last) words[0] = last;
-
-      words[words.length - 1] = temp;
+    if (res) {
+      civlIds.set(pilot, res.id);
+      searchQueue.delete(pilot);
+      await addToCache(pilot, res.id);
     }
   }
 
-  return words.join(" ");
+  const missingInMinisearch = searchQueue.size;
+
+  /**
+   * Find using algolia
+   */
+
+  //   const client = algoliasearch(env.ALGOLIA_API_KEY, env.ALGOLIA_API_KEY);
+
+  //   const index = client.initIndex("civl_ranking");
+  //   const promises = [...searchQueue].map((pilot) =>
+  //     index.search<Ranking>(pilot),
+  //   );
+  //   const algoliaResults = await Promise.all(promises);
+
+  //   for (const res of algoliaResults) {
+  //     const civl = res.hits[0]?.id;
+
+  //     if (civl) {
+  //       civlIds.set(res.query, civl);
+  //       searchQueue.delete(res.query);
+  //       await addToCache(res.query, civl);
+  //     }
+  //   }
+
+  const missingInAlgolia = searchQueue.size;
+
+  //   Statistics
+  const percentageNotFound = +(
+    (searchQueue.size / numberOfPilots) *
+    100
+  ).toFixed(2);
+
+  const statistics = {
+    numberOfPilots,
+    missingInCache,
+    missingInDB,
+    missingInMinisearch,
+    missingInAlgolia,
+    percentageNotFound,
+  };
+
+  /**
+   * Add pilots still not found to cache with placeholder civl id
+   */
+
+  for (const pilot of [...searchQueue]) {
+    await addToCache(pilot, CIVL_PLACEHOLDER_ID);
+    civlIds.set(pilot, CIVL_PLACEHOLDER_ID);
+  }
+
+  return { civlIds, statistics };
+}
+
+async function addToCache(name: string, civl: number) {
+  const redisKey = `name:${name.toLowerCase()}`;
+  await redis.set(redisKey, civl).catch((err) => {
+    console.log(err);
+  });
 }

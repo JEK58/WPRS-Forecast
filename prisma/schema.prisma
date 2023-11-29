@@ -12,15 +12,16 @@ datasource db {
 
 // TODO: Type the gender column "F" | "M"
 model Ranking {
-    id        Int      @id
-    createdAt DateTime @default(now())
-    updatedAt DateTime @updatedAt
-    name      String
-    gender    String
-    points    Float
-    rank      Int
-    nation    String
-    date      DateTime
+    id             Int      @id
+    createdAt      DateTime @default(now())
+    updatedAt      DateTime @updatedAt
+    name           String
+    normalizedName String?
+    gender         String
+    points         Float
+    rank           Int
+    nation         String
+    date           DateTime
 }
 
 model Usage {
