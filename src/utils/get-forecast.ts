@@ -82,6 +82,7 @@ export async function getForecast(
       all: await calculateWPRS(comp.pilots, comp.maxPilots),
       confirmed: await calculateWPRS(comp.pilots.filter((p) => p.confirmed)),
       compUrl: url,
+      meta: comp.statistics,
     };
   }
 
@@ -104,6 +105,7 @@ export async function getForecast(
       all: await calculateWPRS(comp.pilots, comp.maxPilots),
       confirmed: await calculateWPRS(comp.pilots.filter((p) => p.confirmed)),
       compUrl: url,
+      meta: comp.statistics,
     };
   }
   return { error: "UNSUPPORTED_PLATFORM" };
@@ -149,8 +151,10 @@ async function generatePwcCompUrl(url: string) {
   const h2 = $("h2")
     .eq(0)
     .text()
+    .trim()
     .toLocaleLowerCase()
     .replaceAll(" ", "-")
+    .replaceAll("-–-", "-") // - vs –
     .replaceAll(",", "");
 
   const year = new Date().getFullYear();
