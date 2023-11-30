@@ -39,7 +39,7 @@ describe("Lookup pilots by name", () => {
   it("should find pilot without umlauts", async () => {
     const name = "Stephan Schoepe";
     const expectedPilotCivl = 39705;
-    const res = await getCivlIds([name], DISABLE_ALGOLIA);
+    const res = await getCivlIds([name]);
 
     expect(res?.civlIds.get(name.toLowerCase())).toBe(expectedPilotCivl);
   });

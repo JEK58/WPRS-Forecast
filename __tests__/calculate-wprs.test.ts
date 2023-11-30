@@ -1,5 +1,8 @@
 import { calculateWPRS } from "@/utils/calculate-wprs";
 
+// Use test database url with dummy data only for this test
+process.env.DATABASE_URL = process.env.TEST_DATABASE_URL;
+
 describe("Calculate WPRS", () => {
   const timeout = 200000;
   it(
