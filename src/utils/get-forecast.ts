@@ -22,8 +22,8 @@ export async function getForecast(
     const compUrl = generateAirtribuneCompUrl(url);
     const comp = await getAirtribuneComp(compUrl);
 
-    if (!comp || comp?.pilots.length < MIN_PILOTS)
-      return { error: "NOT_ENOUGH_PILOTS" };
+    if (!comp) return { error: "UNSUPPORTED_PLATFORM" };
+    if (comp?.pilots.length < MIN_PILOTS) return { error: "NOT_ENOUGH_PILOTS" };
 
     if (
       comp.compDate.endDate &&
@@ -44,8 +44,8 @@ export async function getForecast(
   if (isCivlLink(url)) {
     const compUrl = generateCivlCompUrl(url);
     const comp = await getCivlcompsComp(compUrl);
-    if (!comp || comp.pilots?.length < MIN_PILOTS)
-      return { error: "NOT_ENOUGH_PILOTS" };
+    if (!comp) return { error: "UNSUPPORTED_PLATFORM" };
+    if (comp?.pilots.length < MIN_PILOTS) return { error: "NOT_ENOUGH_PILOTS" };
 
     if (
       comp.compDate?.endDate &&
@@ -67,8 +67,8 @@ export async function getForecast(
     const compUrl = await generatePwcCompUrl(url);
 
     const comp = await getPwcComp(compUrl);
-    if (!comp || comp.pilots?.length < MIN_PILOTS)
-      return { error: "NOT_ENOUGH_PILOTS" };
+    if (!comp) return { error: "UNSUPPORTED_PLATFORM" };
+    if (comp?.pilots.length < MIN_PILOTS) return { error: "NOT_ENOUGH_PILOTS" };
 
     if (
       comp.compDate.endDate &&
@@ -82,6 +82,7 @@ export async function getForecast(
       all: await calculateWPRS(comp.pilots, comp.maxPilots),
       confirmed: await calculateWPRS(comp.pilots.filter((p) => p.confirmed)),
       compUrl: url,
+      meta: comp.statistics,
     };
   }
 
@@ -90,8 +91,8 @@ export async function getForecast(
     const compUrl = generateSwissleagueCompUrl(url);
     const detailsUrl = generateSwissleagueDetailsUrl(url);
     const comp = await getSwissleagueComp(compUrl, detailsUrl);
-    if (!comp || comp?.pilots?.length < MIN_PILOTS)
-      return { error: "NOT_ENOUGH_PILOTS" };
+    if (!comp) return { error: "UNSUPPORTED_PLATFORM" };
+    if (comp?.pilots.length < MIN_PILOTS) return { error: "NOT_ENOUGH_PILOTS" };
 
     if (
       comp.compDate.endDate &&
@@ -104,6 +105,7 @@ export async function getForecast(
       all: await calculateWPRS(comp.pilots, comp.maxPilots),
       confirmed: await calculateWPRS(comp.pilots.filter((p) => p.confirmed)),
       compUrl: url,
+      meta: comp.statistics,
     };
   }
   return { error: "UNSUPPORTED_PLATFORM" };
@@ -149,8 +151,10 @@ async function generatePwcCompUrl(url: string) {
   const h2 = $("h2")
     .eq(0)
     .text()
+    .trim()
     .toLocaleLowerCase()
     .replaceAll(" ", "-")
+    .replaceAll("-–-", "-") // - vs –
     .replaceAll(",", "");
 
   const year = new Date().getFullYear();

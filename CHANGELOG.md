@@ -1,5 +1,13 @@
 # Changelog
 
+### 2023-11-30
+
+**Improvements (under the hood):**
+
+- New method of finding the CIVL ID by name. It is no longer depending on the CIVL website and more reliable using a narrow down approach with the local db, fuzzysearch and algolia (as a last resort)
+- PWC comps are working again
+- Better tests
+
 ### 2023-11-19
 
 **Improvements:**

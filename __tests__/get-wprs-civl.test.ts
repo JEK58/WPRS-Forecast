@@ -1,18 +1,12 @@
 import { getForecast } from "@/utils/get-forecast";
 import { getCivlcompsComp } from "@/utils/get-civl-comp";
 
-describe("Get WPRS for CIVL comps", () => {
+describe("Get data for CIVL comps", () => {
   it("should find the correct amount of registered pilots", async () => {
-    const expectedNumOfPilots = 291;
-    const startTime = performance.now();
-    console.log("⏱️ ~ ", "Timer started");
+    const expectedNumOfPilots = 295;
 
     const url = "https://civlcomps.org/event/german-open-2023/participants";
     const res = await getCivlcompsComp(url);
-
-    const endTime = performance.now();
-    const elapsedTime = endTime - startTime;
-    console.log("⏱️ ~ ", (elapsedTime / 1000).toFixed(2), "seconds");
 
     expect(res.pilots.length).toBe(expectedNumOfPilots);
   }, 30000);

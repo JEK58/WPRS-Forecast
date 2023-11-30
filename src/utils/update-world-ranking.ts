@@ -4,6 +4,7 @@ import { z } from "zod";
 import axios from "axios";
 import { load } from "cheerio";
 import fs from "fs";
+import { normalizeName } from "@/utils/normalize-name";
 
 const CIVL_URL = "https://civlcomps.org/ranking/paragliding-xc/pilots";
 const CIVL_DOWNLOAD_ENDPOINT = "https://civlcomps.org/ranking/export-new";
@@ -55,6 +56,7 @@ export async function updateWorldRanking() {
   const newEntry = z.object({
     id: z.number(),
     name: z.string(),
+    normalizedName: z.string(),
     gender: z.string(),
     points: z.number(),
     rank: z.number(),
@@ -67,11 +69,12 @@ export async function updateWorldRanking() {
     .map((el) => {
       return newEntry.parse({
         id: el["CIVL ID"],
-        name: el.Name,
-        gender: el.Gender,
+        name: el.Name.trim(),
+        normalizedName: normalizeName(el.Name.trim()),
+        gender: el.Gender.trim(),
         points: el.Points,
         rank: el.Rank,
-        nation: el.Nation,
+        nation: el.Nation.trim(),
         date: worldRankingDate,
       });
     });

@@ -19,6 +19,8 @@ jobs:
       API_KEY: ${{ secrets.API_KEY }}
       REDIS_URL: ${{ secrets.REDIS_URL }}
       OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+      ALGOLIA_APP_ID: ${{ secrets.ALGOLIA_APP_ID }}
+      ALGOLIA_API_KEY: ${{ secrets.ALGOLIA_API_KEY }}
 
     strategy:
       matrix:
