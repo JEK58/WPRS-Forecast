@@ -31,7 +31,6 @@
     "class-variance-authority": "^0.7.0",
     "clsx": "^2.0.0",
     "daisyui": "^4.4.14",
-    "fuse.js": "^7.0.0",
     "ioredis": "^5.3.2",
     "lucide-react": "^0.294.0",
     "minisearch": "^6.3.0",
