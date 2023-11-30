@@ -153,6 +153,7 @@ export async function getCivlIds(pilots: string[], disableAlgolia?: boolean) {
     missingInAlgolia,
     percentageNotFound,
     civlSearchDurationInMs: duration,
+    pilotsNotfound: [...searchQueue],
   };
 
   return { civlIds, statistics };
