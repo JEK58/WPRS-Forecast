@@ -34,4 +34,5 @@ model Usage {
     compTitle      String?
     processingTime Float?
     error          String?
+    meta           Json?
 }

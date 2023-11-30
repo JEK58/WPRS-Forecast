@@ -90,7 +90,13 @@ async function getForecast(inputUrl: string) {
     if (queryID && wprs) {
       await prisma.usage.update({
         where: { id: queryID },
-        data: { wprs, compTitle, processingTime, potentialWprs },
+        data: {
+          wprs,
+          compTitle,
+          processingTime,
+          potentialWprs,
+          meta: forecast?.meta,
+        },
       });
     }
   } catch (error) {

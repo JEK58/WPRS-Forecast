@@ -1,7 +1,6 @@
 import { getCivlIds, CIVL_PLACEHOLDER_ID } from "@/utils/get-civl-ids";
 import { load } from "cheerio";
 import { getStartAndEndDateFromRange } from "./get-start-and-end-date-from-range";
-import { writeFileSync } from "fs";
 
 interface PWCApiResponse {
   subscriptions?: PilotDetails[];
@@ -76,7 +75,7 @@ export async function getPwcComp(url: string) {
     const name = input.split(" (")[0] ?? "";
 
     return {
-      name,
+      name: name.trim().toLowerCase(),
       nationality: el.country,
       civlID: CIVL_PLACEHOLDER_ID,
       wing: el.glider,
@@ -84,11 +83,12 @@ export async function getPwcComp(url: string) {
       confirmed: isConfirmed(el.status_key),
     };
   });
+  console.log("Gettting CIVL IDs");
 
-  const civlIds = await getCivlIds(listOfPilots);
+  const res = await getCivlIds(listOfPilots.map((p) => p.name));
 
   const pilotsWithCivlId = listOfPilots.map((pilot) => {
-    pilot.civlID = civlIds.get(pilot.name) ?? CIVL_PLACEHOLDER_ID;
+    pilot.civlID = res.civlIds.get(pilot.name) ?? CIVL_PLACEHOLDER_ID;
     return pilot;
   });
 
@@ -97,6 +97,7 @@ export async function getPwcComp(url: string) {
     maxPilots: MAX_PILOTS,
     pilots: pilotsWithCivlId,
     compDate: { startDate, endDate },
+    statistics: res.statistics,
   };
 }
 

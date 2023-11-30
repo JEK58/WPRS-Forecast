@@ -22,8 +22,8 @@ export async function getForecast(
     const compUrl = generateAirtribuneCompUrl(url);
     const comp = await getAirtribuneComp(compUrl);
 
-    if (!comp || comp?.pilots.length < MIN_PILOTS)
-      return { error: "NOT_ENOUGH_PILOTS" };
+    if (!comp) return { error: "UNSUPPORTED_PLATFORM" };
+    if (comp?.pilots.length < MIN_PILOTS) return { error: "NOT_ENOUGH_PILOTS" };
 
     if (
       comp.compDate.endDate &&
@@ -44,8 +44,8 @@ export async function getForecast(
   if (isCivlLink(url)) {
     const compUrl = generateCivlCompUrl(url);
     const comp = await getCivlcompsComp(compUrl);
-    if (!comp || comp.pilots?.length < MIN_PILOTS)
-      return { error: "NOT_ENOUGH_PILOTS" };
+    if (!comp) return { error: "UNSUPPORTED_PLATFORM" };
+    if (comp?.pilots.length < MIN_PILOTS) return { error: "NOT_ENOUGH_PILOTS" };
 
     if (
       comp.compDate?.endDate &&
@@ -67,8 +67,8 @@ export async function getForecast(
     const compUrl = await generatePwcCompUrl(url);
 
     const comp = await getPwcComp(compUrl);
-    if (!comp || comp.pilots?.length < MIN_PILOTS)
-      return { error: "NOT_ENOUGH_PILOTS" };
+    if (!comp) return { error: "UNSUPPORTED_PLATFORM" };
+    if (comp?.pilots.length < MIN_PILOTS) return { error: "NOT_ENOUGH_PILOTS" };
 
     if (
       comp.compDate.endDate &&
@@ -91,8 +91,8 @@ export async function getForecast(
     const compUrl = generateSwissleagueCompUrl(url);
     const detailsUrl = generateSwissleagueDetailsUrl(url);
     const comp = await getSwissleagueComp(compUrl, detailsUrl);
-    if (!comp || comp?.pilots?.length < MIN_PILOTS)
-      return { error: "NOT_ENOUGH_PILOTS" };
+    if (!comp) return { error: "UNSUPPORTED_PLATFORM" };
+    if (comp?.pilots.length < MIN_PILOTS) return { error: "NOT_ENOUGH_PILOTS" };
 
     if (
       comp.compDate.endDate &&

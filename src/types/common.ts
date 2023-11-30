@@ -24,4 +24,5 @@ export type Forecast = {
   all?: CompForecast;
   confirmed?: CompForecast;
   compUrl: string;
+  meta?: object;
 };

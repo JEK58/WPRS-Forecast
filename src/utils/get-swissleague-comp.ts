@@ -64,7 +64,7 @@ export async function getSwissleagueComp(url: string, detailsUrl: string) {
     const name = el.pilot ?? "";
 
     return {
-      name,
+      name: name.trim().toLowerCase(),
       nationality: el.country,
       civlID: CIVL_PLACEHOLDER_ID,
       wing: el.glider,
@@ -73,10 +73,10 @@ export async function getSwissleagueComp(url: string, detailsUrl: string) {
     };
   });
 
-  const civlIds = await getCivlIds(listOfPilots);
+  const res = await getCivlIds(listOfPilots.map((p) => p.name));
 
   const pilotsWithCivlId = listOfPilots.map((pilot) => {
-    pilot.civlID = civlIds.get(pilot.name) ?? CIVL_PLACEHOLDER_ID;
+    pilot.civlID = res.civlIds.get(pilot.name) ?? CIVL_PLACEHOLDER_ID;
     return pilot;
   });
 
@@ -88,6 +88,7 @@ export async function getSwissleagueComp(url: string, detailsUrl: string) {
       startDate: compDetails.compDate.startDate,
       endDate: compDetails.compDate.endDate,
     },
+    statistics: res.statistics,
   };
 }
 

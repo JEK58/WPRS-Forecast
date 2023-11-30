@@ -1,284 +1,166 @@
-import axios from "axios";
+import { prisma } from "@/server/db";
+import { type Ranking } from "@prisma/client";
+import MiniSearch from "minisearch";
+import algoliasearch from "algoliasearch";
 import Redis from "ioredis";
 import { env } from "@/env.mjs";
-import { CookieJar } from "tough-cookie";
-import { load } from "cheerio";
-import { _findPilot, findPilot } from "./find-ranking";
-import { prisma } from "@/server/db";
-import Fuse from "fuse.js";
-import { Ranking } from "@prisma/client";
-
-const redis = new Redis({ host: env.REDIS_URL });
 
 export const CIVL_PLACEHOLDER_ID = 99999;
 
-interface CivlPilotLookup {
-  id: number;
-  text: string;
-}
-interface Cookies {
-  cookieString: string;
-  embeddedCsrfToken: string;
-}
+const redis = new Redis({ host: env.REDIS_URL });
 
-export async function getCivlIds(listOfPilots: { name: string }[]) {
-  // Get CIVL session cookie
-  const cookies = await getCivlCookies();
-  if (!cookies) throw new Error("No cookies found");
-  const map = new Map<string, number>();
+/**
+ * Looks up the CIVL ID for each pilot in the list.
+ * As some names will not have exact matches due to special
+ * characters like "é", typos, reversed order of firstname/lastname, or optional middlenames there are
+ * multiple steps involved:
+ *
+ * Check if...
+ * 1. the pilot is already in the cache
+ * 2. the pilot can be found in the DB
+ * 3. the pilot can be found fuzzysearch
+ * 4. the pilot can be found with algolia
+ *
+ * If a pilot still can't be found, a placeholder value is used for the CIVL ID.
+ */
+export async function getCivlIds(pilots: string[], disableAlgolia?: boolean) {
+  const startTime = performance.now();
+  const numberOfPilots = pilots.length;
+  const searchQueue = new Set(pilots.map((p) => p.toLowerCase()));
+  const civlIds = new Map<string, number>();
 
-  // New method
-  // Perfomance timer
-  // const startTime = performance.now();
-  // console.log("⏱️ ~ ", "Timer started");
+  /**
+   * Lookup pilots in cache
+   */
 
-  // const names = listOfPilots.map((p) => p.name.toLocaleLowerCase());
-  // console.log("🚀 ~ names:", names.length);
+  const search = [...searchQueue];
+  const redisPromises = search.map((pilot) => redis.get(`name:${pilot}`));
+  const cachedCivlIds = await Promise.all(redisPromises);
 
-  // const pilots = await prisma.ranking.findMany({
-  //   where: {
-  //     name: { in: names, mode: "insensitive" },
-  //   },
-  // });
-
-  // const missing = names.filter(
-  //   (name) => !pilots.find((p) => p.name.toLocaleLowerCase() === name),
-  // );
-  // console.log("🚀 ~ missing:", missing.length);
-  // console.log("🚀 ~ pilots:", pilots.length);
-
-  // // for (const pilot of missing) {
-  // //   const res = fuse.search(
-  // //     {
-  // //       $and: [{ name: pilot }, { name: reverseFirstAndLast(pilot) }],
-  // //     },
-  // //     { limit: 1 },
-  // //   );
-
-  // //   const foo = res[0]?.item;
-  // //   if (foo) {
-  // //     map.set(pilot, foo.id);
-  // //     // console.log(foo.name);
-  // //   } else console.log("⛔️", pilot);
-  // // }
-
-  // for (const pilot of missing) {
-  //   const res = await _findPilot(pilot);
-  //   if (res) {
-  //     map.set(pilot, res.id);
-  //   } else console.log("⛔️", pilot);
-  // }
-
-  // console.log("🚀 ~ map:", map.size);
-  // // Performance Timer
-  // const endTime = performance.now();
-  // const elapsedTime = endTime - startTime;
-  // console.log("⏱️ ~ ", (elapsedTime / 1000).toFixed(2), "seconds");
-
-  await Promise.all(
-    listOfPilots.map(async (pilot) => {
-      const name = pilot.name;
-      // const redisKey = `name:${name.toLowerCase()}`;
-
-      try {
-        // // Check cache
-        // const cachedId = await redis.get(redisKey);
-        // if (cachedId) return map.set(name, +cachedId);
-
-        // No cache hit => query CIVL
-        const res = await lookUpCivlId(pilot.name, cookies);
-
-        const civlId = res ?? CIVL_PLACEHOLDER_ID;
-
-        // Cache result
-        // if (civlId != CIVL_PLACEHOLDER_ID) await redis.set(redisKey, civlId);
-
-        return map.set(name, civlId);
-      } catch (error) {
-        console.log(error);
-        return map.set(name, CIVL_PLACEHOLDER_ID);
-      }
-    }),
-  );
-
-  // Check the number of entries that have the CIVL placeholder value
-  // Log a warning if there are more than 5% missing
-  // TODO: Send an email
-
-  let placeHolderCount = 0;
-
-  map.forEach((item) => {
-    if (item === CIVL_PLACEHOLDER_ID) placeHolderCount++;
+  cachedCivlIds.forEach((id, index) => {
+    const name = search[index];
+    if (id && name) {
+      civlIds.set(name, Number(id));
+      searchQueue.delete(name);
+    }
   });
-  if (placeHolderCount > listOfPilots.length / 20)
-    console.log("⚠️ ~ More than 5% with no CIVL ID!", placeHolderCount);
 
-  return map;
-}
+  const missingInCache = searchQueue.size;
 
-export async function lookUpCivlId(name: string, cookies: Cookies) {
-  const searchString = name
-    .replaceAll(" ", "+")
-    .replaceAll("'", " ")
-    .replaceAll("-", " ");
+  /**
+   * Lookup pilots in DB
+   */
 
-  try {
-    const searchUrl = "https://civlcomps.org/meta/search-profile";
+  const pilotsFoundDb = await prisma.ranking.findMany({
+    where: {
+      name: {
+        in: [...searchQueue],
+        mode: "insensitive",
+      },
+    },
+    // take: searchQueue.size,
+    // distinct: ["name"],
+  });
 
-    const headers = {
-      "Content-Type": "application/x-www-form-urlencoded; charset=UTF-8",
-      Cookie: cookies.cookieString,
-      Pragma: "no-cache",
-      Accept: "application/json, text/javascript, */*; q=0.01",
-      "Sec-Fetch-Site": "same-origin",
-    };
+  for (const pilot of pilotsFoundDb) {
+    const name = pilot.name.toLowerCase();
+    civlIds.set(name, pilot.id);
+    searchQueue.delete(name);
 
-    const formData = `term=${searchString}&meta=true&_csrf=${cookies.embeddedCsrfToken}`;
-
-    let res = await axios.post<CivlPilotLookup[]>(searchUrl, formData, {
-      headers,
-    });
-    if (!res.data || !res.data.length) {
-      /**
-       * Try again with less information.
-       * Sometimes the CIVL search does not find pilots if they have a middle name
-       */
-      console.log(
-        `🤷 ~ CIVL lookup failed for ${name} => trying with less information`,
-      );
-      const splitName = searchString.split("+");
-      splitName.splice(1, 1);
-      const newSearchString = splitName.join("+");
-      const newFormData = `term=${newSearchString}&meta=true&_csrf=${cookies.embeddedCsrfToken}`;
-      res = await axios.post<CivlPilotLookup[]>(searchUrl, newFormData, {
-        headers,
-      });
-
-      if (!res.data || !res.data.length) {
-        console.log(`❗️ ~ No data for ${name}`);
-        return CIVL_PLACEHOLDER_ID;
-      }
-    }
-    const data = res.data;
-
-    if (data.length > 1) {
-      // Find the best match if the search returns multiple results
-
-      const namePartsRegex = /(\S+)\s*(\S+)?\s*(\S+)?/;
-      const nameParts =
-        normalizeName(name).match(namePartsRegex)?.slice(1).sort() ?? [];
-
-      let bestMatch: CivlPilotLookup | undefined;
-      let bestMatchScore = 0;
-      for (const pilot of data) {
-        const currentNameParts =
-          normalizeName(pilot.text).match(namePartsRegex)?.slice(1).sort() ??
-          [];
-
-        let matchScore = 0;
-        for (const part of nameParts) {
-          if (currentNameParts.includes(part)) matchScore++;
-        }
-
-        if (matchScore >= 2 && matchScore > bestMatchScore) {
-          bestMatch = pilot;
-          bestMatchScore = matchScore;
-        }
-      }
-
-      if (!bestMatch) {
-        console.log(`❗️ ~ No data for ${name}`);
-        return CIVL_PLACEHOLDER_ID;
-      }
-      // If the name of the best match does not match exactly log it for easier debugging
-      if (!bestMatch.text.includes(name))
-        console.log(
-          `☑️ ~ Multiple results for ${name}. Picked: ${bestMatch.text}`,
-        );
-      return bestMatch.id;
-    }
-    console.log(name, data[0]?.text);
-
-    if (data[0]) return data[0].id;
-    else return CIVL_PLACEHOLDER_ID;
-  } catch (error) {
-    console.log("Error for name:", name);
-
-    if (axios.isAxiosError(error)) {
-      if (error.response) {
-        // The request was made and the server responded with a status code
-        // that falls out of the range of 2xx
-        console.log(error.response.config.data);
-        console.log(error.response.status);
-        // console.log(error.response.headers);
-      } else if (error.request) {
-        // The request was made but no response was received
-        // `error.request` is an instance of XMLHttpRequest in the browser and an instance of
-        // http.ClientRequest in node.js
-        console.log(error.request);
-      } else {
-        // Something happened in setting up the request that triggered an Error
-        console.log("Error", error.message);
-      }
-    } else {
-      console.log(error);
-    }
-
-    return CIVL_PLACEHOLDER_ID;
+    await addToCache(name, pilot.id);
   }
-}
 
-export function normalizeName(name: string) {
-  return name
-    .normalize("NFD")
-    .replace(/[\u0300-\u036f]/g, "")
-    .toLowerCase();
-}
+  const missingInDB = searchQueue.size;
 
-export async function getCivlCookies() {
-  try {
-    // Create a new cookie jar
-    const cookieJar = new CookieJar();
-    const cookieUrl = "https://civlcomps.org/ranking/paragliding-xc/pilots";
-    const cookieResponse = await fetch(cookieUrl);
+  /**
+   * Find locally with fuzzysearch
+   * TODO: Only load and index if there are pilots left to search
+   */
 
-    const body = await cookieResponse.text();
+  const worldRanking = await prisma.ranking.findMany();
 
-    // Get embedded csrf-token
-    const $ = load(body, { xmlMode: true });
-    const embeddedCsrfToken = $('meta[name="csrf-token"]').attr("content");
+  const miniSearch = new MiniSearch({
+    fields: ["name"],
+    storeFields: ["id", "name"],
+    searchOptions: { fuzzy: 0.2 },
+  });
 
-    // Get cookies
-    const cookies = cookieResponse.headers.get("set-cookie");
-    if (!cookies || !embeddedCsrfToken) throw new Error("No cookies found");
+  // Create index
+  miniSearch.addAll(worldRanking);
 
-    const cookiesArray = cookies.split(",");
+  for (const pilot of [...searchQueue]) {
+    const res = miniSearch.search(pilot, {
+      combineWith: "AND",
+    })[0] as unknown as Pick<Ranking, "id" | "name">;
 
-    cookiesArray.forEach((cookieStr) => {
-      cookieJar.setCookieSync(cookieStr, "https://civlcomps.org");
-    });
-
-    const cookieString = cookieJar.getCookieStringSync("https://civlcomps.org");
-
-    return { cookieString, embeddedCsrfToken };
-  } catch (error) {
-    console.log(error);
-  }
-}
-
-function reverseFirstAndLast(inputString: string): string {
-  const words: string[] = inputString.split(" ");
-
-  if (words.length >= 2) {
-    const temp = words[0];
-
-    if (temp) {
-      const last = words[words.length - 1];
-      if (last) words[0] = last;
-
-      words[words.length - 1] = temp;
+    if (res) {
+      civlIds.set(pilot, res.id);
+      searchQueue.delete(pilot);
+      await addToCache(pilot, res.id);
     }
   }
 
-  return words.join(" ");
+  const missingInMinisearch = searchQueue.size;
+
+  /**
+   * Find using algolia
+   */
+  if (!disableAlgolia) {
+    const client = algoliasearch(env.ALGOLIA_APP_ID, env.ALGOLIA_API_KEY);
+
+    const index = client.initIndex("civl_ranking");
+    const promises = [...searchQueue].map((pilot) =>
+      index.search<Ranking>(pilot),
+    );
+    const algoliaResults = await Promise.all(promises);
+
+    for (const res of algoliaResults) {
+      const civl = res.hits[0]?.id;
+
+      if (civl) {
+        civlIds.set(res.query, civl);
+        searchQueue.delete(res.query);
+        await addToCache(res.query, civl);
+      }
+    }
+  }
+
+  const missingInAlgolia = searchQueue.size;
+
+  /**
+   * Add pilots still not found to cache with placeholder civl id
+   */
+
+  for (const pilot of [...searchQueue]) {
+    await addToCache(pilot, CIVL_PLACEHOLDER_ID);
+    civlIds.set(pilot, CIVL_PLACEHOLDER_ID);
+  }
+
+  // Perfomance Timer
+  const duration = Math.round(performance.now() - startTime);
+
+  // Statistics
+  const percentageNotFound = +(
+    (searchQueue.size / numberOfPilots) *
+    100
+  ).toFixed(2);
+
+  const statistics = {
+    numberOfPilots,
+    missingInCache,
+    missingInDB,
+    missingInMinisearch,
+    missingInAlgolia,
+    percentageNotFound,
+    civlSearchDurationInMs: duration,
+  };
+
+  return { civlIds, statistics };
+}
+
+async function addToCache(name: string, civl: number) {
+  const redisKey = `name:${name.toLowerCase()}`;
+  await redis.set(redisKey, civl).catch((err) => {
+    console.log(err);
+  });
 }
