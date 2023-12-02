@@ -1,5 +1,11 @@
 # Changelog
 
+### 2023-12-02
+
+**Improvements:**
+
+- Recent queries now lists comps with no confirmed pilots.
+
 ### 2023-11-30
 
 **Improvements (under the hood):**
