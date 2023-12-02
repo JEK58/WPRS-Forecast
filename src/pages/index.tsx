@@ -273,7 +273,7 @@ export const getServerSideProps = async () => {
     const data = await prisma.usage.findMany({
       orderBy: { createdAt: "desc" },
       where: {
-        wprs: { not: null },
+        potentialWprs: { not: null },
         NOT: [{ compTitle: null }, { compTitle: "" }],
       },
       select: {

@@ -51,7 +51,7 @@ const RecentQueriesTable = ({
           </a>
         </TableCell>
         <TableCell className="font-bold text-green-500">
-          {stat.wprs}
+          {stat.wprs ?? "---"}
           {stat.potentialWprs && (
             <span className="font-normal text-gray-400">
               {" "}
