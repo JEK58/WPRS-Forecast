@@ -15,7 +15,7 @@ describe("Get WPRS for PWC comps", () => {
     const url =
       "https://pwca.org/events/2023-world-cup-pico-do-gaviao-brazil-2023/selection";
     const res = await getPwcComp(url);
-    if (res) expect(res.pilots.filter((p) => p.confirmed).length).toBe(97);
+    if (res) expect(res.pilots.filter((p) => p.confirmed).length).toBe(103);
   }, 20000);
 
   // Let's see how the new page develops
