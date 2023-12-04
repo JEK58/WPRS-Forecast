@@ -51,6 +51,10 @@ export async function calculateWPRS(
 
   const WPRS = factors.map((factor) => calcWPR(factor, Pq, Pn));
 
+  const civlIds = pilots
+    .map((pilot) => pilot.civlID)
+    .filter((item): item is number => typeof item === "number");
+
   return {
     worldRankingDate,
     numPilots: numberOfPilots,
@@ -60,6 +64,7 @@ export async function calculateWPRS(
     Pn: +Pn.toFixed(3),
     compRanking: +compRanking.toFixed(3),
     WPRS,
+    civlIds,
   };
 }
 

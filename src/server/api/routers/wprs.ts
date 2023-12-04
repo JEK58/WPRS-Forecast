@@ -95,7 +95,11 @@ async function getForecast(inputUrl: string) {
           compTitle,
           processingTime,
           potentialWprs,
-          meta: forecast?.meta,
+          meta: {
+            ...forecast?.meta,
+            confirmed: forecast?.confirmed?.civlIds,
+            registered: forecast?.all?.civlIds,
+          },
         },
       });
     }
