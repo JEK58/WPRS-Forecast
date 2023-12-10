@@ -12,6 +12,7 @@ const server = z.object({
   OPENAI_API_KEY: z.string(),
   ALGOLIA_APP_ID: z.string(),
   ALGOLIA_API_KEY: z.string(),
+  PLAUSIBLE_URL: z.string().url().optional(),
 });
 
 /**
@@ -36,6 +37,7 @@ const processEnv = {
   OPENAI_API_KEY: process.env.OPENAI_API_KEY,
   ALGOLIA_API_KEY: process.env.ALGOLIA_API_KEY,
   ALGOLIA_APP_ID: process.env.ALGOLIA_APP_ID,
+  PLAUSIBLE_URL: process.env.PLAUSIBLE_URL,
   // NEXT_PUBLIC_CLIENTVAR: process.env.NEXT_PUBLIC_CLIENTVAR,
 };
 
