@@ -10,7 +10,7 @@ const MyApp: AppType = ({ Component, pageProps }) => {
     <PlausibleProvider
       domain="wprs-forecast.org"
       selfHosted={true}
-      customDomain={env.PLAUSIBLE_URL}
+      customDomain={env.NEXT_PUBLIC_PLAUSIBLE_URL}
     >
       <Component {...pageProps} />;
     </PlausibleProvider>
