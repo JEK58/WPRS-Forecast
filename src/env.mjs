@@ -12,7 +12,6 @@ const server = z.object({
   OPENAI_API_KEY: z.string(),
   ALGOLIA_APP_ID: z.string(),
   ALGOLIA_API_KEY: z.string(),
-  NEXT_PUBLIC_PLAUSIBLE_URL: z.string().url().optional(),
 });
 
 /**
