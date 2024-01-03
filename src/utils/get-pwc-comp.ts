@@ -1,6 +1,7 @@
 import { getCivlIds, CIVL_PLACEHOLDER_ID } from "@/utils/get-civl-ids";
 import { load } from "cheerio";
 import { getStartAndEndDateFromRange } from "./get-start-and-end-date-from-range";
+import { getPosition } from "@/utils/utils";
 
 interface PWCApiResponse {
   subscriptions?: PilotDetails[];
@@ -38,7 +39,9 @@ interface PilotDetails {
 const MAX_PILOTS = 125;
 
 export async function getPwcComp(url: string) {
-  const response = await fetch(url);
+  const compUrl = await generatePwcCompUrl(url);
+
+  const response = await fetch(compUrl);
   const body = await response.text();
 
   const $ = load(body, { xmlMode: true });
@@ -50,7 +53,7 @@ export async function getPwcComp(url: string) {
   const startDate = dates?.startDate;
   const endDate = dates?.endDate;
 
-  const apiUrl = url.replace("pwca.org", "pwca.org/api");
+  const apiUrl = compUrl.replace("pwca.org", "pwca.org/api");
   const femaleApiUrl = apiUrl + "?gender=female";
 
   const [maleRes, femaleRes] = await Promise.all([
@@ -107,4 +110,36 @@ function isConfirmed(status?: string) {
     status?.toLowerCase() == "wildcard" ||
     status?.toLowerCase() == "guest_card_confirmed"
   );
+}
+
+async function generatePwcCompUrl(url: string) {
+  if (url.includes("pwca.org"))
+    return url.slice(0, getPosition(url, "/", 5)) + "/selection";
+
+  // If it's a running event using the new .events page: Create the legacy url from an h2
+  const response = await fetch(url);
+  const body = await response.text();
+
+  const $ = load(body, { xmlMode: true });
+
+  const h2 = $("h2")
+    .eq(0)
+    .text()
+    .trim()
+    .toLocaleLowerCase()
+    .replaceAll(" ", "-")
+    .replaceAll("-–-", "-") // - vs –
+    .replaceAll(",", "");
+
+  // The superfinal api url starts with its season year number even if it's held in the current year
+  // We therefore need to find the year in the h2 otherwise with just take the current one and hope for the best.
+
+  const year = findYearInString(h2) ?? new Date().getFullYear();
+
+  return "https://pwca.org/events/" + year + "-" + h2 + "/selection";
+}
+
+function findYearInString(str: string): string | null {
+  const match = str.match(/\b(20)\d{2}\b/);
+  return match ? match[0] : null;
 }

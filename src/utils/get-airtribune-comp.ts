@@ -1,7 +1,8 @@
-import type { Pilot } from "@/types/common";
+import type { CompDetails, Pilot } from "@/types/common";
 import { load } from "cheerio";
 import { evalMaxPilots } from "./eval-max-pilots";
 import { getStartAndEndDateFromRange } from "./get-start-and-end-date-from-range";
+import { getPosition } from "@/utils/utils";
 
 interface AirtribunePilot
   extends Omit<Pilot, "civlID" | "wing" | "nationality"> {
@@ -10,8 +11,12 @@ interface AirtribunePilot
   civl_id: string;
 }
 
-export async function getAirtribuneComp(url: string) {
-  const response = await fetch(url);
+export async function getAirtribuneComp(
+  url: string,
+): Promise<CompDetails | undefined> {
+  const compUrl = generateAirtribuneCompUrl(url);
+
+  const response = await fetch(compUrl);
   const body = await response.text();
 
   // Find competition name
@@ -78,4 +83,8 @@ function isConfirmed(status?: string) {
     status?.toLowerCase() == "wildcard" ||
     status?.toLowerCase() == "team_pilot"
   );
+}
+
+function generateAirtribuneCompUrl(url: string) {
+  return url.slice(0, getPosition(url, "/", 4)) + "/pilots";
 }

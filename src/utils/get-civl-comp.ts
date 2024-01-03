@@ -2,10 +2,15 @@ import { load } from "cheerio";
 import { CIVL_PLACEHOLDER_ID } from "@/utils/get-civl-ids";
 import { evalMaxPilots } from "./eval-max-pilots";
 import { getStartAndEndDateFromRange } from "./get-start-and-end-date-from-range";
-import { type Pilot } from "@/types/common";
+import { type CompDetails, type Pilot } from "@/types/common";
+import { getPosition } from "@/utils/utils";
 
-export async function getCivlcompsComp(url: string) {
-  const response = await fetch(url);
+export async function getCivlcompsComp(
+  url: string,
+): Promise<CompDetails | undefined> {
+  const compUrl = generateCivlCompUrl(url);
+
+  const response = await fetch(compUrl);
   const body = await response.text();
 
   const $ = load(body, { xmlMode: true });
@@ -65,4 +70,8 @@ function isConfirmed(status?: string) {
   return (
     status?.toLowerCase() == "confirmed" || status?.toLowerCase() == "wildcard"
   );
+}
+
+function generateCivlCompUrl(url: string) {
+  return url.slice(0, getPosition(url, "/", 5)) + "/participants";
 }

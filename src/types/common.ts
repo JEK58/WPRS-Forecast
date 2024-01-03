@@ -25,5 +25,27 @@ export type Forecast = {
   all?: CompForecast;
   confirmed?: CompForecast;
   compUrl: string;
-  meta?: object;
+  meta?: Statistics;
+};
+
+export type CompDetails = {
+  pilots: Pilot[];
+  compTitle?: string;
+  maxPilots: number;
+  compDate?: {
+    startDate?: Date;
+    endDate?: Date;
+  };
+  statistics?: Statistics;
+};
+
+export type Statistics = {
+  numberOfPilots: number;
+  missingInCache: number;
+  missingInDB: number;
+  missingInMinisearch: number;
+  missingInAlgolia: number;
+  percentageNotFound: number;
+  civlSearchDurationInMs: number;
+  pilotsNotfound: string[];
 };

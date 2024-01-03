@@ -3,6 +3,7 @@ import { getCivlIds, CIVL_PLACEHOLDER_ID } from "@/utils/get-civl-ids";
 import { getMaxPilotsFromDescription } from "@/utils/get-max-pilots-from-description";
 import { evalMaxPilots } from "./eval-max-pilots";
 import { getStartAndEndDateFromRange } from "./get-start-and-end-date-from-range";
+import { getPosition } from "@/utils/utils";
 
 // Gets the description of the comp and asks GPT to analyze it as this information
 // is never found at the same spot like on airtribune or civlcomps
@@ -31,8 +32,11 @@ async function getCompDetails(url: string) {
   };
 }
 
-export async function getSwissleagueComp(url: string, detailsUrl: string) {
-  const response = await fetch(url);
+export async function getSwissleagueComp(url: string) {
+  const compUrl = generateSwissleagueCompUrl(url);
+  const detailsUrl = generateSwissleagueDetailsUrl(url);
+
+  const response = await fetch(compUrl);
   const body = await response.text();
   const $ = load(body, { xmlMode: true });
   const compTitle = $("h1").text();
@@ -96,4 +100,10 @@ function isConfirmed(status?: string) {
   return (
     status?.toLowerCase() == "paid" || status?.toLowerCase() == "free entry"
   );
+}
+function generateSwissleagueCompUrl(url: string) {
+  return url.slice(0, getPosition(url, "/", 7)) + "/pilots";
+}
+function generateSwissleagueDetailsUrl(url: string) {
+  return url.slice(0, getPosition(url, "/", 7)) + "/";
 }
