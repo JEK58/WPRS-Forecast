@@ -52,11 +52,12 @@ export async function getForecast(
 
 function identifyCompHost(_url: string): Platform {
   const url = new URL(_url);
+  console.log("🚀 ~ url:", url);
 
-  if (url.hostname === "airtribune.com") return "AIRTRIBUNE";
-  if (url.hostname === "civlcomps.org") return "CIVLCOMPS";
-  if (url.hostname === "swissleague.ch") return "SWISSLEAGUE";
-  if (url.hostname === "pwca.org" || url.hostname === "pwca.events")
+  if (url.hostname.endsWith("airtribune.com")) return "AIRTRIBUNE";
+  if (url.hostname.endsWith("civlcomps.org")) return "CIVLCOMPS";
+  if (url.hostname.endsWith("swissleague.ch")) return "SWISSLEAGUE";
+  if (url.hostname.endsWith("pwca.org") || url.hostname.endsWith("pwca.events"))
     return "PWCA";
 }
 
