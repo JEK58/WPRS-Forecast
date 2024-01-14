@@ -8,28 +8,30 @@ import { calculateWPRS } from "./calculate-wprs";
 const MIN_PILOTS = 25; // Minimum required confirmed pilots in a comp
 
 type Error = "NOT_ENOUGH_PILOTS" | "PAST_EVENT" | "UNSUPPORTED_PLATFORM";
-
 type GetForecastError = {
   error: Error;
 };
+type Platform = "AIRTRIBUNE" | "CIVLCOMPS" | "PWCA" | "SWISSLEAGUE" | undefined;
 
 export async function getForecast(
   url: string,
 ): Promise<Forecast | GetForecastError> {
   let comp: CompDetails | undefined;
 
+  const platform = identifyCompHost(url);
+
   // Airtribune
-  if (isAirtibuneLink(url)) comp = await getAirtribuneComp(url);
+  if (platform === "AIRTRIBUNE") comp = await getAirtribuneComp(url);
 
   // CIVL
-  if (isCivlLink(url)) comp = await getCivlcompsComp(url);
+  if (platform === "CIVLCOMPS") comp = await getCivlcompsComp(url);
 
   // PWC
-  if (isPwcLink(url)) comp = await getPwcComp(url);
+  if (platform === "PWCA") comp = await getPwcComp(url);
 
   // Swissleague
-  if (isSwissleagueLink(url)) comp = await getSwissleagueComp(url);
-  if (!comp) return { error: "UNSUPPORTED_PLATFORM" };
+  if (platform === "SWISSLEAGUE") comp = await getSwissleagueComp(url);
+  if (!comp || !platform) return { error: "UNSUPPORTED_PLATFORM" };
   if (comp?.pilots.length < MIN_PILOTS) return { error: "NOT_ENOUGH_PILOTS" };
 
   if (
@@ -48,14 +50,15 @@ export async function getForecast(
   };
 }
 
-const isAirtibuneLink = (url: string) => url.includes("airtribune.com/");
+function identifyCompHost(_url: string): Platform {
+  const url = new URL(_url);
 
-const isCivlLink = (url: string) => url.includes("civlcomps.org/");
-
-const isSwissleagueLink = (url: string) => url.includes("swissleague.ch/");
-
-const isPwcLink = (url: string) =>
-  url.includes("pwca.org") || url.includes("pwca.events");
+  if (url.hostname === "airtribune.com") return "AIRTRIBUNE";
+  if (url.hostname === "civlcomps.org") return "CIVLCOMPS";
+  if (url.hostname === "swissleague.ch") return "SWISSLEAGUE";
+  if (url.hostname === "pwca.org" || url.hostname === "pwca.events")
+    return "PWCA";
+}
 
 function isDateFromPreviousMonthOrOlder(dateToCompare: Date): boolean {
   const currentDate = new Date();
