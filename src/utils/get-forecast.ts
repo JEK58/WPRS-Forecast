@@ -52,7 +52,7 @@ export async function getForecast(
 
 function identifyCompHost(_url: string): Platform {
   const url = new URL(_url);
-  console.log("🚀 ~ url:", url);
+  console.log("🚀 ~ url:");
 
   if (url.hostname.endsWith("airtribune.com")) return "AIRTRIBUNE";
   if (url.hostname.endsWith("civlcomps.org")) return "CIVLCOMPS";
