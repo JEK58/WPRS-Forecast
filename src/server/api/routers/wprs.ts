@@ -93,6 +93,7 @@ async function getForecast(inputUrl: string) {
         data: {
           wprs,
           compTitle,
+          pilotsUrl: forecast?.pilotsUrl,
           processingTime,
           potentialWprs,
           meta: {
