@@ -46,8 +46,8 @@ export default function Home(props: RecentQueriesProps) {
               <h2 className="text-lg font-bold dark:text-slate-200">History</h2>
 
               <p>
-                Compare the forecasted points with the points actually awarded
-                in the official{" "}
+                Compare the forecasted points to the points actually awarded in
+                the official{" "}
                 <Link
                   className="text-green-500 hover:underline"
                   target="_blank"
