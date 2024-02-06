@@ -68,6 +68,7 @@ export async function getAirtribuneComp(
     return {
       pilots,
       compTitle,
+      pilotsUrl: compUrl,
       maxPilots,
       compDate: { startDate, endDate },
     };

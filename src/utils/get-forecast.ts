@@ -46,6 +46,7 @@ export async function getForecast(
     all: await calculateWPRS(comp.pilots, comp.maxPilots),
     confirmed: await calculateWPRS(comp.pilots.filter((p) => p.confirmed)),
     compUrl: url,
+    pilotsUrl: comp.pilotsUrl,
     meta: comp.statistics,
   };
 }

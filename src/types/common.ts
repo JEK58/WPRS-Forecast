@@ -22,6 +22,7 @@ export interface CompForecast {
 export type Forecast = {
   maxPilots: number;
   compTitle?: string;
+  pilotsUrl?: string;
   all?: CompForecast;
   confirmed?: CompForecast;
   compUrl: string;
@@ -31,6 +32,7 @@ export type Forecast = {
 export type CompDetails = {
   pilots: Pilot[];
   compTitle?: string;
+  pilotsUrl?: string;
   maxPilots: number;
   compDate?: {
     startDate?: Date;

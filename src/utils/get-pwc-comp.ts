@@ -100,6 +100,7 @@ export async function getPwcComp(url: string) {
     maxPilots: MAX_PILOTS,
     pilots: pilotsWithCivlId,
     compDate: { startDate, endDate },
+    pilotsUrl: compUrl,
     statistics: res.statistics,
   };
 }

@@ -63,6 +63,7 @@ export async function getCivlcompsComp(
     maxPilots,
     pilots,
     compDate,
+    pilotsUrl: compUrl,
   };
 }
 

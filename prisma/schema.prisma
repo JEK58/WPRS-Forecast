@@ -29,6 +29,7 @@ model Usage {
     createdAt      DateTime @default(now())
     updatedAt      DateTime @updatedAt
     compUrl        String
+    pilotsUrl      String?
     wprs           Float?
     potentialWprs  Float?
     compTitle      String?

@@ -87,6 +87,7 @@ export async function getSwissleagueComp(url: string) {
   return {
     pilots: pilotsWithCivlId,
     compTitle,
+    pilotsUrl: compUrl,
     maxPilots: compDetails.maxPilots,
     compDate: {
       startDate: compDetails.compDate.startDate,
