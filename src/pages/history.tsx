@@ -84,7 +84,7 @@ export const getServerSideProps = async () => {
         compTitle: true,
         createdAt: true,
       },
-      take: 50,
+      // take: 100,
     });
     const history = data
       // Convert createdAt to milliseconds because of serialization issues with dates
@@ -98,9 +98,16 @@ export const getServerSideProps = async () => {
       )
       // Filter our entries newer then the past month
       .filter((item) => {
-        const date = new Date(item.createdAt);
-        return date.getMonth() !== new Date().getMonth();
-      });
+        const now = new Date();
+        const then = new Date(item.createdAt);
+        return (
+          then.getFullYear() < now.getFullYear() ||
+          (then.getFullYear() === now.getFullYear() &&
+            then.getMonth() < now.getMonth())
+        );
+      })
+      // sort by date
+      .sort((a, b) => b.createdAt - a.createdAt);
 
     return { props: { history } };
   } catch (error) {
