@@ -38,6 +38,12 @@ const RecentQueriesTable = ({
   );
 
   const recentQueriesTableRows = uniqueQueries?.map((stat) => {
+    const MAX_TITLE_LENGTH = 30;
+    let compTitle = stat.compTitle ?? stat.compUrl;
+    if (compTitle.length > MAX_TITLE_LENGTH) {
+      compTitle = compTitle.substring(0, MAX_TITLE_LENGTH) + "...";
+    }
+
     return (
       <TableRow key={stat.id} className="dark:border-slate-600">
         <TableCell>
@@ -47,7 +53,7 @@ const RecentQueriesTable = ({
             target="_blank"
             rel="noopener noreferrer"
           >
-            {stat.compTitle ?? stat.compUrl}
+            {compTitle}
           </a>
         </TableCell>
         <TableCell className="font-bold text-green-500">
