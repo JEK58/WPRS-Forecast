@@ -18,6 +18,8 @@ interface Props {
   disableUpdateButton: boolean;
 }
 
+const MAX_TITLE_LENGTH = 45;
+
 const RecentQueriesTable = ({
   recentQueries,
   onUpdateButtonClick,
@@ -38,7 +40,6 @@ const RecentQueriesTable = ({
   );
 
   const recentQueriesTableRows = uniqueQueries?.map((stat) => {
-    const MAX_TITLE_LENGTH = 30;
     let compTitle = stat.compTitle ?? stat.compUrl;
     if (compTitle.length > MAX_TITLE_LENGTH) {
       compTitle = compTitle.substring(0, MAX_TITLE_LENGTH) + "...";
