@@ -1,5 +1,11 @@
 # Changelog
 
+### 2024-02-16
+
+**Improvements:**
+
+- History page with statistics added
+
 ### 2023-12-02
 
 **Improvements:**

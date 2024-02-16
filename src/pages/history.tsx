@@ -11,7 +11,6 @@ export type RecentQueriesProps = InferGetServerSidePropsType<
 
 export default function Home(props: RecentQueriesProps) {
   const list = props.history.map((item) => {
-    // const date = new Date(item.createdAt).toISOString();
     return (
       <li className="mb-2" key={item.id}>
         <p className="">{item.compTitle} </p>
@@ -65,7 +64,7 @@ export default function Home(props: RecentQueriesProps) {
               </p>
             </Box>
             <Box>
-              <div className="border-t border-gray-200 py-2 dark:border-slate-600">
+              <div>
                 <ul>{list}</ul>
               </div>
             </Box>
