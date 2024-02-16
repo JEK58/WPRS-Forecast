@@ -13,10 +13,16 @@ export default function Home(props: RecentQueriesProps) {
   const list = props.history.map((item) => {
     // const date = new Date(item.createdAt).toISOString();
     return (
-      <li key={item.id}>
-        {item.compTitle}:{" "}
-        <span className="me-1 text-green-500">{item.wprs}</span>
-        {/* <span className="me-1 text-red-500">{date}</span> */}
+      <li className="mb-2" key={item.id}>
+        <p className="">{item.compTitle} </p>
+        <p className="text-gray-500 dark:text-inherit">
+          Forecast: <span className="me-1 text-green-500">{item.wprs}</span>
+          <br />
+          Actual: <span className="me-1 text-green-500">{item.actualWprs}</span>
+          {item.tasks && item.tasks < 3 && (
+            <span className="me-1">(Less than three tasks)</span>
+          )}
+        </p>
       </li>
     );
   });
@@ -57,8 +63,10 @@ export default function Home(props: RecentQueriesProps) {
                 </Link>
                 .
               </p>
+            </Box>
+            <Box>
               <div className="border-t border-gray-200 py-2 dark:border-slate-600">
-                <ul className="text-gray-500 dark:text-inherit">{list}</ul>
+                <ul>{list}</ul>
               </div>
             </Box>
           </div>
@@ -71,12 +79,24 @@ export default function Home(props: RecentQueriesProps) {
 }
 
 export const getServerSideProps = async () => {
+  const MAX_DAYS_AGO = 120;
+
   try {
+    const searchDateDaysAgo = new Date();
+    searchDateDaysAgo.setDate(searchDateDaysAgo.getDate() - MAX_DAYS_AGO);
+
+    const compsInRanking = await prisma.compRanking.findMany({
+      where: { resultsUpdated: { gt: searchDateDaysAgo } },
+      select: { name: true, winnerScore: true, tasks: true },
+    });
+
+    const compNames = compsInRanking.map((comp) => comp.name);
+
     const data = await prisma.usage.findMany({
       orderBy: { createdAt: "desc" },
       where: {
         potentialWprs: { not: null },
-        NOT: [{ compTitle: null }, { compTitle: "" }, { wprs: null }],
+        NOT: [{ wprs: null }],
       },
       select: {
         wprs: true,
@@ -84,9 +104,16 @@ export const getServerSideProps = async () => {
         compTitle: true,
         createdAt: true,
       },
-      // take: 100,
     });
-    const history = data
+
+    const trimmedCompNames = compNames.map((name) => name.trim().toLowerCase());
+
+    const filteredData = data.filter((item) => {
+      if (!item.compTitle) return false;
+      return trimmedCompNames.includes(item.compTitle.trim().toLowerCase());
+    });
+
+    const history = filteredData
       // Convert createdAt to milliseconds because of serialization issues with dates
       .map(({ createdAt, ...rest }) => {
         return { createdAt: createdAt.getTime(), ...rest };
@@ -96,16 +123,25 @@ export const getServerSideProps = async () => {
         (item, index, self) =>
           index === self.findIndex((i) => i.compTitle === item.compTitle),
       )
-      // Filter our entries newer then the past month
-      .filter((item) => {
-        const now = new Date();
-        const then = new Date(item.createdAt);
-        return (
-          then.getFullYear() < now.getFullYear() ||
-          (then.getFullYear() === now.getFullYear() &&
-            then.getMonth() < now.getMonth())
-        );
+      // Add wprs and # of tasks to each entry
+      .map((el) => {
+        const actualWprs = compsInRanking.find(
+          (comp) =>
+            comp.name.toLowerCase().trim() ===
+            el.compTitle?.toLowerCase().trim(),
+        )?.winnerScore;
+        const tasks = compsInRanking.find(
+          (comp) =>
+            comp.name.toLowerCase().trim() ===
+            el.compTitle?.toLowerCase().trim(),
+        )?.tasks;
+        return {
+          ...el,
+          actualWprs,
+          tasks,
+        };
       })
+
       // sort by date
       .sort((a, b) => b.createdAt - a.createdAt);
 

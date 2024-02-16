@@ -13,6 +13,7 @@ import { ForecastView } from "@/components/ForecastView";
 import { useRouter } from "next/router";
 import { Footer } from "@/components/Footer";
 import { Element, scroller, animateScroll } from "react-scroll";
+import Link from "next/link";
 
 export type RecentQueriesProps = InferGetServerSidePropsType<
   typeof getServerSideProps
@@ -239,6 +240,13 @@ export default function Home(props: RecentQueriesProps) {
                       It will not work for past events. It&apos;s a forecast!
                     </li>
                   </ul>
+                  <p className="mt-2  text-gray-500 dark:text-inherit">
+                    See the{" "}
+                    <Link className="text-green-500 " href="/history">
+                      history page
+                    </Link>{" "}
+                    for forecast accuracy statistics.
+                  </p>
                 </div>
               </Box>
             )}

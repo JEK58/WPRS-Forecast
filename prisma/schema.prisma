@@ -37,3 +37,23 @@ model Usage {
     error          String?
     meta           Json?
 }
+
+model CompRanking {
+    id                 Int      @id @default(autoincrement())
+    period             String
+    name               String
+    link               String?
+    discipline         String
+    ta                 Float
+    pn                 Float
+    pq                 Float
+    td                 Float
+    tasks              Int
+    pilots             Int
+    pilotsLast12Months Int
+    compsLast12Months  Int
+    daysSinceCompEnd   Int
+    lastScore          Float
+    winnerScore        Float
+    resultsUpdated     DateTime
+}
