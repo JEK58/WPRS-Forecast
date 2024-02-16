@@ -1,4 +1,4 @@
-import { scrapeRecentCivlComps } from "../src/utils/scrape-recent-comps";
+import { scrapeRecentCivlComps } from "../src/utils/update-recent-comps";
 
 describe("Scrape recent comps from CIVL website", () => {
   it("should find the recent comps in the world ranking", async () => {
