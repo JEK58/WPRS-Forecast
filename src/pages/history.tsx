@@ -62,6 +62,11 @@ export default function Home(props: RecentQueriesProps) {
                 </Link>
                 .
               </p>
+              <p>
+                This page is generated automatically. Some comps may be missing
+                if the name on the comp website does not match the name in the
+                world ranking.
+              </p>
             </Box>
             <Box>
               <div>
