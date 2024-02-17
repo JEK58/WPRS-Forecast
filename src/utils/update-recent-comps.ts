@@ -60,7 +60,6 @@ export async function scrapeRecentCivlComps() {
         return;
       return comp;
     })
-    .filter(Boolean)
     .get();
 
   return comps;
