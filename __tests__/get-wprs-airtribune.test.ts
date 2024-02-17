@@ -1,3 +1,4 @@
+import { describe, it, expect } from "bun:test";
 import { getForecast } from "@/utils/get-forecast";
 import { getAirtribuneComp } from "@/utils/get-airtribune-comp";
 
@@ -10,7 +11,7 @@ describe("Get WPRS for Airtribune comp", () => {
     if ("error" in res) {
       expect(res.error).toBe("PAST_EVENT");
     }
-  });
+  }, 20000);
 
   it("should find the correct amount of max pilots", async () => {
     const expectedNumberOfMaxPilots = 80;
