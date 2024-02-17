@@ -21,6 +21,7 @@ jobs:
       OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
       ALGOLIA_APP_ID: ${{ secrets.ALGOLIA_APP_ID }}
       ALGOLIA_API_KEY: ${{ secrets.ALGOLIA_API_KEY }}
+      PRISMA_CLI_BINARY_TARGETS: "debian-openssl-3.0.x"
 
     # strategy:
     #   matrix:
