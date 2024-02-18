@@ -31,6 +31,7 @@ export async function getForecast(
 
   // Swissleague
   if (platform === "SWISSLEAGUE") comp = await getSwissleagueComp(url);
+
   if (!comp || !platform) return { error: "UNSUPPORTED_PLATFORM" };
   if (comp?.pilots.length < MIN_PILOTS) return { error: "NOT_ENOUGH_PILOTS" };
 
