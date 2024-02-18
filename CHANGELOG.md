@@ -5,6 +5,8 @@
 **Improvements:**
 
 - History page with statistics added
+- PWCs should work again
+- Days till comp start added to table
 
 ### 2023-12-02
 

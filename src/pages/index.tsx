@@ -228,8 +228,9 @@ export default function Home(props: RecentQueriesProps) {
                       all.
                     </li>
                     <li>
-                      The calculation will become more accurate as the
-                      competition date approaches.
+                      The calculation will become{" "}
+                      <span className="text-green-500">more accurate</span> as
+                      the competition date approaches.
                     </li>
                     <li>
                       PWC events may currently not give correct results or not
@@ -240,9 +241,12 @@ export default function Home(props: RecentQueriesProps) {
                       It will not work for past events. It&apos;s a forecast!
                     </li>
                   </ul>
-                  <p className="mt-2  text-gray-500 dark:text-inherit">
+                  <p className="mt-2 text-gray-500 dark:text-inherit">
                     See the{" "}
-                    <Link className="text-green-500 " href="/history">
+                    <Link
+                      className="text-green-500 hover:underline hover:decoration-green-500"
+                      href="/history"
+                    >
                       history page
                     </Link>{" "}
                     for forecast accuracy statistics.

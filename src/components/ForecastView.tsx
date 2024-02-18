@@ -14,12 +14,12 @@ export const ForecastView: React.FC<Props> = ({ data, onResetCompData }) => {
     <>
       <div className="justify-content-between flex items-start ">
         <div className="flex-grow">
-          <h2 className="mb-2 text-lg font-bold dark:text-slate-200 sm:text-2xl">
+          <h2 className="mb-2 text-lg font-bold sm:text-2xl dark:text-slate-200">
             {data.compTitle}
           </h2>
           {data.compUrl && (
             <Link
-              className=" flex items-center text-sm underline decoration-green-500 decoration-dotted hover:decoration-black dark:text-slate-300"
+              className="flex items-center text-sm underline decoration-green-500 decoration-dotted hover:decoration-black dark:text-slate-300"
               target="_blank"
               href={data.compUrl}
             >
