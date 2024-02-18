@@ -26,9 +26,11 @@ model Ranking {
 }
 
 model Usage {
-    id             String   @id @default(cuid())
-    createdAt      DateTime @default(now())
-    updatedAt      DateTime @updatedAt
+    id             String    @id @default(cuid())
+    createdAt      DateTime  @default(now())
+    updatedAt      DateTime  @updatedAt
+    startDate      DateTime?
+    endDate        DateTime?
     compUrl        String
     pilotsUrl      String?
     wprs           Float?

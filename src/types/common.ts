@@ -27,6 +27,10 @@ export type Forecast = {
   confirmed?: CompForecast;
   compUrl: string;
   meta?: Statistics;
+  compDate?: {
+    startDate?: Date;
+    endDate?: Date;
+  };
 };
 
 export type CompDetails = {

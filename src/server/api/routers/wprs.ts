@@ -96,6 +96,8 @@ async function getForecast(inputUrl: string) {
           pilotsUrl: forecast?.pilotsUrl,
           processingTime,
           potentialWprs,
+          startDate: forecast?.compDate?.startDate,
+          endDate: forecast?.compDate?.endDate,
           meta: {
             ...forecast?.meta,
             confirmed: forecast?.confirmed?.civlIds,

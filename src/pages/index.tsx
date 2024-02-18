@@ -291,20 +291,41 @@ export const getServerSideProps = async () => {
         id: true,
         compTitle: true,
         createdAt: true,
+        startDate: true,
+        endDate: true,
       },
       take: 50,
     });
 
-    const comps = data.map(({ createdAt, ...rest }) => {
+    const comps = data.map(({ createdAt, startDate, endDate, ...rest }) => {
       const now = new Date();
       const timeDiff = now.getTime() - createdAt.getTime(); // in milliseconds
 
       // Calculate time differences in hours and days
       const hoursDiff = Math.floor(timeDiff / (1000 * 60 * 60));
 
+      // Time till comp start
+      let daysTillCompStart: number | null = null;
+      let daysSinceCompEnd: number | null = null;
+      if (startDate != null) {
+        const diffInMilliseconds = startDate.getTime() - now.getTime();
+        daysTillCompStart = Math.ceil(
+          diffInMilliseconds / (1000 * 60 * 60 * 24),
+        );
+      }
+      // Time since comp end
+      if (endDate != null) {
+        const diffInMilliseconds = endDate.getTime() - now.getTime();
+        daysSinceCompEnd = Math.ceil(
+          diffInMilliseconds / (1000 * 60 * 60 * 24),
+        );
+      }
+
       return {
         ...rest,
         ageInHours: hoursDiff,
+        daysTillCompStart,
+        daysSinceCompEnd,
       };
     });
 

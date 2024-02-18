@@ -48,6 +48,7 @@ export async function getForecast(
     compUrl: url,
     pilotsUrl: comp.pilotsUrl,
     meta: comp.statistics,
+    compDate: comp.compDate,
   };
 }
 
