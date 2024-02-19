@@ -46,7 +46,10 @@ const RecentQueriesTable = ({
     }
 
     return (
-      <TableRow key={stat.id} className="dark:border-slate-600">
+      <TableRow
+        key={stat.id}
+        className="border-slate-300 dark:border-slate-600"
+      >
         <TableCell>
           <a
             className="decoration-green-500 hover:underline hover:decoration-dotted"
