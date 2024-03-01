@@ -41,6 +41,7 @@ const MAX_PILOTS = 125;
 export async function getPwcComp(url: string) {
   const compUrl = await generatePwcCompUrl(url);
 
+  if (!compUrl) return;
   const response = await fetch(compUrl);
   const body = await response.text();
 
@@ -117,30 +118,15 @@ async function generatePwcCompUrl(url: string) {
   if (url.includes("pwca.org"))
     return url.slice(0, getPosition(url, "/", 5)) + "/selection";
 
-  // If it's a running event using the new .events page: Create the legacy url from an h2
   const response = await fetch(url);
   const body = await response.text();
 
   const $ = load(body, { xmlMode: true });
 
-  const h2 = $("h2")
-    .eq(0)
-    .text()
-    .trim()
-    .toLocaleLowerCase()
-    .replaceAll(" ", "-")
-    .replaceAll("-–-", "-") // - vs –
-    .replaceAll(",", "");
+  // Find the legacy link by getting the src url from the selection iframe used on the new event page
+  const iframeSrc = $("iframe#advanced_iframe")
+    .attr("src")
+    ?.replace("selection-frame", "selection");
 
-  // The superfinal api url starts with its season year number even if it's held in the current year
-  // We therefore need to find the year in the h2 otherwise with just take the current one and hope for the best.
-
-  const year = findYearInString(h2) ?? new Date().getFullYear();
-
-  return "https://pwca.org/events/" + year + "-" + h2 + "/selection";
-}
-
-function findYearInString(str: string): string | null {
-  const match = str.match(/\b(20)\d{2}\b/);
-  return match ? match[0] : null;
+  return iframeSrc;
 }

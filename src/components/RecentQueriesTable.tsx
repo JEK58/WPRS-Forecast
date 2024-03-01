@@ -18,6 +18,8 @@ interface Props {
   disableUpdateButton: boolean;
 }
 
+const MAX_TITLE_LENGTH = 45;
+
 const RecentQueriesTable = ({
   recentQueries,
   onUpdateButtonClick,
@@ -38,14 +40,16 @@ const RecentQueriesTable = ({
   );
 
   const recentQueriesTableRows = uniqueQueries?.map((stat) => {
-    const MAX_TITLE_LENGTH = 30;
     let compTitle = stat.compTitle ?? stat.compUrl;
     if (compTitle.length > MAX_TITLE_LENGTH) {
       compTitle = compTitle.substring(0, MAX_TITLE_LENGTH) + "...";
     }
 
     return (
-      <TableRow key={stat.id} className="dark:border-slate-600">
+      <TableRow
+        key={stat.id}
+        className="border-slate-300 dark:border-slate-600"
+      >
         <TableCell>
           <a
             className="decoration-green-500 hover:underline hover:decoration-dotted"
@@ -55,6 +59,18 @@ const RecentQueriesTable = ({
           >
             {compTitle}
           </a>
+        </TableCell>
+        <TableCell>
+          {stat.daysTillCompStart && stat.daysTillCompStart > 0 && (
+            <span className="font-normal text-gray-400">
+              {stat.daysTillCompStart}{" "}
+              {stat.daysTillCompStart != 1 ? "days" : "day"}
+            </span>
+          )}
+
+          {/* {stat.daysSinceCompEnd && stat.daysSinceCompEnd < 0 && (
+            <span className="font-normal text-gray-400"></span>
+          )} */}
         </TableCell>
         <TableCell className="font-bold text-green-500">
           {stat.wprs ?? "---"}
@@ -101,10 +117,11 @@ const RecentQueriesTable = ({
     <>
       <h2 className="text-lg font-bold dark:text-slate-200">Recent Queries</h2>
       <div className="w-full overflow-x-auto">
-        <Table className="text-lef w-full">
+        <Table className="w-full text-left">
           <TableHeader>
             <TableRow className="dark:border-slate-600">
               <TableHead></TableHead>
+              <TableHead>Begins</TableHead>
               <TableHead>WPRS</TableHead>
               <TableHead>Updated</TableHead>
               <TableHead />

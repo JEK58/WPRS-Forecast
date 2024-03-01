@@ -86,7 +86,7 @@ async function getForecast(inputUrl: string) {
   try {
     const wprs = forecast?.confirmed?.WPRS?.[0]?.Ta3;
     const potentialWprs = forecast.all?.WPRS?.[0]?.Ta3;
-    const compTitle = forecast?.compTitle;
+    const compTitle = forecast?.compTitle?.trim();
     if (queryID && (wprs || potentialWprs)) {
       await prisma.usage.update({
         where: { id: queryID },
@@ -96,6 +96,8 @@ async function getForecast(inputUrl: string) {
           pilotsUrl: forecast?.pilotsUrl,
           processingTime,
           potentialWprs,
+          startDate: forecast?.compDate?.startDate,
+          endDate: forecast?.compDate?.endDate,
           meta: {
             ...forecast?.meta,
             confirmed: forecast?.confirmed?.civlIds,

@@ -2,7 +2,8 @@
 // learn more about it in the docs: https://pris.ly/d/prisma-schema
 
 generator client {
-    provider = "prisma-client-js"
+    binaryTargets = ["native", "debian-openssl-3.0.x"]
+    provider      = "prisma-client-js"
 }
 
 datasource db {
@@ -25,9 +26,11 @@ model Ranking {
 }
 
 model Usage {
-    id             String   @id @default(cuid())
-    createdAt      DateTime @default(now())
-    updatedAt      DateTime @updatedAt
+    id             String    @id @default(cuid())
+    createdAt      DateTime  @default(now())
+    updatedAt      DateTime  @updatedAt
+    startDate      DateTime?
+    endDate        DateTime?
     compUrl        String
     pilotsUrl      String?
     wprs           Float?
@@ -36,4 +39,24 @@ model Usage {
     processingTime Float?
     error          String?
     meta           Json?
+}
+
+model CompRanking {
+    id                 Int      @id @default(autoincrement())
+    period             String
+    name               String
+    link               String?
+    discipline         String
+    ta                 Float
+    pn                 Float
+    pq                 Float
+    td                 Float
+    tasks              Int
+    pilots             Int
+    pilotsLast12Months Int
+    compsLast12Months  Int
+    daysSinceCompEnd   Int
+    lastScore          Float
+    winnerScore        Float
+    resultsUpdated     DateTime
 }

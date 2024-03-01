@@ -1,6 +1,7 @@
 import type { NextApiRequest, NextApiResponse } from "next";
 import { env } from "@/env.mjs";
 import { updateWorldRanking } from "@/utils/update-world-ranking";
+import { updateRecentComps } from "@/utils/update-recent-comps";
 
 async function handler(req: NextApiRequest, res: NextApiResponse) {
   const { apiKey } = req.query;
@@ -10,10 +11,15 @@ async function handler(req: NextApiRequest, res: NextApiResponse) {
     return res.status(401).json({ message: "Invalid API key" });
   }
 
-  console.info("🧹 Updating world ranking db...");
   try {
+    console.info("🧹 Updating world ranking db...");
     await updateWorldRanking();
     console.info("🧹 ...done");
+
+    console.info("🧹 Updating recent comps db...");
+    await updateRecentComps();
+    console.info("🧹 ...done");
+
     res.status(200).send("done");
   } catch (err) {
     res.status(500).json({ error: "internal error", message: err });

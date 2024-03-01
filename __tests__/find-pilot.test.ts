@@ -1,3 +1,5 @@
+import { describe, it, expect } from "bun:test";
+
 import { getCivlIds } from "@/utils/get-civl-ids";
 import { pilots } from "./data/pwcPilots";
 
