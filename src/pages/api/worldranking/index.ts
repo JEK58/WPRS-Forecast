@@ -10,6 +10,10 @@ async function handler(req: NextApiRequest, res: NextApiResponse) {
     return res.status(401).json({ message: "Invalid API key" });
   }
 
+  console.info(
+    "World ranking endpoint called with gender: " + gender?.toString(),
+  );
+
   let options = {};
 
   if (typeof gender === "string" && ["M", "m", "F", "f"].includes(gender)) {
