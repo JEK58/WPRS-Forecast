@@ -1,6 +1,8 @@
 import type { NextApiRequest, NextApiResponse } from "next";
-import { env } from "@/env.mjs";
-import { prisma } from "@/server/db";
+import { env } from "@/env.js";
+import { db } from "@/server/db";
+import { ilike } from "drizzle-orm";
+import { ranking } from "@/server/db/schema";
 
 async function handler(req: NextApiRequest, res: NextApiResponse) {
   const { apiKey, gender } = req.query;
@@ -14,16 +16,15 @@ async function handler(req: NextApiRequest, res: NextApiResponse) {
     "World ranking endpoint called with gender: " + gender?.toString(),
   );
 
-  let options = {};
-
-  if (typeof gender === "string" && ["M", "m", "F", "f"].includes(gender)) {
-    options = {
-      where: { gender: { equals: gender, mode: "insensitive" } },
-    };
-  }
+  const useOptions =
+    typeof gender === "string" && ["M", "m", "F", "f"].includes(gender);
 
   try {
-    const result = await prisma.ranking.findMany(options);
+    const result = await db
+      .select()
+      .from(ranking)
+      .where(useOptions ? ilike(ranking.gender, gender) : undefined);
+
     res.status(200).json(result);
   } catch (err) {
     res.status(500).json({ error: "internal error", message: err });

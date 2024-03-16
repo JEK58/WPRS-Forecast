@@ -4,8 +4,6 @@ FROM node:20-alpine AS deps
 RUN apk add --no-cache libc6-compat openssl
 WORKDIR /app
 
-COPY prisma ./
-
 COPY package.json yarn.lock* package-lock.json* pnpm-lock.yaml\* ./
 
 RUN \
@@ -24,8 +22,6 @@ WORKDIR /app
 COPY --from=deps /app/node_modules ./node_modules
 RUN mkdir tmp
 COPY . .
-
-RUN yarn prisma generate
 
 ENV NEXT_TELEMETRY_DISABLED 1
 

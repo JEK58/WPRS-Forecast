@@ -1,17 +1,18 @@
-import { prisma } from "@/server/db";
+import { db } from "@/server/db";
+import { compRanking } from "@/server/db/schema";
+import { load } from "cheerio";
 
 export async function updateRecentComps() {
   const comps = await scrapeRecentCivlComps();
 
   // Update DB
-  const deleted = await prisma.compRanking.deleteMany({});
-  console.log("🗑️ ~ Deleted comp ranking entries:", deleted.count);
+  // eslint-disable-next-line drizzle/enforce-delete-with-where
+  const deleted = await db.delete(compRanking).returning();
+  console.log("🗑️ ~ Deleted comp ranking entries:", deleted.length);
 
-  const entries = await prisma.compRanking.createMany({ data: comps });
-  console.log("🧪 ~ New comp ranking entries:", entries.count);
+  const entries = await db.insert(compRanking).values(comps).returning();
+  console.log("🧪 ~ New comp ranking entries:", entries.length);
 }
-
-import { load } from "cheerio";
 
 const CIVL_URL = "https://civlcomps.org/ranking/paragliding-xc/competitions";
 
@@ -49,7 +50,7 @@ export async function scrapeRecentCivlComps() {
         daysSinceCompEnd: parseInt(row.find("td").eq(11).text()),
         lastScore: parseFloat(row.find("td").eq(12).text()),
         winnerScore: parseFloat(row.find("td").eq(13).text()),
-        resultsUpdated: new Date(resultsUpdated),
+        resultsUpdated: new Date(resultsUpdated).toISOString(),
       };
 
       if (

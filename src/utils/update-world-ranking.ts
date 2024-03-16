@@ -1,10 +1,11 @@
 import XLSX from "xlsx";
-import { prisma } from "@/server/db";
 import { z } from "zod";
 import axios from "axios";
 import { load } from "cheerio";
 import fs from "fs";
 import { normalizeName } from "@/utils/normalize-name";
+import { db } from "@/server/db";
+import { ranking } from "@/server/db/schema";
 
 const CIVL_URL = "https://civlcomps.org/ranking/paragliding-xc/pilots";
 const CIVL_DOWNLOAD_ENDPOINT = "https://civlcomps.org/ranking/export-new";
@@ -61,7 +62,7 @@ export async function updateWorldRanking() {
     points: z.number(),
     rank: z.number(),
     nation: z.string(),
-    date: z.date(),
+    date: z.string(),
   });
 
   const data = worldRanking
@@ -75,16 +76,17 @@ export async function updateWorldRanking() {
         points: el.Points,
         rank: el.Rank,
         nation: el.Nation.trim(),
-        date: worldRankingDate,
+        date: worldRankingDate.toISOString(),
       });
     });
 
   // Update DB
-  const deleted = await prisma.ranking.deleteMany({});
-  console.log("🗑️ ~ Deleted entries:", deleted.count);
+  // eslint-disable-next-line drizzle/enforce-delete-with-where
+  const deleted = await db.delete(ranking).returning();
+  console.log("🗑️ ~ Deleted entries:", deleted.length);
 
-  const entries = await prisma.ranking.createMany({ data });
-  console.log("🧪 ~ New entries:", entries.count);
+  const entries = await db.insert(ranking).values(data).returning();
+  console.log("🧪 ~ New entries:", entries.length);
 }
 
 /**

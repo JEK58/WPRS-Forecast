@@ -87,7 +87,7 @@ export async function getPwcComp(url: string) {
       confirmed: isConfirmed(el.status_key),
     };
   });
-  console.log("Gettting CIVL IDs");
+  console.log("Getting CIVL IDs");
 
   const res = await getCivlIds(listOfPilots.map((p) => p.name));
 
