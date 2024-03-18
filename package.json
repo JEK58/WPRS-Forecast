@@ -10,7 +10,9 @@
     "db:generate": "drizzle-kit generate:pg",
     "dev": "next dev",
     "lint": "next lint",
-    "start": "next start"
+    "start": "next start",
+    "test": "bun test --watch",
+    "test:ci": "bun test --ci --silent"
   },
   "dependencies": {
     "@braintree/sanitize-url": "^7.0.0",
