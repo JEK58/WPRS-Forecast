@@ -38,7 +38,7 @@ export async function ForecastView({ url }: { url?: string }) {
               target="_blank"
               href={data.compUrl}
             >
-              Visit comp website
+              {data.compUrl}{" "}
             </Link>
           )}
         </div>
