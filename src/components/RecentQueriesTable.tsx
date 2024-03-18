@@ -66,7 +66,9 @@ const RecentQueriesTable = async () => {
             </span>
           )}
         </TableCell>
-        <TableCell>{formatAge(stat.ageInHours)}</TableCell>
+        <TableCell className="hidden sm:block">
+          {formatAge(stat.ageInHours)}
+        </TableCell>
         <TableCell className="text-right">
           <Link href={`/forecast?url=${stat.compUrl}`}>
             <Button
@@ -108,7 +110,7 @@ const RecentQueriesTable = async () => {
               <TableHead></TableHead>
               <TableHead>Begins</TableHead>
               <TableHead>WPRS</TableHead>
-              <TableHead>Updated</TableHead>
+              <TableHead className="hidden sm:block">Updated</TableHead>
               <TableHead />
             </TableRow>
           </TableHeader>
