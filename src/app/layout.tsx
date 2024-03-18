@@ -1,7 +1,8 @@
 import { Footer } from "@/components/Footer";
 import "@/styles/globals.css";
 import Link from "next/link";
-
+import PlausibleProvider from "next-plausible";
+import { env } from "@/env.js";
 import { Inter } from "next/font/google";
 
 const inter = Inter({
@@ -23,6 +24,13 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en">
+      <head>
+        <PlausibleProvider
+          domain="wprs-forecast.org"
+          selfHosted={true}
+          customDomain={env.NEXT_PUBLIC_PLAUSIBLE_URL}
+        />
+      </head>
       <body className={`font-sans ${inter.variable}`}>
         <div className="flex min-h-screen flex-col bg-gradient-to-r from-green-400 to-blue-500 pb-4">
           <div className="flex flex-col items-center justify-center space-y-8 px-0 py-4 md:px-4">
