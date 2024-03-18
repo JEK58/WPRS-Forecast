@@ -8,6 +8,7 @@ import { ranking } from "@/server/db/schema";
 import { type InferSelectModel, inArray } from "drizzle-orm";
 
 export const CIVL_PLACEHOLDER_ID = 99999;
+const REDIS_EXP_TIME = 60 * 60 * 24 * 10; // 10 days
 
 const redis = new Redis({ host: env.REDIS_URL });
 
@@ -164,7 +165,7 @@ export async function getCivlIds(pilots: string[], disableAlgolia?: boolean) {
 
 async function addToCache(name: string, civl: number) {
   const redisKey = `name:${name.toLowerCase()}`;
-  await redis.set(redisKey, civl).catch((err) => {
+  await redis.set(redisKey, civl, "EX", REDIS_EXP_TIME).catch((err) => {
     console.log(err);
   });
 }

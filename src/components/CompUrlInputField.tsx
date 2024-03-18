@@ -10,23 +10,6 @@ export function CompUrlInputField() {
 
   const isValidLink = isValidUrl(url);
 
-  // Used to scroll to the areas of interest
-  // useEffect(() => {
-  //   if (data) {
-  //     scroller.scrollTo("forecastViewScroll", {
-  //       duration: 500,
-  //       delay: 100,
-  //       smooth: true,
-  //       offset: -50,
-  //     });
-  //   } else {
-  //     animateScroll.scrollToTop({
-  //       duration: 500,
-  //       smooth: true,
-  //     });
-  //   }
-  // }, [data]);
-
   // Only show the paste button when the browser supports reading from clipboard.
   // useEffect is needed to prevent a hydration error bc ".navigator" is only available in the browser
   useEffect(() => {

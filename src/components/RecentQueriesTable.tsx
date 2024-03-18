@@ -1,6 +1,5 @@
 import { sanitizeUrl } from "@braintree/sanitize-url";
 import { Button } from "@/components/ui/Button";
-// import { animateScroll } from "react-scroll";
 import { fetchRecentQueries } from "@/app/lib/data";
 import { unstable_noStore as noStore } from "next/cache";
 import Link from "next/link";

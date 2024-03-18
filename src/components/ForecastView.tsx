@@ -42,6 +42,7 @@ export async function ForecastView({ url }: { url?: string }) {
             </Link>
           )}
         </div>
+        {/* Close button */}
         <Link href="/">
           <button
             className="rounded-full px-0.5 py-0.5  hover:bg-green-500 focus:bg-gray-400 focus:outline-none"
