@@ -1,7 +1,8 @@
 import type { NextApiRequest, NextApiResponse } from "next";
-import { env } from "@/env.mjs";
-import { prisma } from "@/server/db";
+import { env } from "@/env.js";
 import Redis from "ioredis";
+import { db } from "@/server/db";
+import { ranking } from "@/server/db/schema";
 
 async function handler(req: NextApiRequest, res: NextApiResponse) {
   const { apiKey } = req.query;
@@ -25,9 +26,9 @@ async function handler(req: NextApiRequest, res: NextApiResponse) {
 async function populateCache() {
   const redis = new Redis({ host: env.REDIS_URL });
 
-  const ranking = await prisma.ranking.findMany();
+  const res = await db.select().from(ranking);
 
-  const keyValuePairs = ranking.map((item) => [
+  const keyValuePairs = res.map((item) => [
     "name:" + item.name.toLocaleLowerCase(),
     item.id,
   ]);

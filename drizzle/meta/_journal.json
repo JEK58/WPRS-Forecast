@@ -1,0 +1,27 @@
+{
+  "version": "5",
+  "dialect": "pg",
+  "entries": [
+    {
+      "idx": 0,
+      "version": "5",
+      "when": 1710757045687,
+      "tag": "0000_swift_mac_gargan",
+      "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "5",
+      "when": 1710757727926,
+      "tag": "0001_brainy_lady_deathstrike",
+      "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "5",
+      "when": 1710757793305,
+      "tag": "0002_steady_purifiers",
+      "breakpoints": true
+    }
+  ]
+}

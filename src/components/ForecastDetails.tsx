@@ -19,10 +19,6 @@ export function ForecastDetails({ data }: { data: Forecast }) {
         <span className={listClassName}>{data?.confirmed?.WPRS[0]?.Ta1}</span>
       </li>
       <li>
-        Number of pilots:{" "}
-        <span className={listClassName}>{data?.confirmed?.numPilots}</span>
-      </li>
-      <li>
         Number of participants (Pn):{" "}
         <span className={listClassName}>{data?.confirmed?.Pn}</span>
       </li>

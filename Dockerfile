@@ -4,8 +4,6 @@ FROM node:20-alpine AS deps
 RUN apk add --no-cache libc6-compat openssl
 WORKDIR /app
 
-COPY prisma ./
-
 COPY package.json yarn.lock* package-lock.json* pnpm-lock.yaml\* ./
 
 RUN \
@@ -24,8 +22,6 @@ WORKDIR /app
 COPY --from=deps /app/node_modules ./node_modules
 RUN mkdir tmp
 COPY . .
-
-RUN yarn prisma generate
 
 ENV NEXT_TELEMETRY_DISABLED 1
 
@@ -48,7 +44,7 @@ ENV NEXT_TELEMETRY_DISABLED 1
 RUN addgroup --system --gid 1001 nodejs
 RUN adduser --system --uid 1001 nextjs
 
-COPY --from=builder /app/next.config.mjs ./
+COPY --from=builder /app/next.config.js ./
 COPY --from=builder /app/public ./public
 COPY --from=builder /app/package.json ./package.json
 

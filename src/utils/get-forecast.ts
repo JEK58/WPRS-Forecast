@@ -7,8 +7,12 @@ import { calculateWPRS } from "./calculate-wprs";
 
 const MIN_PILOTS = 25; // Minimum required confirmed pilots in a comp
 
-type Error = "NOT_ENOUGH_PILOTS" | "PAST_EVENT" | "UNSUPPORTED_PLATFORM";
-type GetForecastError = {
+type Error =
+  | "NOT_ENOUGH_PILOTS"
+  | "PAST_EVENT"
+  | "UNSUPPORTED_PLATFORM"
+  | "NO_URL";
+export type GetForecastError = {
   error: Error;
 };
 type Platform = "AIRTRIBUNE" | "CIVLCOMPS" | "PWCA" | "SWISSLEAGUE" | undefined;

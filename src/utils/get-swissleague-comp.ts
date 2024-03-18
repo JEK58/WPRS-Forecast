@@ -46,9 +46,7 @@ export async function getSwissleagueComp(url: string) {
 
   const compDetails = await getCompDetails(detailsUrl);
 
-  interface RowData {
-    [key: string]: string;
-  }
+  type RowData = Record<string, string>;
 
   const data: RowData[] = [];
 

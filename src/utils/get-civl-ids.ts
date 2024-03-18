@@ -1,11 +1,14 @@
-import { prisma } from "@/server/db";
-import { type Ranking } from "@prisma/client";
+/* eslint-disable drizzle/enforce-delete-with-where */
 import MiniSearch from "minisearch";
 import algoliasearch from "algoliasearch";
 import Redis from "ioredis";
-import { env } from "@/env.mjs";
+import { env } from "@/env.js";
+import { db } from "@/server/db";
+import { ranking } from "@/server/db/schema";
+import { type InferSelectModel, inArray } from "drizzle-orm";
 
 export const CIVL_PLACEHOLDER_ID = 99999;
+const REDIS_EXP_TIME = 60 * 60 * 24 * 10; // 10 days
 
 const redis = new Redis({ host: env.REDIS_URL });
 
@@ -50,24 +53,23 @@ export async function getCivlIds(pilots: string[], disableAlgolia?: boolean) {
   /**
    * Lookup pilots in DB
    */
+  if (searchQueue.size > 0) {
+    try {
+      const pilotsFoundDb = await db
+        .select()
+        .from(ranking)
+        .where(inArray(ranking.name, [...searchQueue]));
 
-  const pilotsFoundDb = await prisma.ranking.findMany({
-    where: {
-      name: {
-        in: [...searchQueue],
-        mode: "insensitive",
-      },
-    },
-    // take: searchQueue.size,
-    // distinct: ["name"],
-  });
+      for (const pilot of pilotsFoundDb) {
+        const name = pilot.name.toLowerCase();
+        civlIds.set(name, pilot.id);
+        searchQueue.delete(name);
 
-  for (const pilot of pilotsFoundDb) {
-    const name = pilot.name.toLowerCase();
-    civlIds.set(name, pilot.id);
-    searchQueue.delete(name);
-
-    await addToCache(name, pilot.id);
+        await addToCache(name, pilot.id);
+      }
+    } catch (error) {
+      console.log(error);
+    }
   }
 
   const missingInDB = searchQueue.size;
@@ -77,7 +79,7 @@ export async function getCivlIds(pilots: string[], disableAlgolia?: boolean) {
    * TODO: Only load and index if there are pilots left to search
    */
 
-  const worldRanking = await prisma.ranking.findMany();
+  const worldRanking = await db.select().from(ranking);
 
   const miniSearch = new MiniSearch({
     fields: ["name"],
@@ -87,6 +89,8 @@ export async function getCivlIds(pilots: string[], disableAlgolia?: boolean) {
 
   // Create index
   miniSearch.addAll(worldRanking);
+
+  type Ranking = InferSelectModel<typeof ranking>;
 
   for (const pilot of [...searchQueue]) {
     const res = miniSearch.search(pilot, {
@@ -161,7 +165,7 @@ export async function getCivlIds(pilots: string[], disableAlgolia?: boolean) {
 
 async function addToCache(name: string, civl: number) {
   const redisKey = `name:${name.toLowerCase()}`;
-  await redis.set(redisKey, civl).catch((err) => {
+  await redis.set(redisKey, civl, "EX", REDIS_EXP_TIME).catch((err) => {
     console.log(err);
   });
 }

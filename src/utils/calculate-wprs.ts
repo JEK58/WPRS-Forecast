@@ -1,8 +1,9 @@
-import { prisma } from "@/server/db";
-import { type Ranking } from "@prisma/client";
 import { type Pilot, type CompForecast } from "@/types/common";
 import Redis from "ioredis";
-import { env } from "@/env.mjs";
+import { env } from "@/env";
+import { db } from "@/server/db";
+import { ranking } from "@/server/db/schema";
+import { type InferSelectModel, asc, eq } from "drizzle-orm";
 
 const REDIS_EXP_TIME = 60 * 60; // 1 hour
 const AVG_NUM_PARTICIPANTS = 76; // June 2022-June 2023
@@ -16,10 +17,11 @@ export async function calculateWPRS(
 
   if (pilots.length < 2) return;
 
-  const worldRankingDate = (await prisma.ranking.findFirst())?.date;
+  const worldRankingDate = (await db.query.ranking.findFirst())?.date;
+
   if (!worldRankingDate) throw new Error("No world ranking date found");
 
-  const numberOfPilots = Math.min(pilots.length, maxPilots || pilots.length);
+  const numberOfPilots = Math.min(pilots.length, maxPilots ?? pilots.length);
 
   /**
    * Quality of participants (Pq)
@@ -56,7 +58,7 @@ export async function calculateWPRS(
     .filter((item): item is number => typeof item === "number");
 
   return {
-    worldRankingDate,
+    worldRankingDate: new Date(worldRankingDate),
     numPilots: numberOfPilots,
     Pq: +Pq.toFixed(3),
     Pq_srp: +Pq_srp.toFixed(3),
@@ -78,10 +80,11 @@ function calcPilotPointFactors(numOfPilots: number, Pq: number) {
 }
 
 async function getPq_srtp(numberOfPilots: number) {
-  const topPilots = await prisma.ranking.findMany({
-    orderBy: [{ rank: "asc" }],
-    take: numberOfPilots / 2,
-  });
+  const topPilots = await db
+    .select()
+    .from(ranking)
+    .orderBy(asc(ranking.rank))
+    .limit(Math.floor(numberOfPilots / 2));
 
   return topPilots.reduce((a, b) => a + b.points, 0);
 }
@@ -97,13 +100,16 @@ async function getPq_srp(pilots: Pilot[], numberOfPilots: number) {
       compPilotsWprs.push(0);
       continue;
     }
-
-    let pilotRanking: Ranking | null;
+    type Ranking = InferSelectModel<typeof ranking>;
+    let pilotRanking: Ranking | undefined;
     const cachedRanking = await redis.get(`civl:${civl}`);
 
     if (cachedRanking) pilotRanking = JSON.parse(cachedRanking) as Ranking;
     else {
-      pilotRanking = await prisma.ranking.findUnique({ where: { id: civl } });
+      pilotRanking = await db.query.ranking.findFirst({
+        where: eq(ranking.id, civl),
+      });
+
       await redis.set(
         `civl:${civl}`,
         JSON.stringify(pilotRanking),

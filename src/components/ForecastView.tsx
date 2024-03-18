@@ -1,18 +1,33 @@
 import { ForecastDetails } from "@/components/ForecastDetails";
 import Link from "next/link";
-
-import { type RouterOutputs } from "@/utils/api";
+import { fetchForecastData } from "@/app/lib/data";
 import { ListRankings } from "@/components/ForecastListRankings";
 
-interface Props {
-  onResetCompData: () => void;
-  data: RouterOutputs["wprs"]["getWprs"];
-}
+export async function ForecastView({ url }: { url?: string }) {
+  const data = await fetchForecastData(url);
 
-export const ForecastView: React.FC<Props> = ({ data, onResetCompData }) => {
+  if ("error" in data) {
+    const err = data.error;
+    let errMessage = "Something went wrong. Please try again.";
+
+    if (err === "NO_URL") errMessage = "No valid URL submitted";
+    if (err === "PAST_EVENT") errMessage = "Competition date is in the past";
+    if (err === "NOT_ENOUGH_PILOTS")
+      errMessage = "Not enough pilots in this comp.";
+    if (err === "UNSUPPORTED_PLATFORM") errMessage = "No valid URL submitted.";
+    if (err === "SOMETHING_WENT_WRONG")
+      errMessage = "Something went wrong. Please try again.";
+
+    return (
+      <div>
+        <h2>{errMessage}</h2>
+      </div>
+    );
+  }
+
   return (
     <>
-      <div className="justify-content-between flex items-start ">
+      <div className="justify-content-between flex items-start">
         <div className="flex-grow">
           <h2 className="mb-2 text-lg font-bold sm:text-2xl dark:text-slate-200">
             {data.compTitle}
@@ -27,27 +42,27 @@ export const ForecastView: React.FC<Props> = ({ data, onResetCompData }) => {
             </Link>
           )}
         </div>
-
-        <button
-          className="rounded-full px-0.5 py-0.5  hover:bg-green-500 focus:bg-gray-400 focus:outline-none"
-          type="button"
-          onClick={() => onResetCompData()}
-        >
-          <svg
-            className="h-6 w-6 fill-current stroke-black dark:stroke-white"
-            viewBox="0 0 20 20"
-            xmlns="http://www.w3.org/2000/svg"
+        {/* Close button */}
+        <Link href="/">
+          <button
+            className="rounded-full px-0.5 py-0.5  hover:bg-green-500 focus:bg-gray-400 focus:outline-none"
+            type="button"
           >
-            <path
-              d="M6.4 6.4l7.2 7.2m0-7.2l-7.2 7.2"
-              strokeWidth="2"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-            />
-          </svg>
-        </button>
+            <svg
+              className="h-6 w-6 fill-current stroke-black dark:stroke-white"
+              viewBox="0 0 20 20"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <path
+                d="M6.4 6.4l7.2 7.2m0-7.2l-7.2 7.2"
+                strokeWidth="2"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              />
+            </svg>
+          </button>
+        </Link>
       </div>
-
       <div className="text-lg">
         WPRS:{" "}
         <span className="font-bold text-green-500">
@@ -57,7 +72,6 @@ export const ForecastView: React.FC<Props> = ({ data, onResetCompData }) => {
       <div className="text-sm">
         <ForecastDetails data={data} />
       </div>
-
       <Link
         className="text-sm underline decoration-green-500 decoration-dotted hover:decoration-black"
         target="_blank"
@@ -73,4 +87,4 @@ export const ForecastView: React.FC<Props> = ({ data, onResetCompData }) => {
       {data.confirmed?.WPRS.length && <ListRankings data={data} />}
     </>
   );
-};
+}

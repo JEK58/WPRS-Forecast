@@ -1,5 +1,5 @@
 import OpenAI from "openai";
-import { env } from "@/env.mjs";
+import { env } from "@/env.js";
 import Redis from "ioredis";
 
 const openai = new OpenAI({

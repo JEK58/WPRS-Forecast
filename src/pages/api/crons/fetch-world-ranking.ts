@@ -1,5 +1,5 @@
 import type { NextApiRequest, NextApiResponse } from "next";
-import { env } from "@/env.mjs";
+import { env } from "@/env.js";
 import { updateWorldRanking } from "@/utils/update-world-ranking";
 import { updateRecentComps } from "@/utils/update-recent-comps";
 

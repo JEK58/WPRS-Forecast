@@ -1,0 +1,290 @@
+{
+  "id": "5a8ac940-c96e-444d-bb97-164038df8206",
+  "prevId": "9824bcfa-56d4-48e8-838e-40a346879c42",
+  "version": "5",
+  "dialect": "pg",
+  "tables": {
+    "CompRanking": {
+      "name": "CompRanking",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "serial",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "period": {
+          "name": "period",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "name": {
+          "name": "name",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "link": {
+          "name": "link",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "discipline": {
+          "name": "discipline",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "ta": {
+          "name": "ta",
+          "type": "double precision",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "pn": {
+          "name": "pn",
+          "type": "double precision",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "pq": {
+          "name": "pq",
+          "type": "double precision",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "td": {
+          "name": "td",
+          "type": "double precision",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "tasks": {
+          "name": "tasks",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "pilots": {
+          "name": "pilots",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "pilotsLast12Months": {
+          "name": "pilotsLast12Months",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "compsLast12Months": {
+          "name": "compsLast12Months",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "daysSinceCompEnd": {
+          "name": "daysSinceCompEnd",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "lastScore": {
+          "name": "lastScore",
+          "type": "double precision",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "winnerScore": {
+          "name": "winnerScore",
+          "type": "double precision",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "resultsUpdated": {
+          "name": "resultsUpdated",
+          "type": "timestamp(3)",
+          "primaryKey": false,
+          "notNull": true
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {},
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {}
+    },
+    "Ranking": {
+      "name": "Ranking",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "integer",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "createdAt": {
+          "name": "createdAt",
+          "type": "timestamp(3)",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        },
+        "updatedAt": {
+          "name": "updatedAt",
+          "type": "timestamp(3)",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        },
+        "name": {
+          "name": "name",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "gender": {
+          "name": "gender",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "points": {
+          "name": "points",
+          "type": "double precision",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "rank": {
+          "name": "rank",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "nation": {
+          "name": "nation",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "date": {
+          "name": "date",
+          "type": "timestamp(3)",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "normalizedName": {
+          "name": "normalizedName",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {},
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {}
+    },
+    "Usage": {
+      "name": "Usage",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "uuid",
+          "primaryKey": true,
+          "notNull": true,
+          "default": "gen_random_uuid()"
+        },
+        "createdAt": {
+          "name": "createdAt",
+          "type": "timestamp(3)",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        },
+        "updatedAt": {
+          "name": "updatedAt",
+          "type": "timestamp(3)",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        },
+        "compUrl": {
+          "name": "compUrl",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "wprs": {
+          "name": "wprs",
+          "type": "double precision",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "compTitle": {
+          "name": "compTitle",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "error": {
+          "name": "error",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "processingTime": {
+          "name": "processingTime",
+          "type": "double precision",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "potentialWprs": {
+          "name": "potentialWprs",
+          "type": "double precision",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "meta": {
+          "name": "meta",
+          "type": "jsonb",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "pilotsUrl": {
+          "name": "pilotsUrl",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "endDate": {
+          "name": "endDate",
+          "type": "timestamp(3)",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "startDate": {
+          "name": "startDate",
+          "type": "timestamp(3)",
+          "primaryKey": false,
+          "notNull": false
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {},
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {}
+    }
+  },
+  "enums": {},
+  "schemas": {},
+  "_meta": {
+    "columns": {},
+    "schemas": {},
+    "tables": {}
+  }
+}

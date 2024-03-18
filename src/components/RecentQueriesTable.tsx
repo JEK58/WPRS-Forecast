@@ -1,7 +1,8 @@
 import { sanitizeUrl } from "@braintree/sanitize-url";
-import { type RecentQueriesProps } from "@/pages/index";
 import { Button } from "@/components/ui/Button";
-import { animateScroll } from "react-scroll";
+import { fetchRecentQueries } from "@/app/lib/data";
+import { unstable_noStore as noStore } from "next/cache";
+import Link from "next/link";
 
 import {
   TableHead,
@@ -12,27 +13,11 @@ import {
   Table,
 } from "@/components/ui/Table";
 
-interface Props {
-  onUpdateButtonClick: (url: string) => void;
-  recentQueries: RecentQueriesProps["recentQueries"];
-  disableUpdateButton: boolean;
-}
-
 const MAX_TITLE_LENGTH = 45;
 
-const RecentQueriesTable = ({
-  recentQueries,
-  onUpdateButtonClick,
-  disableUpdateButton,
-}: Props) => {
-  const handleUpdate = (url: string) => {
-    onUpdateButtonClick(url);
-    animateScroll.scrollToTop({
-      delay: 100,
-      duration: 500,
-      smooth: true,
-    });
-  };
+const RecentQueriesTable = async () => {
+  noStore();
+  const recentQueries = await fetchRecentQueries();
 
   const uniqueQueries = recentQueries.filter(
     (item, index, self) =>
@@ -83,31 +68,31 @@ const RecentQueriesTable = ({
         </TableCell>
         <TableCell>{formatAge(stat.ageInHours)}</TableCell>
         <TableCell className="text-right">
-          <Button
-            aria-label="Update"
-            className="md:text-md rounded bg-green-500 px-2 py-1 font-bold text-white hover:bg-green-700 sm:text-xs"
-            onClick={() => handleUpdate(stat.compUrl)}
-            disabled={disableUpdateButton}
-          >
-            <span className="hidden sm:inline">Update</span>
-            <svg
-              className="inline sm:hidden"
-              fill="none"
-              height="24"
-              stroke="currentColor"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              strokeWidth="2"
-              viewBox="0 0 24 24"
-              width="16"
-              xmlns="http://www.w3.org/2000/svg"
+          <Link href={`/forecast?url=${stat.compUrl}`}>
+            <Button
+              aria-label="Update"
+              className="md:text-md rounded bg-green-500 px-2 py-1 font-bold text-white hover:bg-green-700 sm:text-xs"
             >
-              <path d="M3 12a9 9 0 0 1 9-9 9.75 9.75 0 0 1 6.74 2.74L21 8" />
-              <path d="M21 3v5h-5" />
-              <path d="M21 12a9 9 0 0 1-9 9 9.75 9.75 0 0 1-6.74-2.74L3 16" />
-              <path d="M8 16H3v5" />
-            </svg>
-          </Button>
+              <span className="hidden sm:inline">Update</span>
+              <svg
+                className="inline sm:hidden"
+                fill="none"
+                height="24"
+                stroke="currentColor"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth="2"
+                viewBox="0 0 24 24"
+                width="16"
+                xmlns="http://www.w3.org/2000/svg"
+              >
+                <path d="M3 12a9 9 0 0 1 9-9 9.75 9.75 0 0 1 6.74 2.74L21 8" />
+                <path d="M21 3v5h-5" />
+                <path d="M21 12a9 9 0 0 1-9 9 9.75 9.75 0 0 1-6.74-2.74L3 16" />
+                <path d="M8 16H3v5" />
+              </svg>
+            </Button>
+          </Link>
         </TableCell>
       </TableRow>
     );

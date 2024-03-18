@@ -1,0 +1,1 @@
+DROP TABLE "pg_stat_statements";
