@@ -1,12 +1,3 @@
-// import { PrismaClient } from "@prisma/client";
-// const prisma = new PrismaClient({
-//   datasources: {
-//     db: {
-//       url: process.env.TEST_DATABASE_URL,
-//     },
-//   },
-// });
-
 // async function main() {
 //   const test = await prisma.ranking.findFirst();
 //   if (test) throw new Error("DB already contains data!");
