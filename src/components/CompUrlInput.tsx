@@ -20,7 +20,7 @@ export function CompUrlInput() {
           </li>
           <li>
             The calculation will become{" "}
-            <span className="text-green-500">more accurate</span> as the
+            <span className="font-semibold">more accurate</span> as the
             competition date approaches.
           </li>
           <li>
@@ -32,7 +32,7 @@ export function CompUrlInput() {
         <p className="mt-2 text-gray-500 dark:text-inherit">
           See the{" "}
           <Link
-            className="text-green-500 hover:underline hover:decoration-green-500"
+            className="text-green-500 underline decoration-green-500 decoration-dotted hover:decoration-solid"
             href="/history"
           >
             history page

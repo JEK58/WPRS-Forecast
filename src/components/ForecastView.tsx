@@ -34,7 +34,7 @@ export async function ForecastView({ url }: { url?: string }) {
           </h2>
           {data.compUrl && (
             <Link
-              className="flex items-center text-sm underline decoration-green-500 decoration-dotted hover:decoration-black dark:text-slate-300"
+              className="flex items-center text-sm underline decoration-green-500 decoration-dotted hover:decoration-solid dark:text-slate-300"
               target="_blank"
               href={data.compUrl}
             >
@@ -73,7 +73,7 @@ export async function ForecastView({ url }: { url?: string }) {
         <ForecastDetails data={data} />
       </div>
       <Link
-        className="text-sm underline decoration-green-500 decoration-dotted hover:decoration-black"
+        className="text-sm underline decoration-green-500 decoration-dotted hover:decoration-solid"
         target="_blank"
         href="https://www.fai.org/sites/default/files/civl/documents/sporting_code_s7_e_-_wprs_2022.pdf"
       >
