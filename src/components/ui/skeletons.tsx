@@ -3,17 +3,16 @@ import Link from "next/link";
 export function ForecastSkeleton() {
   return (
     <>
-      <div className="animate-pulse">
-        <div className="justify-content-between flex  items-start">
+      <div className="animate-pulse overflow-hidden">
+        <div className="justify-content-between flex items-start">
           <div className="flex-grow">
-            <div className="mb-4 h-6 w-72 rounded-md bg-gray-500"></div>
-
+            <div className="mb-4 h-6 w-56 rounded-md bg-gray-500"></div>
             <div className="mb-4 flex h-5 w-32 rounded-md bg-gray-400"></div>
           </div>
           {/* Back button */}
           <Link href="/" className="animate-none">
             <button
-              className=" rounded-full px-0.5 py-0.5  hover:bg-green-500 focus:bg-gray-400 focus:outline-none"
+              className="flex-shrink-0 rounded-full px-0.5 py-0.5  hover:bg-green-500 focus:bg-gray-400 focus:outline-none"
               type="button"
             >
               <svg
