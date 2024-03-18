@@ -165,7 +165,7 @@ export async function fetchRecentQueries() {
   const res = await db
     .select()
     .from(usage)
-    .where(isNotNull(usage.wprs))
+    .where(isNotNull(usage.potentialWprs))
     .orderBy(desc(usage.createdAt))
     .limit(50)
     .execute();
