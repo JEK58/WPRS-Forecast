@@ -3,6 +3,7 @@ import { Input } from "@/components/ui/Input";
 import { Button } from "@/components/ui/Button";
 import { useEffect, useState, useCallback } from "react";
 import { isValidUrl } from "@/utils/check-valid-url";
+import Link from "next/link";
 
 export function CompUrlInputField() {
   const [url, setUrl] = useState("");
@@ -37,10 +38,7 @@ export function CompUrlInputField() {
 
   return (
     <>
-      <form
-        className="flex flex-col space-y-2 md:flex-row md:space-x-2 md:space-y-0"
-        action="/forecast"
-      >
+      <form className="flex flex-col space-y-2 md:flex-row md:space-x-2 md:space-y-0">
         <div className="relative flex-grow">
           <Input
             name="url"
@@ -55,6 +53,7 @@ export function CompUrlInputField() {
           {/* Paste/Clear button */}
           {url.length > 0 ? (
             <button
+              type="button"
               onClick={() => setUrl("")}
               className="absolute right-2 top-1/2 -translate-y-1/2 transform rounded  px-2 py-1 font-bold text-gray-500 hover:text-green-500"
             >
@@ -64,6 +63,7 @@ export function CompUrlInputField() {
             // Only show the button when the browser supports reading from clipboard.
             clipboardApiSupported && (
               <Button
+                type="button"
                 className="absolute right-2 top-1/2 -translate-y-1/2 transform rounded bg-transparent px-2 py-1 font-bold text-gray-500 hover:text-gray-700"
                 onClick={handlePaste}
               >
@@ -87,13 +87,21 @@ export function CompUrlInputField() {
             )
           )}
         </div>
-        <Button
-          className="h-12 rounded bg-blue-500 px-4 py-2 font-bold text-white hover:bg-blue-700 md:self-center"
-          type="submit"
-          disabled={!isValidLink}
+
+        <Link
+          href={`/forecast?url=${url}`}
+          className={!isValidLink ? "pointer-events-none" : ""}
+          aria-disabled={!isValidLink}
+          tabIndex={!isValidLink ? -1 : undefined}
         >
-          Calculate
-        </Button>
+          <Button
+            className="h-12 rounded bg-blue-500 px-4 py-2 font-bold text-white hover:bg-blue-700 md:self-center"
+            type="submit"
+            disabled={!isValidLink}
+          >
+            Calculate
+          </Button>
+        </Link>
       </form>
       {/* Error message */}
       <div className="text-sm text-red-500">

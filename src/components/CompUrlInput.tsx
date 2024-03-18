@@ -11,7 +11,6 @@ export function CompUrlInput() {
 
       {/* Notes */}
       <div className="border-t border-gray-200 py-2 dark:border-slate-600">
-        {/* <h3 className="text-lg font-semibold">Note:</h3> */}
         <ul className="list-outside list-disc px-4 text-gray-500 dark:text-inherit">
           <li>This only works for paragliding competitions.</li>
           <li>
