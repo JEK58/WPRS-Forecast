@@ -4,6 +4,7 @@ import Link from "next/link";
 import PlausibleProvider from "next-plausible";
 import { env } from "@/env.js";
 import { Inter } from "next/font/google";
+import { type Viewport } from "next";
 
 const inter = Inter({
   subsets: ["latin"],
@@ -16,6 +17,8 @@ export const metadata = {
     "Enables you to forecast the potential world ranking points for paragliding competitions.",
   icons: [{ rel: "icon", url: "/favicon.ico" }],
 };
+
+export const viewport: Viewport = { themeColor: "#4ade80" };
 
 export default function RootLayout({
   children,
