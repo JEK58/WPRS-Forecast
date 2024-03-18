@@ -11,6 +11,15 @@ export default {
       },
     },
   },
+  daisyui: {
+    themes: [
+      {
+        mytheme: {
+          primary: "#22c55e",
+        },
+      },
+    ],
+  },
   plugins: [
     require("daisyui"),
     // require("tailwindcss-animate")

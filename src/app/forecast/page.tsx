@@ -16,7 +16,6 @@ export default async function Page({
       <div className="mx-auto flex w-full flex-col space-y-4 p-3 md:max-w-3xl">
         <Box>
           {/* <Element name="forecastViewScroll"></Element> */}
-
           <Suspense fallback={<ForecastSkeleton />}>
             <ForecastView url={url} />
           </Suspense>
