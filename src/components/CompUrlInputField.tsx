@@ -95,7 +95,7 @@ export function CompUrlInputField() {
           tabIndex={!isValidLink ? -1 : undefined}
         >
           <Button
-            className="h-12 rounded bg-blue-500 px-4 py-2 font-bold text-white hover:bg-blue-700 md:self-center"
+            className="h-12 w-full rounded bg-blue-500 px-4 py-2 font-bold text-white hover:bg-blue-700 md:self-center"
             type="submit"
             disabled={!isValidLink}
           >
