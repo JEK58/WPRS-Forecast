@@ -167,7 +167,7 @@ export async function fetchRecentQueries() {
     .from(usage)
     .where(isNotNull(usage.potentialWprs))
     .orderBy(desc(usage.createdAt))
-    .limit(50)
+    .limit(100)
     .execute();
 
   const comps = res.map(({ createdAt, startDate, endDate, ...rest }) => {

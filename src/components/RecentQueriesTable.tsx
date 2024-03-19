@@ -19,10 +19,12 @@ const RecentQueriesTable = async () => {
   noStore();
   const recentQueries = await fetchRecentQueries();
 
-  const uniqueQueries = recentQueries.filter(
-    (item, index, self) =>
-      index === self.findIndex((i) => i.compTitle === item.compTitle),
-  );
+  const uniqueQueries = recentQueries
+    .filter(
+      (item, index, self) =>
+        index === self.findIndex((i) => i.compTitle === item.compTitle),
+    )
+    .slice(0, 30);
 
   const recentQueriesTableRows = uniqueQueries?.map((stat) => {
     let compTitle = stat.compTitle ?? stat.compUrl;
