@@ -65,6 +65,13 @@ export async function ForecastView({ url }: { url?: string }) {
       </div>
       <div className="text-lg">
         WPRS:{" "}
+        {data?.confirmed?.WPRS[0]?.Ta3 ? (
+          <span className="font-bold text-green-500">
+            {data?.confirmed?.WPRS[0]?.Ta3}
+          </span>
+        ) : (
+          <span>No confirmed pilots yet.</span>
+        )}
         <span className="font-bold text-green-500">
           {data?.confirmed?.WPRS[0]?.Ta3}
         </span>
