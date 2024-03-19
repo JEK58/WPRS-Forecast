@@ -56,7 +56,7 @@ export async function ForecastView({ url }: { url?: string }) {
       </div>
       {data.compUrl && (
         <Link
-          className="flex items-center text-sm underline decoration-green-500 decoration-dotted hover:decoration-solid dark:text-slate-300"
+          className="flex max-w-full items-center overflow-hidden overflow-ellipsis text-sm underline decoration-green-500 decoration-dotted hover:decoration-solid dark:text-slate-300"
           target="_blank"
           href={data.compUrl}
         >
