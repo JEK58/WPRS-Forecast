@@ -45,7 +45,7 @@ export function ForecastSkeleton() {
         <div className="mb-2 flex h-5 rounded-md bg-gray-400"></div>
         <div className="mb-5 flex h-5 w-72 rounded-md bg-gray-400"></div>
         <div className="mb-3 flex h-14 rounded-md bg-gray-300 dark:bg-gray-500"></div>
-        <progress className="progress progress-primary"></progress>
+        <progress className="progress progress-success"></progress>
         <div className="">Getting pilots details and ranking...</div>
       </div>
     </>
