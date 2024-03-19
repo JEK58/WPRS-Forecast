@@ -2,18 +2,17 @@ import Link from "next/link";
 
 export function Footer() {
   return (
-    <footer className="mt-auto w-full bg-gray-800 p-4 text-center text-sm text-gray-300 ">
-      <div className="mx-auto max-w-7xl space-x-4 px-4 sm:px-6 lg:px-8">
+    <footer className="mt-auto w-full bg-gray-800 px-0 py-4 text-center text-sm text-gray-300 ">
+      <div className="mx-auto flex max-w-7xl flex-wrap items-center justify-center space-x-4 px-4  sm:px-6 lg:px-8">
         <Link
-          className="hover:underline"
+          className="whitespace-nowrap py-1 align-middle hover:underline"
           href="https://www.stephanschoepe.de/impressum"
         >
           Impressum
         </Link>
-        <span className="text-gray-400">|</span>
-
+        <span className="hidden py-1 text-gray-400 sm:inline">|</span>
         <Link
-          className="hover:underline"
+          className="whitespace-nowrap py-1 align-middle hover:underline"
           href="https://github.com/JEK58/wprs-forecast"
         >
           Made with
