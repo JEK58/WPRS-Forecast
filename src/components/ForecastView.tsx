@@ -32,15 +32,6 @@ export async function ForecastView({ url }: { url?: string }) {
           <h2 className="mb-2 text-lg font-bold sm:text-2xl dark:text-slate-200">
             {data.compTitle}
           </h2>
-          {data.compUrl && (
-            <Link
-              className="flex items-center text-sm underline decoration-green-500 decoration-dotted hover:decoration-solid dark:text-slate-300"
-              target="_blank"
-              href={data.compUrl}
-            >
-              {data.compUrl}{" "}
-            </Link>
-          )}
         </div>
         {/* Close button */}
         <Link href="/">
@@ -63,6 +54,15 @@ export async function ForecastView({ url }: { url?: string }) {
           </button>
         </Link>
       </div>
+      {data.compUrl && (
+        <Link
+          className="flex items-center text-sm underline decoration-green-500 decoration-dotted hover:decoration-solid dark:text-slate-300"
+          target="_blank"
+          href={data.compUrl}
+        >
+          {data.compUrl}{" "}
+        </Link>
+      )}
       <div className="text-lg">
         WPRS:{" "}
         {data?.confirmed?.WPRS[0]?.Ta3 ? (
