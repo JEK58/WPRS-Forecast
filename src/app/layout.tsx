@@ -41,9 +41,6 @@ export default function RootLayout({
               <h1 className="mt-6 text-6xl font-bold text-white sm:text-center sm:text-[5rem] sm:leading-tight">
                 WPRS
                 <span className="block text-green-300 sm:inline">Forecast</span>
-                <span className="block text-right text-sm tracking-normal sm:inline sm:text-left">
-                  beta
-                </span>
               </h1>
             </Link>
             {children}
