@@ -40,8 +40,6 @@ export function ForecastSkeleton() {
         <div className="mb-2 flex h-5 w-44 rounded-md bg-gray-400"></div>
         <div className="mb-2 flex h-5 w-40 rounded-md bg-gray-400"></div>
         <div className="mb-2 flex h-5 w-32 rounded-md bg-gray-400"></div>
-        <div className="mb-5 flex h-5 w-32 rounded-md bg-gray-400"></div>
-        <div className="mb-5 flex h-5 w-80 rounded-md bg-gray-400"></div>
         <div className="mb-2 flex h-5 rounded-md bg-gray-400"></div>
         <div className="mb-5 flex h-5 w-72 rounded-md bg-gray-400"></div>
         <div className="mb-3 flex h-14 rounded-md bg-gray-300 dark:bg-gray-500"></div>
