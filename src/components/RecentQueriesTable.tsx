@@ -37,7 +37,7 @@ const RecentQueriesTable = async () => {
       >
         <TableCell>
           <a
-            className="decoration-green-500 hover:underline hover:decoration-dotted"
+            className="text-gray-400 decoration-green-500 hover:underline hover:decoration-dotted"
             href={sanitizeUrl(stat.compUrl)}
             target="_blank"
             rel="noopener noreferrer"
@@ -103,7 +103,7 @@ const RecentQueriesTable = async () => {
   return (
     <>
       <h2 className="text-lg font-bold dark:text-slate-200">Recent Queries</h2>
-      <div className="w-full overflow-x-auto">
+      <div className="w-full overflow-x-auto text-gray-400">
         <Table className="w-full text-left">
           <TableHeader>
             <TableRow className="dark:border-slate-600">
