@@ -68,7 +68,7 @@ const RecentQueriesTable = async () => {
             </span>
           )}
         </TableCell>
-        <TableCell className="hidden sm:block">
+        <TableCell className="hidden sm:table-cell">
           {formatAge(stat.ageInHours)}
         </TableCell>
         <TableCell className="text-right">
@@ -112,7 +112,7 @@ const RecentQueriesTable = async () => {
               <TableHead></TableHead>
               <TableHead>Begins</TableHead>
               <TableHead>WPRS</TableHead>
-              <TableHead className="hidden sm:block">Updated</TableHead>
+              <TableHead className="hidden sm:table-cell">Updated</TableHead>
               <TableHead />
             </TableRow>
           </TableHeader>
