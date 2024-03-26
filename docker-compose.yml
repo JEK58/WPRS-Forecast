@@ -14,6 +14,7 @@ services:
       - 3000:3000
     depends_on:
       - redis
+      - db
     labels:
       traefik.enable: true
       traefik.http.routers.wprs-forecast.rule: "Host(`${TRAEFIK_DOMAIN}`) || Host(`www.wprs-forecast.org`)"
@@ -22,6 +23,17 @@ services:
       traefik.http.routers.wprs-forecast.priority: 100
       traefik.port: 3000
       traefik.docker.network: traefik
+  db:
+    image: postgres:16-alpine
+    restart: always
+    # set shared memory limit when using docker-compose
+    shm_size: 128mb
+    environment:
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+    volumes:
+      - wprs-forecast-db:/var/lib/postgresql/data
+    ports:
+      - 5432:5432
 
   redis:
     image: redis:alpine
@@ -36,5 +48,6 @@ networks:
     external: true
 
 volumes:
+  wprs-forecast-db:
   cache:
     driver: local
