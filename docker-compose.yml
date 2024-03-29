@@ -35,6 +35,20 @@ services:
     ports:
       - 5433:5432
 
+  backup:
+    build:
+      context: ./backup
+      dockerfile: Dockerfile
+      args:
+        CLOUDFLARE_ACCESS_KEY_ID: ${CLOUDFLARE_ACCESS_KEY_ID}
+        CLOUDFLARE_SECRET_ACCESS_KEY: ${CLOUDFLARE_SECRET_ACCESS_KEY}
+        CLOUDFLARE_R2_ENDPOINT: ${CLOUDFLARE_R2_ENDPOINT}
+    restart: always
+    depends_on:
+      - db
+    environment:
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+
   redis:
     image: redis:alpine
     restart: always
