@@ -4,7 +4,6 @@ echo "Running Backup..."
 export PGPASSWORD=$POSTGRES_PASSWORD
 BACKUP_FILE="/var/opt/$(date +"%Y-%m-%d_%H-%M-%S").sql"
 pg_dump -h db -U postgres postgres >> $BACKUP_FILE
-echo "...done"
-echo "Uploading backup..."
+echo "...done. Uploading backup..."
 rclone copy $BACKUP_FILE r2:sql-backup
 echo "...done"
