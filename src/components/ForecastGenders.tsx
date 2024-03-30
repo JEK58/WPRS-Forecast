@@ -9,27 +9,38 @@ import {
   ResponsiveContainer,
   Cell,
 } from "recharts";
+interface EntryType {
+  payload?: {
+    payload?: {
+      value?: string;
+      percentage?: number;
+    };
+  };
+}
 
 export function Genders({ data }: { data: Forecast }) {
   if (!data.genders) return null;
 
-  const pieData = [
-    { name: "Female", value: data.genders.female },
-    { name: "Male", value: data.genders.male },
-  ];
+  const genders = data.genders;
+  const sum = genders.female + genders.male;
 
-  interface EntryType {
-    payload?: {
-      payload?: {
-        value?: string;
-      };
-    };
-  }
+  const pieData = [
+    {
+      name: "Female",
+      value: genders.female,
+      percentage: (genders.female / sum) * 100,
+    },
+    {
+      name: "Male",
+      value: genders.male,
+      percentage: (genders.male / sum) * 100,
+    },
+  ];
 
   const renderLegend = (value: string, entry: EntryType) => {
     return (
       <span className="text-sm text-black dark:text-slate-200">
-        {value}: {entry?.payload?.payload?.value}
+        {value}: {Math.round(entry?.payload?.payload?.percentage ?? 0)}%
       </span>
     );
   };
