@@ -17,7 +17,7 @@ export async function updateRecentComps() {
 const CIVL_URL = "https://civlcomps.org/ranking/paragliding-xc/competitions";
 
 export async function scrapeRecentCivlComps() {
-  const res = await fetch(CIVL_URL);
+  const res = await fetch(CIVL_URL, { cache: "no-store" });
   const body = await res.text();
 
   const $ = load(body, { xmlMode: true });

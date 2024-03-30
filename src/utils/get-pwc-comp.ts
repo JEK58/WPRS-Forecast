@@ -42,7 +42,7 @@ export async function getPwcComp(url: string) {
   const compUrl = await generatePwcCompUrl(url);
 
   if (!compUrl) return;
-  const response = await fetch(compUrl);
+  const response = await fetch(compUrl, { cache: "no-store" });
   const body = await response.text();
 
   const $ = load(body, { xmlMode: true });
@@ -58,8 +58,8 @@ export async function getPwcComp(url: string) {
   const femaleApiUrl = apiUrl + "?gender=female";
 
   const [maleRes, femaleRes] = await Promise.all([
-    await fetch(apiUrl),
-    await fetch(femaleApiUrl),
+    await fetch(apiUrl, { cache: "no-store" }),
+    await fetch(femaleApiUrl, { cache: "no-store" }),
   ]);
 
   if (maleRes.status == 404 || femaleRes.status == 404) return;
@@ -118,7 +118,7 @@ async function generatePwcCompUrl(url: string) {
   if (url.includes("pwca.org"))
     return url.slice(0, getPosition(url, "/", 5)) + "/selection";
 
-  const response = await fetch(url);
+  const response = await fetch(url, { cache: "no-store" });
   const body = await response.text();
 
   const $ = load(body, { xmlMode: true });
