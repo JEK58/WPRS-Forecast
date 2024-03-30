@@ -10,14 +10,13 @@ import {
   Cell,
 } from "recharts";
 
-export function Nationalities({ data }: { data: Forecast }) {
-  if (!data.nationalities) return null;
+export function Genders({ data }: { data: Forecast }) {
+  if (!data.genders) return null;
 
-  const pieData = Object.keys(data.nationalities.count)
-    .map((key) => {
-      return { name: key, value: data.nationalities?.count[key] ?? 0 };
-    })
-    .sort((a, b) => b.value - a.value);
+  const pieData = [
+    { name: "Female", value: data.genders.female },
+    { name: "Male", value: data.genders.male },
+  ];
 
   interface EntryType {
     payload?: {
@@ -37,16 +36,18 @@ export function Nationalities({ data }: { data: Forecast }) {
 
   return (
     <div className="">
-      <h2 className="text-lg font-bold">Nationalities</h2>
+      <h2 className="text-lg font-bold">Genders</h2>
 
-      <ResponsiveContainer width="100%" height={600}>
-        <PieChart width={500} height={500}>
+      <ResponsiveContainer width="100%" height={200}>
+        <PieChart width={500} height={200}>
           <Pie
             dataKey="value"
             isAnimationActive={true}
+            startAngle={180}
+            endAngle={0}
             data={pieData}
             cx="50%"
-            cy="50%"
+            cy="90%"
             outerRadius={120}
             fill="#8884d8"
             label

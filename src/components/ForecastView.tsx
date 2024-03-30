@@ -3,6 +3,7 @@ import Link from "next/link";
 import { fetchForecastData } from "@/app/lib/data";
 import { ListRankings } from "@/components/ForecastListRankings";
 import { Nationalities } from "./ForecastNationalities";
+import { Genders } from "./ForecastGenders";
 
 export async function ForecastView({ url }: { url?: string }) {
   const data = await fetchForecastData(url);
@@ -90,6 +91,11 @@ export async function ForecastView({ url }: { url?: string }) {
         competition date approaches.
       </p>
       {data.nationalities && <Nationalities data={data} />}
+      {data.genders && <Genders data={data} />}
+      <div className="mt-4 px-2 text-sm">
+        The sum of pilots may not be equal to the number of confirmed pilots
+        because of lookup mismatches.
+      </div>
       {data.confirmed?.WPRS.length && <ListRankings data={data} />}
     </>
   );

@@ -5,7 +5,7 @@ import { type InferSelectModel, asc } from "drizzle-orm";
 
 const AVG_NUM_PARTICIPANTS = 76; // June 2022-June 2023
 
-type Ranking = InferSelectModel<typeof ranking>;
+export type Ranking = InferSelectModel<typeof ranking>;
 
 export async function calculateWPRS(
   pilots: Ranking[],

@@ -3,7 +3,7 @@ import { getCivlcompsComp } from "@/utils/get-civl-comp";
 import { getPwcComp } from "./get-pwc-comp";
 import { getSwissleagueComp } from "@/utils/get-swissleague-comp";
 import { type Pilot, type CompDetails, type Forecast } from "@/types/common";
-import { calculateWPRS } from "./calculate-wprs";
+import { type Ranking, calculateWPRS } from "./calculate-wprs";
 import { db } from "@/server/db";
 import { ranking } from "@/server/db/schema";
 import { inArray } from "drizzle-orm";
@@ -64,18 +64,19 @@ export async function getForecast(
     pilotsUrl: comp.pilotsUrl,
     meta: comp.statistics,
     compDate: comp.compDate,
-    nationalities: calculateNationalities(confirmed),
+    nationalities: calculateNationalities(confirmedPilots),
+    genders: calculateGender(confirmedPilots),
   };
 }
 
-function calculateNationalities(pilots: Pilot[]) {
+function calculateNationalities(pilots: Ranking[]) {
   const nationalitiesCount: Record<string, number> = {};
   pilots.forEach((pilot) => {
-    if (!pilot.nationality) return;
-    if (nationalitiesCount[pilot.nationality]) {
-      nationalitiesCount[pilot.nationality]++;
+    if (!pilot.nation) return;
+    if (nationalitiesCount[pilot.nation]) {
+      nationalitiesCount[pilot.nation]++;
     } else {
-      nationalitiesCount[pilot.nationality] = 1;
+      nationalitiesCount[pilot.nation] = 1;
     }
   });
 
@@ -89,6 +90,17 @@ function calculateNationalities(pilots: Pilot[]) {
   }
 
   return { count: nationalitiesCount, percentage: nationalitiesPercentage };
+}
+
+function calculateGender(pilots: Ranking[]) {
+  let female = 0;
+  let male = 0;
+
+  pilots.forEach((pilot) => {
+    if (pilot.gender.toLowerCase() == "f") female++;
+    if (pilot.gender.toLowerCase() == "m") male++;
+  });
+  return { male, female };
 }
 
 async function getPilotRankings(pilots: Pilot[]) {

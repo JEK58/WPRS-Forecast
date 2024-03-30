@@ -37,6 +37,7 @@ export type Forecast = {
     endDate?: Date;
   };
   nationalities?: Nationalities;
+  genders?: { male: number; female: number };
 };
 
 export type CompDetails = {
