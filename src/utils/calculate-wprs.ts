@@ -1,16 +1,15 @@
-import { type Pilot, type CompForecast } from "@/types/common";
-import Redis from "ioredis";
-import { env } from "@/env";
+import { type CompForecast } from "@/types/common";
 import { db } from "@/server/db";
 import { ranking } from "@/server/db/schema";
-import { type InferSelectModel, asc, eq } from "drizzle-orm";
+import { type InferSelectModel, asc } from "drizzle-orm";
 
-const REDIS_EXP_TIME = 60 * 60; // 1 hour
 const AVG_NUM_PARTICIPANTS = 76; // June 2022-June 2023
 
+type Ranking = InferSelectModel<typeof ranking>;
+
 export async function calculateWPRS(
-  pilots: Pilot[],
-  maxPilots?: number,
+  pilots: Ranking[],
+  numberOfPilots: number,
 ): Promise<CompForecast | undefined> {
   // Variable names according to the CIVL document
   // https://www.fai.org/sites/default/files/civl/documents/sporting_code_s7_e_-_wprs_2022.pdf
@@ -20,8 +19,6 @@ export async function calculateWPRS(
   const worldRankingDate = (await db.query.ranking.findFirst())?.date;
 
   if (!worldRankingDate) throw new Error("No world ranking date found");
-
-  const numberOfPilots = Math.min(pilots.length, maxPilots ?? pilots.length);
 
   /**
    * Quality of participants (Pq)
@@ -53,10 +50,6 @@ export async function calculateWPRS(
 
   const WPRS = factors.map((factor) => calcWPR(factor, Pq, Pn));
 
-  const civlIds = pilots
-    .map((pilot) => pilot.civlID)
-    .filter((item): item is number => typeof item === "number");
-
   return {
     worldRankingDate: new Date(worldRankingDate),
     numPilots: numberOfPilots,
@@ -66,7 +59,7 @@ export async function calculateWPRS(
     Pn: +Pn.toFixed(3),
     compRanking: +compRanking.toFixed(3),
     WPRS,
-    civlIds,
+    civlIds: pilots.map((pilot) => pilot.id),
   };
 }
 
@@ -89,37 +82,9 @@ async function getPq_srtp(numberOfPilots: number) {
   return topPilots.reduce((a, b) => a + b.points, 0);
 }
 
-async function getPq_srp(pilots: Pilot[], numberOfPilots: number) {
-  const redis = new Redis({ host: env.REDIS_URL });
-  const compPilotsWprs: number[] = [];
+async function getPq_srp(pilots: Ranking[], numberOfPilots: number) {
+  const compPilotsWprs = pilots.map(({ points }) => points);
 
-  for (const pilot of pilots) {
-    const civl = pilot.civlID;
-
-    if (!civl || isNaN(civl) || civl > 99999) {
-      compPilotsWprs.push(0);
-      continue;
-    }
-    type Ranking = InferSelectModel<typeof ranking>;
-    let pilotRanking: Ranking | undefined;
-    const cachedRanking = await redis.get(`civl:${civl}`);
-
-    if (cachedRanking) pilotRanking = JSON.parse(cachedRanking) as Ranking;
-    else {
-      pilotRanking = await db.query.ranking.findFirst({
-        where: eq(ranking.id, civl),
-      });
-
-      await redis.set(
-        `civl:${civl}`,
-        JSON.stringify(pilotRanking),
-        "EX",
-        REDIS_EXP_TIME,
-      );
-    }
-
-    compPilotsWprs.push(pilotRanking?.points ?? 0);
-  }
   return compPilotsWprs
     .sort((a, b) => b - a)
     .slice(0, numberOfPilots / 2)

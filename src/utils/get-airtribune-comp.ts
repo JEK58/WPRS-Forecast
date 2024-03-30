@@ -11,14 +11,15 @@ interface AirtribunePilot
   civl_id: string;
 }
 
+const CIVL_PLACEHOLDER_ID = 99999;
+
 export async function getAirtribuneComp(
   url: string,
 ): Promise<CompDetails | undefined> {
   const compUrl = generateAirtribuneCompUrl(url);
 
-  const response = await fetch(compUrl);
+  const response = await fetch(compUrl, { cache: "no-store" });
   const body = await response.text();
-
   // Find competition name
   const $ = load(body, { xmlMode: true });
   const compTitle = $('meta[property="og:title"]')
@@ -56,15 +57,21 @@ export async function getAirtribuneComp(
     const maxPilots = evalMaxPilots(isNaN(num) ? 0 : num);
 
     const pilots = jsonData.pilots.map((el) => {
+      // Make sure that the CIVL ID is a number and not greater than 99999
+      const civlID = Math.min(
+        CIVL_PLACEHOLDER_ID,
+        parseInt(el.civl_id ?? CIVL_PLACEHOLDER_ID.toString(), 10),
+      );
       return {
         name: el.name,
         nationality: el.country.ioc_code,
-        civlID: parseInt(el.civl_id ?? "99999", 10),
+        civlID,
         wing: el.glider_model,
         status: el.status,
         confirmed: isConfirmed(el.status),
       };
     });
+
     return {
       pilots,
       compTitle,
