@@ -10,7 +10,7 @@ export async function getCivlcompsComp(
 ): Promise<CompDetails | undefined> {
   const compUrl = generateCivlCompUrl(url);
 
-  const response = await fetch(compUrl);
+  const response = await fetch(compUrl, { cache: "no-store" });
   const body = await response.text();
 
   const $ = load(body, { xmlMode: true });

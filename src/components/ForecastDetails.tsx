@@ -38,7 +38,7 @@ export function ForecastDetails({ data }: { data: Forecast }) {
         </span>
       </li>
       <li>
-        Number of pilots:{" "}
+        Confirmed pilots:{" "}
         <span className={listClassName}>{data?.confirmed?.numPilots}</span>
       </li>
       <li>

@@ -19,6 +19,11 @@ export interface CompForecast {
   civlIds?: number[];
 }
 
+export interface Nationalities {
+  count: Record<string, number>;
+  percentage: Record<string, string>;
+}
+
 export type Forecast = {
   maxPilots: number;
   compTitle?: string;
@@ -31,6 +36,8 @@ export type Forecast = {
     startDate?: Date;
     endDate?: Date;
   };
+  nationalities?: Nationalities;
+  genders?: { male: number; female: number };
 };
 
 export type CompDetails = {

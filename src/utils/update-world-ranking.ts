@@ -97,7 +97,7 @@ export async function updateWorldRanking() {
  * 5. Return the date of the latest CIVL DB update
  */
 async function downloadExcel() {
-  const res = await fetch(CIVL_URL);
+  const res = await fetch(CIVL_URL, { cache: "no-store" });
   const body = await res.text();
 
   const match = body.match(new RegExp(CIVL_DOWNLOAD_ENDPOINT + ".*"));
@@ -147,7 +147,7 @@ async function downloadExcel() {
   let link = "";
   while (!fileReady) {
     await new Promise((resolve) => setTimeout(resolve, 1000));
-    const res = await fetch(fileUrl);
+    const res = await fetch(fileUrl, { cache: "no-store" });
     const dl = (await res.json()) as HashResponse;
 
     if (typeof dl.url === "string") {

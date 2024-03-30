@@ -8,7 +8,7 @@ import { getPosition } from "@/utils/utils";
 // Gets the description of the comp and asks GPT to analyze it as this information
 // is never found at the same spot like on airtribune or civlcomps
 async function getCompDetails(url: string) {
-  const response = await fetch(url);
+  const response = await fetch(url, { cache: "no-store" });
   const body = await response.text();
 
   const $ = load(body);
@@ -36,7 +36,7 @@ export async function getSwissleagueComp(url: string) {
   const compUrl = generateSwissleagueCompUrl(url);
   const detailsUrl = generateSwissleagueDetailsUrl(url);
 
-  const response = await fetch(compUrl);
+  const response = await fetch(compUrl, { cache: "no-store" });
   const body = await response.text();
   const $ = load(body, { xmlMode: true });
   const compTitle = $("h1").text();
