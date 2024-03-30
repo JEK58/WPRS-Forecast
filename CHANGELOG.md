@@ -1,5 +1,12 @@
 # Changelog
 
+### 2024-03-30
+
+**Improvements:**
+
+- Nation & gender statistics added
+- CIVL ID lookup improved (50% faster)
+
 ### 2024-02-16
 
 **Improvements:**
