@@ -70,6 +70,7 @@ export async function getForecast(
 }
 
 function calculateNationalities(pilots: Ranking[]) {
+  if (pilots.length === 0) return;
   const nationalitiesCount: Record<string, number> = {};
   pilots.forEach((pilot) => {
     if (!pilot.nation) return;
@@ -93,6 +94,7 @@ function calculateNationalities(pilots: Ranking[]) {
 }
 
 function calculateGender(pilots: Ranking[]) {
+  if (pilots.length === 0) return;
   let female = 0;
   let male = 0;
 
@@ -104,6 +106,7 @@ function calculateGender(pilots: Ranking[]) {
 }
 
 async function getPilotRankings(pilots: Pilot[]) {
+  if (pilots.length === 0) return [];
   const civlIds = pilots
     .map((pilot) => pilot.civlID)
     .filter((item): item is number => typeof item === "number");

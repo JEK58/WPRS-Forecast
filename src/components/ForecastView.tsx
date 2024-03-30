@@ -92,10 +92,13 @@ export async function ForecastView({ url }: { url?: string }) {
       </p>
       {data.nationalities && <Nationalities data={data} />}
       {data.genders && <Genders data={data} />}
-      <div className="mt-4 px-2 text-sm">
-        The sum of pilots may not be equal to the number of confirmed pilots
-        because of lookup mismatches.
-      </div>
+      {(data.nationalities ?? data.genders) && (
+        <div className="mt-4 text-sm">
+          The sum of pilots may not be equal to the number of confirmed pilots
+          because of lookup mismatches.
+        </div>
+      )}
+
       {data.confirmed?.WPRS.length && <ListRankings data={data} />}
     </>
   );
