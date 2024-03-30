@@ -2,6 +2,7 @@ import { ForecastDetails } from "@/components/ForecastDetails";
 import Link from "next/link";
 import { fetchForecastData } from "@/app/lib/data";
 import { ListRankings } from "@/components/ForecastListRankings";
+import { Nationalities } from "./ForecastNationalities";
 
 export async function ForecastView({ url }: { url?: string }) {
   const data = await fetchForecastData(url);
@@ -88,6 +89,7 @@ export async function ForecastView({ url }: { url?: string }) {
         their CIVL rankings. The calculation will become more accurate as the
         competition date approaches.
       </p>
+      {data.nationalities && <Nationalities data={data} />}
       {data.confirmed?.WPRS.length && <ListRankings data={data} />}
     </>
   );

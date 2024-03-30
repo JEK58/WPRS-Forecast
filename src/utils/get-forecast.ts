@@ -84,7 +84,8 @@ function calculateNationalities(pilots: Pilot[]) {
   const nationalitiesPercentage: Record<string, string> = {};
   for (const nationality in nationalitiesCount) {
     nationalitiesPercentage[nationality] =
-      ((nationalitiesCount[nationality] / totalPilots) * 100).toFixed(2) + "%";
+      ((nationalitiesCount[nationality] ?? 0 / totalPilots) * 100).toFixed(2) +
+      "%";
   }
 
   return { count: nationalitiesCount, percentage: nationalitiesPercentage };

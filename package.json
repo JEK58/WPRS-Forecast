@@ -35,6 +35,7 @@
     "postgres": "^3.4.4",
     "react": "18.2.0",
     "react-dom": "18.2.0",
+    "recharts": "^2.12.3",
     "tailwind-merge": "^2.2.2",
     "xlsx": "https://cdn.sheetjs.com/xlsx-0.20.0/xlsx-0.20.0.tgz",
     "zod": "^3.22.4"
