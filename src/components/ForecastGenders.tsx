@@ -50,7 +50,7 @@ export function Genders({ data }: { data: Forecast }) {
       <h2 className="text-lg font-bold">Genders</h2>
 
       <ResponsiveContainer width="100%" height={200}>
-        <PieChart width={500} height={200}>
+        <PieChart>
           <Pie
             dataKey="value"
             isAnimationActive={true}
