@@ -114,8 +114,6 @@ async function getPilotRankings(pilots: Pilot[]) {
     .map((pilot) => pilot.civlID)
     .filter((item): item is number => typeof item === "number" && !isNaN(item));
 
-  civlIds.forEach((id) => console.log("🧐 CIVL ID: ", id));
-
   try {
     const res = await db
       .select()
