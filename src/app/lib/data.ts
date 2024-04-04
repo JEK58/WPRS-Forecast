@@ -6,6 +6,7 @@ import { sanitizeUrl } from "@braintree/sanitize-url";
 import { isValidUrl } from "@/utils/check-valid-url";
 import { type GetForecastError, getForecast } from "@/utils/get-forecast";
 import { type Forecast } from "@/types/common";
+import * as Sentry from "@sentry/nextjs";
 
 export const fetchHistory = async () => {
   const MAX_DAYS_AGO = 120;
@@ -77,7 +78,10 @@ export const fetchHistory = async () => {
 
     return history;
   } catch (error) {
+    console.log("Error fetching history");
     console.log(error);
+    Sentry.captureException(error);
+
     return [];
   }
 };
@@ -101,7 +105,9 @@ export async function fetchForecastData(
 
     queryID = res[0]?.id;
   } catch (error) {
+    console.error("Error inserting usage");
     console.log(error);
+    Sentry.captureException(error);
   }
 
   const sanitizedUrl = sanitizeUrl(val.data.url);
@@ -125,7 +131,9 @@ export async function fetchForecastData(
           .where(eq(usage.id, queryID));
       }
     } catch (error) {
+      console.error("Error updating usage");
       console.log(error);
+      Sentry.captureException(error);
     }
 
     return forecast;
@@ -155,7 +163,9 @@ export async function fetchForecastData(
         .where(eq(usage.id, queryID));
     }
   } catch (error) {
+    console.error("Error updating usage");
     console.log(error);
+    Sentry.captureException(error);
   }
 
   return forecast;

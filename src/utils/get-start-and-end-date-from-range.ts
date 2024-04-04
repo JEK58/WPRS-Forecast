@@ -1,6 +1,7 @@
 import OpenAI from "openai";
 import { env } from "@/env.js";
 import Redis from "ioredis";
+import * as Sentry from "@sentry/nextjs";
 
 const openai = new OpenAI({
   apiKey: env.OPENAI_API_KEY,
@@ -27,6 +28,7 @@ export async function getStartAndEndDateFromRange(input?: string) {
       };
     } catch (error) {
       console.error("Error parsing JSON:", error);
+      Sentry.captureException(error);
     }
   }
 
@@ -67,7 +69,9 @@ export async function getStartAndEndDateFromRange(input?: string) {
 
     return compDate;
   } catch (error) {
+    console.error("Error getting start and end date from range");
     console.log(error);
+    Sentry.captureException(error);
     return;
   }
 }

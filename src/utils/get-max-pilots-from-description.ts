@@ -1,5 +1,6 @@
 import OpenAI from "openai";
 import { env } from "@/env.js";
+import * as Sentry from "@sentry/nextjs";
 
 const openai = new OpenAI({
   apiKey: env.OPENAI_API_KEY,
@@ -31,7 +32,9 @@ export async function getMaxPilotsFromDescription(input: string) {
     const num = parseInt(result);
     return isNaN(num) ? 0 : num;
   } catch (error) {
+    console.error("Error getting max pilots from description");
     console.log(error);
+    Sentry.captureException(error);
     return 0;
   }
 }

@@ -3,6 +3,7 @@ import { env } from "@/env.js";
 import { db } from "@/server/db";
 import { ilike } from "drizzle-orm";
 import { ranking } from "@/server/db/schema";
+import * as Sentry from "@sentry/nextjs";
 
 async function handler(req: NextApiRequest, res: NextApiResponse) {
   const { apiKey, gender } = req.query;
@@ -26,9 +27,11 @@ async function handler(req: NextApiRequest, res: NextApiResponse) {
       .where(useOptions ? ilike(ranking.gender, gender) : undefined);
 
     res.status(200).json(result);
-  } catch (err) {
-    res.status(500).json({ error: "internal error", message: err });
-    console.error(err);
+  } catch (error) {
+    res.status(500).json({ error: "internal error", message: error });
+    console.error("Error fetching world ranking:");
+    console.error(error);
+    Sentry.captureException(error);
   }
 }
 export default handler;

@@ -6,6 +6,7 @@ import { env } from "@/env.js";
 import { db } from "@/server/db";
 import { ranking } from "@/server/db/schema";
 import { type InferSelectModel, inArray } from "drizzle-orm";
+import * as Sentry from "@sentry/nextjs";
 
 export const CIVL_PLACEHOLDER_ID = 99999;
 const REDIS_EXP_TIME = 60 * 60 * 24 * 10; // 10 days
@@ -68,7 +69,9 @@ export async function getCivlIds(pilots: string[], disableAlgolia?: boolean) {
         await addToCache(name, pilot.id);
       }
     } catch (error) {
+      console.error("Error fetching pilot rankings:");
       console.log(error);
+      Sentry.captureException(error);
     }
   }
 

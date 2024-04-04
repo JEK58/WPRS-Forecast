@@ -7,6 +7,7 @@ import { type Ranking, calculateWPRS } from "./calculate-wprs";
 import { db } from "@/server/db";
 import { ranking } from "@/server/db/schema";
 import { inArray } from "drizzle-orm";
+import * as Sentry from "@sentry/nextjs";
 
 const MIN_PILOTS = 25; // Minimum required confirmed pilots in a comp
 
@@ -124,8 +125,8 @@ async function getPilotRankings(pilots: Pilot[]) {
 
     return res;
   } catch (error) {
+    Sentry.captureException(error);
     console.log("Error fetching pilot rankings:");
-
     console.log(error);
     return [];
   }

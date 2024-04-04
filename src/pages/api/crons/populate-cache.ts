@@ -3,6 +3,7 @@ import { env } from "@/env.js";
 import Redis from "ioredis";
 import { db } from "@/server/db";
 import { ranking } from "@/server/db/schema";
+import * as Sentry from "@sentry/nextjs";
 
 async function handler(req: NextApiRequest, res: NextApiResponse) {
   const { apiKey } = req.query;
@@ -17,9 +18,10 @@ async function handler(req: NextApiRequest, res: NextApiResponse) {
     await populateCache();
     console.info("🧹 ...done");
     res.status(200).send("done");
-  } catch (err) {
-    res.status(500).json({ error: "internal error", message: err });
-    console.error(err);
+  } catch (error) {
+    res.status(500).json({ error: "internal error", message: error });
+    console.error(error);
+    Sentry.captureException(error);
   }
 }
 

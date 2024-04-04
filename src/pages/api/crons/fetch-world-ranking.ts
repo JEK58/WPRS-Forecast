@@ -2,6 +2,7 @@ import type { NextApiRequest, NextApiResponse } from "next";
 import { env } from "@/env.js";
 import { updateWorldRanking } from "@/utils/update-world-ranking";
 import { updateRecentComps } from "@/utils/update-recent-comps";
+import * as Sentry from "@sentry/nextjs";
 
 async function handler(req: NextApiRequest, res: NextApiResponse) {
   const { apiKey } = req.query;
@@ -21,9 +22,10 @@ async function handler(req: NextApiRequest, res: NextApiResponse) {
     console.info("🧹 ...done");
 
     res.status(200).send("done");
-  } catch (err) {
-    res.status(500).json({ error: "internal error", message: err });
-    console.error(err);
+  } catch (error) {
+    res.status(500).json({ error: "internal error", message: error });
+    console.error(error);
+    Sentry.captureException(error);
   }
 }
 export default handler;
