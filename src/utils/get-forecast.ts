@@ -111,7 +111,9 @@ async function getPilotRankings(pilots: Pilot[]) {
   if (pilots.length === 0) return [];
   const civlIds = pilots
     .map((pilot) => pilot.civlID)
-    .filter((item): item is number => typeof item === "number");
+    .filter((item): item is number => typeof item === "number" && !isNaN(item));
+
+  civlIds.forEach((id) => console.log("🧐 CIVL ID: ", id));
 
   try {
     const res = await db
@@ -122,6 +124,8 @@ async function getPilotRankings(pilots: Pilot[]) {
 
     return res;
   } catch (error) {
+    console.log("Error fetching pilot rankings:");
+
     console.log(error);
     return [];
   }
