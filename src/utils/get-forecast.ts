@@ -27,6 +27,8 @@ export async function getForecast(
 
   const platform = identifyCompHost(url);
 
+  console.log("🧐 Request URL: ", url);
+
   // Airtribune
   if (platform === "AIRTRIBUNE") comp = await getAirtribuneComp(url);
 
