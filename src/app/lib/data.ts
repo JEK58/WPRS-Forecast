@@ -210,6 +210,8 @@ export async function fetchRecentQueries() {
       ageInHours: hoursDiff,
       daysTillCompStart,
       daysSinceCompEnd,
+      startDate,
+      endDate,
     };
   });
   return comps;
