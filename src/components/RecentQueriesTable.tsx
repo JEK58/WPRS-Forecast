@@ -25,6 +25,7 @@ const RecentQueriesTable = async () => {
         index === self.findIndex((i) => i.compTitle === item.compTitle),
     )
     .slice(0, 30);
+  console.log("🚀 ~ uniqueQueries:", uniqueQueries);
 
   const recentQueriesTableRows = uniqueQueries?.map((stat) => {
     let compTitle = stat.compTitle ?? stat.compUrl;
