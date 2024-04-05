@@ -1,5 +1,5 @@
 import { db } from "@/server/db";
-import { desc, eq, gt, isNotNull, and } from "drizzle-orm";
+import { desc, eq, gt, isNotNull, and, isNull, sql } from "drizzle-orm";
 import { compRanking, usage } from "@/server/db/schema";
 import { z } from "zod";
 import { sanitizeUrl } from "@braintree/sanitize-url";
@@ -175,9 +175,14 @@ export async function fetchRecentQueries() {
   const res = await db
     .select()
     .from(usage)
-    .where(isNotNull(usage.potentialWprs))
+    .where(
+      and(
+        isNotNull(usage.potentialWprs),
+        isNull(usage.error),
+        gt(usage.createdAt, sql`NOW() - INTERVAL '10 days'`),
+      ),
+    )
     .orderBy(desc(usage.createdAt))
-    .limit(100)
     .execute();
 
   const comps = res.map(({ createdAt, startDate, endDate, ...rest }) => {
