@@ -48,7 +48,7 @@ const RecentQueriesTable = async () => {
           </a>
         </TableCell>
         <TableCell>
-          {stat.daysTillCompStart && stat.daysTillCompStart > 0 && (
+          {!!stat.daysTillCompStart && stat.daysTillCompStart > 0 && (
             <span className="font-normal text-gray-400">
               {stat.daysTillCompStart}{" "}
               {stat.daysTillCompStart != 1 ? "days" : "day"}
