@@ -38,7 +38,7 @@ export function CompUrlInputField() {
 
   return (
     <>
-      <form className="flex flex-col space-y-2 md:flex-row md:space-x-2 md:space-y-0">
+      <form className="mt-4 flex flex-col space-y-2 md:flex-row md:space-x-2 md:space-y-0">
         <div className="relative flex-grow">
           <Input
             name="url"

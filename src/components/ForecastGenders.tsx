@@ -46,7 +46,7 @@ export function Genders({ data }: { data: Forecast }) {
   };
 
   return (
-    <div className="">
+    <div className="mt-2">
       <h2 className="text-lg font-bold">Genders</h2>
 
       <ResponsiveContainer width="100%" height={200}>

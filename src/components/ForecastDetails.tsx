@@ -1,60 +1,77 @@
 import { type Forecast } from "@/types/common";
+import {
+  Table,
+  TableBody,
+  TableCaption,
+  TableCell,
+  TableRow,
+} from "@/components/ui/Table";
 
 export function ForecastDetails({ data }: { data: Forecast }) {
-  const listClassName = "text-gray-500 dark:text-gray-300";
   return (
-    <ul className="text-base">
-      {data.maxPilots && data.maxPilots > 0 && (
-        <li>
-          WPRS if the top {data.maxPilots} registered pilots would be confirmed:{" "}
-          <span className="text-primary">{data?.all?.WPRS[0]?.Ta3}</span>
-        </li>
-      )}
-      <li>
-        WPRS two valid tasks:{" "}
-        <span className={listClassName}>{data?.confirmed?.WPRS[0]?.Ta2}</span>
-      </li>
-      <li>
-        WPRS one valid task:{" "}
-        <span className={listClassName}>{data?.confirmed?.WPRS[0]?.Ta1}</span>
-      </li>
-      <li>
-        Number of participants (Pn):{" "}
-        <span className={listClassName}>{data?.confirmed?.Pn}</span>
-      </li>
-      <li>
-        Participant quality (Pq):{" "}
-        <span className={listClassName}>{data?.confirmed?.Pq}</span>
-      </li>
+    <div className="collapse collapse-arrow mt-6 rounded-box border border-slate-300 ">
+      <input type="checkbox" />
+      <div className="collapse-title font-medium">Stats for nerds</div>
+      <div className="collapse-content">
+        <Table>
+          <TableCaption>
+            Latest world ranking update:{" "}
+            {new Date(data?.all?.worldRankingDate ?? "").toLocaleString()}
+          </TableCaption>
 
-      <li>
-        Comp ranking:{" "}
-        <span className={listClassName}>{data?.confirmed?.compRanking}</span>
-      </li>
-      <li>
-        Max number of pilots:{" "}
-        <span className={listClassName}>
-          {data.maxPilots === 0 ? "?" : data.maxPilots}
-        </span>
-      </li>
-      <li>
-        Confirmed pilots:{" "}
-        <span className={listClassName}>{data?.confirmed?.numPilots}</span>
-      </li>
-      <li>
-        Pq_srp: <span className={listClassName}>{data?.confirmed?.Pq_srp}</span>
-      </li>
-      <li>
-        Pq_srtp:{" "}
-        <span className={listClassName}>{data?.confirmed?.Pq_srtp}</span>
-      </li>
+          <TableBody>
+            <TableRow>
+              <TableCell className="font-medium">
+                WPRS two valid tasks:
+              </TableCell>
+              <TableCell>{data?.confirmed?.WPRS[0]?.Ta2}</TableCell>
+            </TableRow>
+            <TableRow>
+              <TableCell className="font-medium">
+                WPRS one valid task:
+              </TableCell>
+              <TableCell>{data?.confirmed?.WPRS[0]?.Ta1}</TableCell>
+            </TableRow>
+            <TableRow>
+              <TableCell className="font-medium">
+                Max number of pilots:
+              </TableCell>
+              <TableCell>
+                {data.maxPilots === 0 ? "?" : data.maxPilots}
+              </TableCell>
+            </TableRow>
+            <TableRow>
+              <TableCell className="font-medium">Confirmed pilots:</TableCell>
+              <TableCell>{data?.confirmed?.numPilots}</TableCell>
+            </TableRow>
+            <TableRow>
+              <TableCell className="font-medium">
+                Number of participants (Pn):
+              </TableCell>
+              <TableCell>{data?.confirmed?.Pn}</TableCell>
+            </TableRow>
+            <TableRow>
+              <TableCell className="font-medium">
+                Participant quality (Pq):{" "}
+              </TableCell>
+              <TableCell>{data?.confirmed?.Pq}</TableCell>
+            </TableRow>
+            <TableRow>
+              <TableCell className="font-medium">Comp ranking: </TableCell>
+              <TableCell>{data?.confirmed?.compRanking}</TableCell>
+            </TableRow>
 
-      <li className="my-3 text-sm">
-        Latest world ranking update:{" "}
-        <span className={listClassName}>
-          {new Date(data?.all?.worldRankingDate ?? "").toLocaleString()}
-        </span>
-      </li>
-    </ul>
+            <TableRow>
+              <TableCell className="font-medium">Pq_srp:</TableCell>
+              <TableCell>{data?.confirmed?.Pq_srp}</TableCell>
+            </TableRow>
+            <TableRow>
+              <TableCell className="font-medium">Pq_srtp:</TableCell>
+              <TableCell>{data?.confirmed?.Pq_srtp}</TableCell>
+            </TableRow>
+          </TableBody>
+        </Table>
+      </div>
+    </div>
   );
 }

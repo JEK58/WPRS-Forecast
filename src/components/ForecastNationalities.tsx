@@ -36,7 +36,7 @@ export function Nationalities({ data }: { data: Forecast }) {
   };
 
   return (
-    <div className="">
+    <div className="mt-6">
       <h2 className="text-lg font-bold">Nationalities</h2>
 
       <ResponsiveContainer width="100%" height={600}>

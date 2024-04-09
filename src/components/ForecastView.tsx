@@ -31,7 +31,7 @@ export async function ForecastView({ url }: { url?: string }) {
     <>
       <div className="justify-content-between flex items-start">
         <div className="flex-grow">
-          <h2 className="mb-2 text-lg font-bold sm:text-2xl dark:text-slate-200">
+          <h2 className="mb-1 text-lg font-bold sm:text-2xl dark:text-slate-200">
             {data.compTitle}
           </h2>
         </div>
@@ -65,31 +65,43 @@ export async function ForecastView({ url }: { url?: string }) {
           {data.compUrl}{" "}
         </Link>
       )}
-      <div className="text-lg">
+      <div className="mt-4 font-semibold">
         WPRS:{" "}
         {data?.confirmed?.WPRS[0]?.Ta3 ? (
-          <span className="font-bold text-green-500">
+          <span className="font-semibold text-green-500">
             {data?.confirmed?.WPRS[0]?.Ta3}
           </span>
         ) : (
           <span>No confirmed pilots yet.</span>
         )}
       </div>
-      <div className="text-sm">
-        <ForecastDetails data={data} />
-      </div>
-      <Link
-        className="text-sm underline decoration-green-500 decoration-dotted hover:decoration-solid"
-        target="_blank"
-        href="https://www.fai.org/sites/default/files/civl/documents/sporting_code_s7_e_-_wprs_2022.pdf"
-      >
-        Details can be found in the FAI Sporting Code Section 7E
-      </Link>
-      <p className="text-sm">
+
+      {data.maxPilots && data.maxPilots > 0 && (
+        <div className="mt-2">
+          Potential WPRS:{" "}
+          <span className="text-primary">{data?.all?.WPRS[0]?.Ta3}</span>
+          <p className="text-sm">
+            If the top {data.maxPilots} registered pilots would be confirmed.
+          </p>
+        </div>
+      )}
+
+      <p className="mt-4 text-sm">
         This forecast is based on the currently confirmed/registered pilots and
         their CIVL rankings. The calculation will become more accurate as the
         competition date approaches.
       </p>
+      <div className="mt-2">
+        <Link
+          className=" text-sm underline decoration-green-500 decoration-dotted hover:decoration-solid"
+          target="_blank"
+          href="https://www.fai.org/sites/default/files/civl/documents/sporting_code_s7_e_-_wprs_2022.pdf"
+        >
+          Details can be found in the FAI Sporting Code Section 7E
+        </Link>
+      </div>
+      {!!data?.confirmed?.WPRS[0]?.Ta3 && <ForecastDetails data={data} />}
+
       {data.nationalities && <Nationalities data={data} />}
       {data.genders && <Genders data={data} />}
       {(data.nationalities ?? data.genders) && (

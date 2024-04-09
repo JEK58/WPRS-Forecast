@@ -17,7 +17,7 @@ export function ListRankings({ data }: { data: Forecast }) {
 
   return (
     <>
-      <div className="collapse collapse-arrow mt-3 rounded-box border border-slate-300 ">
+      <div className="collapse collapse-arrow mt-4 rounded-box border border-slate-300 ">
         <input type="checkbox" />
         <div className="collapse-title font-medium">
           Show points for every position

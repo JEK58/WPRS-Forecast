@@ -29,7 +29,7 @@ export default async function History() {
         <Box>
           <h2 className="text-lg font-bold dark:text-slate-200">History</h2>
 
-          <p>
+          <p className="mt-4">
             Compare the forecasted points to the points actually awarded in the
             official{" "}
             <Link

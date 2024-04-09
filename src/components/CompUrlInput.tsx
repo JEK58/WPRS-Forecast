@@ -10,7 +10,7 @@ export function CompUrlInput() {
       <CompUrlInputField />
 
       {/* Notes */}
-      <div className="border-t border-gray-200 py-2 dark:border-slate-600">
+      <div className="mt-4 border-t border-gray-200 py-2 dark:border-slate-600">
         <ul className="list-outside list-disc px-4 text-gray-500 dark:text-inherit">
           <li>This only works for paragliding competitions.</li>
           <li>

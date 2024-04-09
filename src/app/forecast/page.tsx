@@ -13,7 +13,7 @@ export default async function Page({
 
   return (
     <>
-      <div className="mx-auto flex w-full flex-col space-y-4 p-3 md:max-w-3xl">
+      <div className="mx-auto flex w-full flex-col p-3 md:max-w-3xl">
         <Box>
           {/* <ForecastSkeleton /> */}
           <Suspense fallback={<ForecastSkeleton />}>
