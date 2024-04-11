@@ -2,9 +2,8 @@ import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
 
 const requestRecords: Record<string, number[] | undefined> = {};
-// Define the rate limit as 100 requests per 15 minutes
-const ALLOWED_REQUESTS = 2;
-const TIME_FRAME = 1 * 60 * 1000; // 15 minutes in milliseconds
+const ALLOWED_REQUESTS = 15;
+const TIME_FRAME = 1 * 60 * 1000; // 1 minute
 
 // This function can be marked `async` if using `await` inside
 export function middleware(req: NextRequest) {
@@ -12,12 +11,10 @@ export function middleware(req: NextRequest) {
 
   if (!ip) return NextResponse.next();
 
-  console.log(ip);
+  console.log("👮 Too many requests from: " + ip);
 
   const currentTimestamp = Date.now();
-  if (!requestRecords[ip]) {
-    requestRecords[ip] = [];
-  }
+  if (!requestRecords[ip]) requestRecords[ip] = [];
 
   // Clean up old entries
   requestRecords[ip] = requestRecords[ip]?.filter(
@@ -39,5 +36,5 @@ export function middleware(req: NextRequest) {
 
 // See "Matching Paths" below to learn more
 export const config = {
-  matcher: "/history/",
+  matcher: "/forecast/",
 };
