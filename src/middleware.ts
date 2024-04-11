@@ -2,7 +2,7 @@ import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
 
 const requestRecords: Record<string, number[] | undefined> = {};
-const ALLOWED_REQUESTS = 15;
+const ALLOWED_REQUESTS = 25;
 const TIME_FRAME = 1 * 60 * 1000; // 1 minute
 
 // This function can be marked `async` if using `await` inside
