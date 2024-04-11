@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
 
-const requestRecords: Record<string, number[] | undefined> = {};
+const requestRecords: Record<string, number[]> = {};
 const ALLOWED_REQUESTS = 20;
 const TIME_FRAME = 1 * 60 * 1000; // 1 minute
 
@@ -17,19 +17,17 @@ export function middleware(req: NextRequest) {
   if (!requestRecords[ip]) requestRecords[ip] = [];
 
   // Clean up old entries
-  requestRecords[ip] = requestRecords[ip]?.filter(
-    (ts) => currentTimestamp - ts < TIME_FRAME,
-  );
+  requestRecords[ip] =
+    requestRecords[ip]?.filter((ts) => currentTimestamp - ts < TIME_FRAME) ??
+    [];
 
   // Checking if the user has exceeded the rate limit
-  // @ts-expect-error - testing
-  if (requestRecords[ip].length >= ALLOWED_REQUESTS) {
+  if ((requestRecords[ip]?.length ?? 0) >= ALLOWED_REQUESTS) {
     return new NextResponse("Rate limit exceeded.", { status: 429 });
   }
 
   // Recording the new timestamp
-  // @ts-expect-error - testing
-  requestRecords[ip].push(currentTimestamp.toString());
+  (requestRecords[ip] ??= []).push(currentTimestamp);
   return NextResponse.next();
 }
 
