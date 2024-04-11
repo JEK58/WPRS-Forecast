@@ -30,11 +30,9 @@ export function middleware(req: NextRequest) {
   // Recording the new timestamp
   // @ts-expect-error - testing
   requestRecords[ip].push(currentTimestamp.toString());
-  // Continue with the request lifecycle
   return NextResponse.next();
 }
 
-// See "Matching Paths" below to learn more
 export const config = {
   matcher: "/forecast/",
 };
