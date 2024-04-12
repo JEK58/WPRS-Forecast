@@ -2,8 +2,8 @@ import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
 
 const requestRecords: Record<string, number[]> = {};
-const ALLOWED_REQUESTS = 30;
-const TIME_FRAME = 1 * 60 * 1000; // 1 minute
+const ALLOWED_REQUESTS = 100;
+const TIME_FRAME = 5 * 60 * 1000; // 5 minute
 
 // This function can be marked `async` if using `await` inside
 export function middleware(req: NextRequest) {
