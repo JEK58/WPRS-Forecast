@@ -37,8 +37,15 @@ export default function RootLayout({
       <body className={`font-sans ${inter.variable}`}>
         <div className="flex min-h-screen flex-col bg-gradient-to-r from-green-400 to-blue-500 pb-4">
           <div className="flex flex-col items-center justify-center space-y-8 px-0 py-4 md:px-4">
-            {/* Alert */}
-            <div className="px-3 md:max-w-3xl">
+           
+            <Link href="/">
+              <h1 className="mt-6 text-6xl font-bold text-white sm:text-center sm:text-[5rem] sm:leading-tight">
+                WPRS
+                <span className="block text-green-300 sm:inline">Forecast</span>
+              </h1>
+            </Link>
+             {/* Alert */}
+             <div className="px-3 md:max-w-3xl">
               <div role="alert" className="alert alert-error">
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
@@ -61,12 +68,6 @@ export default function RootLayout({
                 </span>
               </div>
             </div>
-            <Link href="/">
-              <h1 className="mt-6 text-6xl font-bold text-white sm:text-center sm:text-[5rem] sm:leading-tight">
-                WPRS
-                <span className="block text-green-300 sm:inline">Forecast</span>
-              </h1>
-            </Link>
             {children}
           </div>
           <Footer />
