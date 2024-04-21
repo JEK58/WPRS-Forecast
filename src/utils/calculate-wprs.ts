@@ -41,7 +41,7 @@ export async function calculateWPRS(
   const Pn_max = 1.2;
 
   // The number of participants compared to other competitions in same ranking (Pn).
-  const Pn_tmp = Math.sqrt(numberOfPilots / AVG_NUM_PARTICIPANTS);
+  const Pn_tmp = Math.sqrt(numberOfPilots / Math.min(AVG_NUM_PARTICIPANTS, 55));
   const Pn = Pn_tmp > Pn_max ? Pn_max : Pn_tmp;
 
   const compRanking = Pq * Pn;
