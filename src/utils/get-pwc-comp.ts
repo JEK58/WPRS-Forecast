@@ -125,7 +125,7 @@ async function generatePwcCompUrl(url: string) {
 
   // Find the legacy link by getting the src url from the selection iframe used on the new event page
   const iframeSrc = $("iframe#advanced_iframe")
-    .attr("src")
+    .attr("data-wpfc-original-src")
     ?.replace("selection-frame", "selection");
 
   return iframeSrc;
