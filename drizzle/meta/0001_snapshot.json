@@ -1,10 +1,8 @@
 {
-  "id": "9824bcfa-56d4-48e8-838e-40a346879c42",
-  "prevId": "00000000-0000-0000-0000-000000000000",
-  "version": "5",
-  "dialect": "pg",
+  "version": "6",
+  "dialect": "postgresql",
   "tables": {
-    "CompRanking": {
+    "public.CompRanking": {
       "name": "CompRanking",
       "schema": "",
       "columns": {
@@ -116,7 +114,7 @@
       "compositePrimaryKeys": {},
       "uniqueConstraints": {}
     },
-    "Ranking": {
+    "public.Ranking": {
       "name": "Ranking",
       "schema": "",
       "columns": {
@@ -187,7 +185,7 @@
       "compositePrimaryKeys": {},
       "uniqueConstraints": {}
     },
-    "Usage": {
+    "public.Usage": {
       "name": "Usage",
       "schema": "",
       "columns": {
@@ -280,8 +278,10 @@
   "enums": {},
   "schemas": {},
   "_meta": {
-    "columns": {},
     "schemas": {},
-    "tables": {}
-  }
+    "tables": {},
+    "columns": {}
+  },
+  "id": "9824bcfa-56d4-48e8-838e-40a346879c42",
+  "prevId": "00000000-0000-0000-0000-000000000000"
 }

@@ -1,10 +1,8 @@
 {
-  "id": "00000000-0000-0000-0000-000000000000",
-  "prevId": "",
-  "version": "5",
-  "dialect": "pg",
+  "version": "6",
+  "dialect": "postgresql",
   "tables": {
-    "CompRanking": {
+    "public.CompRanking": {
       "name": "CompRanking",
       "schema": "",
       "columns": {
@@ -116,7 +114,7 @@
       "compositePrimaryKeys": {},
       "uniqueConstraints": {}
     },
-    "Ranking": {
+    "public.Ranking": {
       "name": "Ranking",
       "schema": "",
       "columns": {
@@ -187,7 +185,7 @@
       "compositePrimaryKeys": {},
       "uniqueConstraints": {}
     },
-    "Usage": {
+    "public.Usage": {
       "name": "Usage",
       "schema": "",
       "columns": {
@@ -276,7 +274,7 @@
       "compositePrimaryKeys": {},
       "uniqueConstraints": {}
     },
-    "pg_stat_statements": {
+    "public.pg_stat_statements": {
       "name": "pg_stat_statements",
       "schema": "",
       "columns": {
@@ -485,5 +483,7 @@
     "schemas": {},
     "tables": {},
     "columns": {}
-  }
+  },
+  "id": "00000000-0000-0000-0000-000000000000",
+  "prevId": ""
 }
