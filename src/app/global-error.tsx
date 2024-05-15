@@ -1,14 +1,11 @@
 "use client";
 
 import * as Sentry from "@sentry/nextjs";
+import type Error from "next/error";
 import NextError from "next/error";
 import { useEffect } from "react";
 
-export default function GlobalError({
-  error,
-}: {
-  error: Error & { digest?: string };
-}) {
+export default function GlobalError({ error }: { error: Error }) {
   useEffect(() => {
     Sentry.captureException(error);
   }, [error]);
@@ -16,9 +13,8 @@ export default function GlobalError({
   return (
     <html>
       <body>
-        {/* This is the default Next.js error component but it doesn't allow omitting the statusCode property yet. */}
         {/* eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-explicit-any */}
-        <NextError statusCode={undefined as any} />
+        <NextError statusCode={undefined as any} />{" "}
       </body>
     </html>
   );
