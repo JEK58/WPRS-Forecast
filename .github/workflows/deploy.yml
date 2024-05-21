@@ -22,4 +22,4 @@ jobs:
             git pull
             docker compose up -d --build
             docker logs -n 10 wprs-forecast
-            docker image prune -a -f
+            docker system prune -a -f
