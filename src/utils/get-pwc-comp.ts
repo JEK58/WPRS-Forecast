@@ -46,8 +46,20 @@ export async function getPwcComp(url: string) {
   const body = await response.text();
 
   const $ = load(body, { xmlMode: true });
-  const compTitle = $('h2[class="title"]').text();
-  const compDate = $(".information").text().trim();
+  const compTitle = $("h2.elementor-heading-title")
+    .first()
+    .text()
+    .replace("Paragliding World Cup", "PWC")
+    .replaceAll(",", " ")
+    .trim();
+
+  console.log("🚀 ~ compTitle:", compTitle);
+
+  const compDate = $(
+    "div.elementor-icon-list--layout-traditional .elementor-icon-list-text",
+  )
+    .first()
+    .text();
 
   const dates = await getStartAndEndDateFromRange(compDate);
 
