@@ -118,15 +118,15 @@ async function generatePwcCompUrl(url: string) {
   if (url.includes("pwca.org"))
     return url.slice(0, getPosition(url, "/", 5)) + "/selection";
 
-  const response = await fetch(url, { cache: "no-store" });
-  const body = await response.text();
+  // const response = await fetch(url, { cache: "no-store" });
+  // const body = await response.text();
 
-  const $ = load(body, { xmlMode: true });
+  // const $ = load(body, { xmlMode: true });
 
   // Find the legacy link by getting the src url from the selection iframe used on the new event page
-  const iframeSrc = $("iframe#advanced_iframe")
-    .attr("data-wpfc-original-src")
-    ?.replace("selection-frame", "selection");
+  // const iframeSrc = $("iframe#advanced_iframe")
+  //   .attr("data-wpfc-original-src")
+  //   ?.replace("selection-frame", "selection");
 
   // TODO: Fix this
   if (url.includes("world-cup-yelmo-spain-2024"))
@@ -140,5 +140,5 @@ async function generatePwcCompUrl(url: string) {
   if (url.includes("world-cup-monroe-usa-2024"))
     return "https://pwca.org/events/2024-paragliding-world-cup-monroe-usa-2024/selection";
 
-  return iframeSrc;
+  // return iframeSrc;
 }
