@@ -131,6 +131,14 @@ async function generatePwcCompUrl(url: string) {
   // TODO: Fix this
   if (url.includes("world-cup-yelmo-spain-2024"))
     return "https://pwca.org/events/2024-paragliding-world-cup-spain-yelmo-2024/selection";
+  if (url.includes("world-cup-cameli-turkey-2024"))
+    return "https://pwca.org/events/2024-paragliding-world-cup-cameli-turkey-2024/selection";
+  if (url.includes("world-cup-cameli-turkey-2024"))
+    return "https://pwca.org/events/2024-paragliding-world-cup-cameli-turkey-2024/selection";
+  if (url.includes("world-cup-gourdon-france-2024"))
+    return "https://pwca.org/events/2024-paragliding-world-cup-gourdon-france-2024/selection";
+  if (url.includes("world-cup-monroe-usa-2024"))
+    return "https://pwca.org/events/2024-paragliding-world-cup-monroe-usa-2024/selection";
 
   return iframeSrc;
 }
