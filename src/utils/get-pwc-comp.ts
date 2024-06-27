@@ -40,8 +40,8 @@ const MAX_PILOTS = 125;
 
 export async function getPwcComp(url: string) {
   const compUrl = await generatePwcCompUrl(url);
-
   if (!compUrl) return;
+
   const response = await fetch(compUrl, { cache: "no-store" });
   const body = await response.text();
 
@@ -54,7 +54,9 @@ export async function getPwcComp(url: string) {
   const startDate = dates?.startDate;
   const endDate = dates?.endDate;
 
-  const apiUrl = compUrl.replace("pwca.org", "pwca.org/api");
+  const apiUrl = getApiUrl(compUrl);
+  if (!apiUrl) return;
+
   const femaleApiUrl = apiUrl + "?gender=female";
 
   const [maleRes, femaleRes] = await Promise.all([
@@ -118,27 +120,18 @@ async function generatePwcCompUrl(url: string) {
   if (url.includes("pwca.org"))
     return url.slice(0, getPosition(url, "/", 5)) + "/selection";
 
-  // const response = await fetch(url, { cache: "no-store" });
-  // const body = await response.text();
+  return url.slice(0, getPosition(url, "/", 4));
+}
 
-  // const $ = load(body, { xmlMode: true });
-
-  // Find the legacy link by getting the src url from the selection iframe used on the new event page
-  // const iframeSrc = $("iframe#advanced_iframe")
-  //   .attr("data-wpfc-original-src")
-  //   ?.replace("selection-frame", "selection");
-
-  // TODO: Fix this
+// Upcoming 2024 PWCs
+// Hardcoded because the PWC website constantly gets updated and refactored which makes it hard to scrape
+function getApiUrl(url: string) {
   if (url.includes("world-cup-yelmo-spain-2024"))
-    return "https://pwca.org/events/2024-paragliding-world-cup-spain-yelmo-2024/selection";
+    return "https://pwca.org/api/events/2024-paragliding-world-cup-spain-yelmo-2024/selection";
   if (url.includes("world-cup-cameli-turkey-2024"))
-    return "https://pwca.org/events/2024-paragliding-world-cup-cameli-turkey-2024/selection";
-  if (url.includes("world-cup-cameli-turkey-2024"))
-    return "https://pwca.org/events/2024-paragliding-world-cup-cameli-turkey-2024/selection";
+    return "https://pwca.org/api/events/2024-paragliding-world-cup-turkey-cameli-2024/selection";
   if (url.includes("world-cup-gourdon-france-2024"))
-    return "https://pwca.org/events/2024-paragliding-world-cup-gourdon-france-2024/selection";
+    return "https://pwca.org/api/events/2024-paragliding-world-cup-france-gourdon-2024/selection";
   if (url.includes("world-cup-monroe-usa-2024"))
-    return "https://pwca.org/events/2024-paragliding-world-cup-monroe-usa-2024/selection";
-
-  // return iframeSrc;
+    return "https://pwca.org/api/events/2024-paragliding-world-cup-usa-monroe-2024/selection";
 }

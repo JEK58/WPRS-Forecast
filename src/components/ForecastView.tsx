@@ -38,7 +38,7 @@ export async function ForecastView({ url }: { url?: string }) {
         {/* Close button */}
         <Link href="/">
           <button
-            className="rounded-full px-0.5 py-0.5  hover:bg-green-500 focus:bg-gray-400 focus:outline-none"
+            className="rounded-full px-0.5 py-0.5 hover:bg-green-500 focus:bg-gray-400 focus:outline-none"
             type="button"
           >
             <svg
@@ -56,13 +56,13 @@ export async function ForecastView({ url }: { url?: string }) {
           </button>
         </Link>
       </div>
-      {data.compUrl && (
+      {data.pilotsUrl && (
         <Link
           className="flex max-w-full items-center overflow-hidden overflow-ellipsis text-sm underline decoration-green-500 decoration-dotted hover:decoration-solid dark:text-slate-300"
           target="_blank"
-          href={data.compUrl}
+          href={data.pilotsUrl}
         >
-          {data.compUrl}{" "}
+          {data.pilotsUrl}{" "}
         </Link>
       )}
       <div className="mt-4 font-semibold">
@@ -93,7 +93,7 @@ export async function ForecastView({ url }: { url?: string }) {
       </p>
       <div className="mt-2">
         <Link
-          className=" text-sm underline decoration-green-500 decoration-dotted hover:decoration-solid"
+          className="text-sm underline decoration-green-500 decoration-dotted hover:decoration-solid"
           target="_blank"
           href="https://www.fai.org/sites/default/files/civl/documents/sporting_code_s7_e_-_wprs_2022.pdf"
         >
