@@ -128,5 +128,9 @@ async function generatePwcCompUrl(url: string) {
     .attr("data-wpfc-original-src")
     ?.replace("selection-frame", "selection");
 
+  // TODO: Fix this
+  if (url.includes("world-cup-yelmo-spain-2024"))
+    return "https://pwca.org/events/2024-paragliding-world-cup-spain-yelmo-2024/selection";
+
   return iframeSrc;
 }
