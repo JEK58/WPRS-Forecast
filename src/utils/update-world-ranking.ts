@@ -167,6 +167,12 @@ async function downloadExcel() {
     download.data.on("end", resolve);
     download.data.on("error", reject);
   });
+  console.log("Download complete");
+
+  // list all files in the FILE_PATH directory
+  fs.readdirSync("./tmp").forEach((file) => {
+    console.log(file);
+  });
 
   return date;
 }
