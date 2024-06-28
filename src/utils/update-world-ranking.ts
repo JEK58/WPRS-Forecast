@@ -155,12 +155,15 @@ async function downloadExcel() {
       fileReady = true;
     }
   }
+  console.log("Starting download");
 
   const download = await axios<fs.WriteStream>({
     url: link,
     method: "GET",
     responseType: "stream",
   });
+
+  console.log("Piping to file");
 
   download.data.pipe(fs.createWriteStream(FILE_PATH));
   await new Promise((resolve, reject) => {
