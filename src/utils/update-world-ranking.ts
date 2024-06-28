@@ -6,6 +6,7 @@ import fs from "fs";
 import { normalizeName } from "@/utils/normalize-name";
 import { db } from "@/server/db";
 import { ranking } from "@/server/db/schema";
+import path from "path";
 
 const CIVL_URL = "https://civlcomps.org/ranking/paragliding-xc/pilots";
 const CIVL_DOWNLOAD_ENDPOINT = "https://civlcomps.org/ranking/export-new";
@@ -156,6 +157,16 @@ async function downloadExcel() {
     }
   }
   console.log("Starting download");
+
+  // Ensure the directory exists
+  const ensureDirExists = (filePath: string) => {
+    const dirname = path.dirname(filePath);
+    if (!fs.existsSync(dirname)) {
+      fs.mkdirSync(dirname, { recursive: true });
+    }
+  };
+
+  ensureDirExists(FILE_PATH);
 
   const download = await axios<fs.WriteStream>({
     url: link,
