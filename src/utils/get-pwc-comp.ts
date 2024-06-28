@@ -53,8 +53,6 @@ export async function getPwcComp(url: string) {
     .replaceAll(",", " ")
     .trim();
 
-  console.log("🚀 ~ compTitle:", compTitle);
-
   const compDate = $(
     "div.elementor-icon-list--layout-traditional .elementor-icon-list-text",
   )
