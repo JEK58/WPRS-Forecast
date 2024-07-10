@@ -78,7 +78,8 @@ function calculateNationalities(pilots: Ranking[]) {
   pilots.forEach((pilot) => {
     if (!pilot.nation) return;
     if (nationalitiesCount[pilot.nation]) {
-      nationalitiesCount[pilot.nation]++;
+      nationalitiesCount[pilot.nation] =
+        (nationalitiesCount[pilot.nation] ?? 0) + 1;
     } else {
       nationalitiesCount[pilot.nation] = 1;
     }
