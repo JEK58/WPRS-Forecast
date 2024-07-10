@@ -2,13 +2,13 @@ import Link from "next/link";
 
 export function Footer() {
   return (
-    <footer className="mt-auto w-full bg-gray-800 px-0 py-4 text-center text-sm text-gray-300 ">
-      <div className="mx-auto flex max-w-7xl flex-wrap items-center justify-center space-x-4 px-4  sm:px-6 lg:px-8">
+    <footer className="mt-auto w-full bg-gray-800 px-0 py-4 text-center text-sm text-gray-300">
+      <div className="mx-auto flex max-w-7xl flex-wrap items-center justify-center space-x-4 px-4 sm:px-6 lg:px-8">
         <Link
           className="whitespace-nowrap py-1 align-middle hover:underline"
-          href="https://www.stephanschoepe.de/impressum"
+          href="/imprint"
         >
-          Impressum
+          Imprint & Privacy
         </Link>
         <span className="hidden py-1 text-gray-400 sm:inline">|</span>
         <Link
@@ -17,7 +17,7 @@ export function Footer() {
         >
           Made with
           <svg
-            className="mx-1 inline text-red-500 "
+            className="mx-1 inline text-red-500"
             fill="none"
             height="20"
             stroke="currentColor"
