@@ -61,9 +61,18 @@ export function LevelChart({ data }: { data: Forecast }) {
             }}
           />
           <YAxis
-            label={{ value: "Amount", angle: -90, position: "insideLeft" }}
+            label={{
+              value: "Pilots",
+              angle: -90,
+              position: "insideLeft",
+              offset: 10,
+            }}
           />
-          <Tooltip />
+          <Tooltip
+            separator=": "
+            formatter={(value) => [value, "Pilots"]}
+            labelFormatter={(value) => `Top ${value}`}
+          />
           <Area
             type="monotone"
             dataKey="value"
