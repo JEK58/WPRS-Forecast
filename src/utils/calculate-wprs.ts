@@ -59,7 +59,7 @@ export async function calculateWPRS(
     Pn: +Pn.toFixed(3),
     compRanking: +compRanking.toFixed(3),
     WPRS,
-    civlIds: pilots.map((pilot) => pilot.id),
+    pilots,
   };
 }
 

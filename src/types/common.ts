@@ -1,3 +1,4 @@
+import type { Ranking } from "@/utils/calculate-wprs";
 export interface Pilot {
   name?: string;
   nationality?: string;
@@ -5,6 +6,7 @@ export interface Pilot {
   wing?: string;
   status?: string;
   confirmed?: boolean;
+  rank?: number;
 }
 
 export interface CompForecast {
@@ -16,7 +18,7 @@ export interface CompForecast {
   Pn: number;
   compRanking: number;
   WPRS: { Ta1: number; Ta2: number; Ta3: number }[];
-  civlIds?: number[];
+  pilots?: Ranking[];
 }
 
 export interface Nationalities {

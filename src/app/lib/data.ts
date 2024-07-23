@@ -156,8 +156,8 @@ export async function fetchForecastData(
           endDate: forecast?.compDate?.endDate?.toISOString(),
           meta: {
             ...forecast?.meta,
-            confirmed: forecast?.confirmed?.civlIds,
-            registered: forecast?.all?.civlIds,
+            confirmed: forecast?.confirmed?.pilots?.map((pilot) => pilot.id),
+            registered: forecast?.all?.pilots?.map((pilot) => pilot.id),
           },
         })
         .where(eq(usage.id, queryID));

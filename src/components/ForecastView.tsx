@@ -3,6 +3,7 @@ import Link from "next/link";
 import { fetchForecastData } from "@/app/lib/data";
 import { ListRankings } from "@/components/ForecastListRankings";
 import { Nationalities } from "./ForecastNationalities";
+import { LevelChart } from "./ForecastLevelChart";
 import { Genders } from "./ForecastGenders";
 
 export async function ForecastView({ url }: { url?: string }) {
@@ -102,6 +103,7 @@ export async function ForecastView({ url }: { url?: string }) {
       </div>
       {!!data?.confirmed?.WPRS[0]?.Ta3 && <ForecastDetails data={data} />}
 
+      {data.confirmed?.pilots && <LevelChart data={data} />}
       {data.nationalities && <Nationalities data={data} />}
       {data.genders && <Genders data={data} />}
       {(data.nationalities ?? data.genders) && (

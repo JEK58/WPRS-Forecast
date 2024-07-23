@@ -1,5 +1,11 @@
 # Changelog
 
+### 2024-07-23
+
+**Improvements:**
+
+- Pilot level distribution chart added
+
 ### 2024-03-30
 
 **Improvements:**
