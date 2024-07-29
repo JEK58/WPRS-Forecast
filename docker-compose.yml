@@ -1,5 +1,3 @@
-version: "3.8"
-
 services:
   wprs-forecast:
     container_name: wprs-forecast
