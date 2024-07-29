@@ -103,9 +103,9 @@ export async function ForecastView({ url }: { url?: string }) {
       </div>
       {!!data?.confirmed?.WPRS[0]?.Ta3 && <ForecastDetails data={data} />}
 
-      {data.confirmed?.pilots && <LevelChart data={data} />}
-      {data.nationalities && <Nationalities data={data} />}
-      {data.genders && <Genders data={data} />}
+      {data.confirmed?.pilots && <LevelChart data={data.confirmed} />}
+      {data.nationalities && <Nationalities data={data.nationalities} />}
+      {data.genders && <Genders data={data.genders} />}
       {(data.nationalities ?? data.genders) && (
         <div className="mt-4 text-sm">
           The sum of pilots may not be equal to the number of confirmed pilots
@@ -113,7 +113,7 @@ export async function ForecastView({ url }: { url?: string }) {
         </div>
       )}
 
-      {data.confirmed?.WPRS.length && <ListRankings data={data} />}
+      {data.confirmed?.WPRS.length && <ListRankings data={data.confirmed} />}
     </>
   );
 }

@@ -10,12 +10,12 @@ import {
   Cell,
 } from "recharts";
 
-export function Nationalities({ data }: { data: Forecast }) {
-  if (!data.nationalities) return null;
+export function Nationalities({ data }: { data: Forecast["nationalities"] }) {
+  if (!data) return null;
 
-  const pieData = Object.keys(data.nationalities.count)
+  const pieData = Object.keys(data.count)
     .map((key) => {
-      return { name: key, value: data.nationalities?.count[key] ?? 0 };
+      return { name: key, value: data.count[key] ?? 0 };
     })
     .sort((a, b) => b.value - a.value);
 

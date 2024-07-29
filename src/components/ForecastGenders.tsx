@@ -18,10 +18,10 @@ interface EntryType {
   };
 }
 
-export function Genders({ data }: { data: Forecast }) {
-  if (!data.genders) return null;
+export function Genders({ data }: { data: Forecast["genders"] }) {
+  if (!data) return null;
 
-  const genders = data.genders;
+  const genders = data;
   const sum = genders.female + genders.male;
 
   const pieData = [

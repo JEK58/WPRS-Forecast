@@ -11,8 +11,8 @@ import {
 } from "recharts";
 import { CHART_COLORS } from "@/utils/constants";
 
-export function LevelChart({ data }: { data: Forecast }) {
-  const pilots = data.confirmed?.pilots;
+export function LevelChart({ data }: { data: Forecast["confirmed"] }) {
+  const pilots = data?.pilots;
 
   if (!pilots) return;
 
