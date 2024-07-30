@@ -7,3 +7,5 @@ pg_dump -h db -U postgres postgres >> $BACKUP_FILE
 echo "...done. Uploading backup..."
 rclone copy $BACKUP_FILE r2:sql-backup
 echo "...done"
+rm $BACKUP_FILE
+echo "Backup file deleted"
