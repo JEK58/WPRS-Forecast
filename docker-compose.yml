@@ -12,7 +12,7 @@ services:
       - db
     labels:
       traefik.enable: true
-      traefik.http.routers.wprs-forecast.rule: "Host(`wprs-forecast.org`, `www.wprs-forecast.org`)"
+      traefik.http.routers.wprs-forecast.rule: "Host(`wprs-forecast.org`)"
       traefik.http.routers.wprs-forecast.entrypoints: websecure
       traefik.http.routers.wprs-forecast.tls.certresolver: myresolver
       traefik.http.routers.wprs-forecast.priority: 100
