@@ -6,10 +6,7 @@ services:
       dockerfile: Dockerfile
     environment:
       DATABASE_URL: ${DATABASE_URL}
-
     restart: always
-    ports:
-      - 3000:3000
     depends_on:
       - redis
       - db
@@ -21,17 +18,24 @@ services:
       traefik.http.routers.wprs-forecast.priority: 100
       traefik.port: 3000
       traefik.docker.network: traefik
+    networks:
+      - internal
+      - traefik
+
   db:
     image: postgres:16-alpine
     restart: always
-    # set shared memory limit when using docker-compose
     shm_size: 128mb
     environment:
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
     volumes:
       - wprs-forecast-db:/var/lib/postgresql/data
+    extra_hosts:
+      - "localhost:127.0.0.1"
     ports:
-      - 5433:5432
+      - "127.0.0.1:5433:5432"
+    networks:
+      - internal
 
   backup:
     build:
@@ -46,6 +50,8 @@ services:
       - db
     environment:
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+    networks:
+      - internal
 
   redis:
     image: redis:alpine
@@ -53,11 +59,14 @@ services:
     command: redis-server --save 60 1 --loglevel warning
     volumes:
       - cache:/data
+    networks:
+      - internal
 
 networks:
-  default:
-    name: traefik
+  traefik:
     external: true
+  internal:
+    driver: bridge
 
 volumes:
   wprs-forecast-db:
