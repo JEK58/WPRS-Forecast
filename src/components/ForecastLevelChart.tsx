@@ -55,7 +55,7 @@ export function LevelChart({ data }: { data: Forecast["confirmed"] }) {
           <XAxis
             dataKey="name"
             label={{
-              value: "WPRS Top 10, Top 20...",
+              value: "Rank (range)",
               position: "insideBottom",
               offset: -14,
             }}
@@ -71,7 +71,8 @@ export function LevelChart({ data }: { data: Forecast["confirmed"] }) {
           <Tooltip
             separator=": "
             formatter={(value) => [value, "Pilots"]}
-            labelFormatter={(value) => `Top ${value}`}
+            // labelFormatter={(value) => `Top ${value}`}
+            labelFormatter={() => ``}
           />
           <Area
             type="monotone"
