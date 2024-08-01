@@ -1,4 +1,5 @@
 import { withSentryConfig } from "@sentry/nextjs";
+import { withPlausibleProxy } from "next-plausible";
 /**
  * Run `build` or `dev` with `SKIP_ENV_VALIDATION` to skip env validation. This is especially useful
  * for Docker builds.
@@ -21,8 +22,11 @@ const config = {
   },
   output: "standalone",
 };
-export default withSentryConfig(
-  config,
+
+const configWithPlausible = withPlausibleProxy()(config);
+
+const configWithSentryAndPlausible = withSentryConfig(
+  configWithPlausible,
 
   {
     // For all available options, see:
@@ -62,3 +66,5 @@ export default withSentryConfig(
     automaticVercelMonitors: true,
   },
 );
+
+export default configWithSentryAndPlausible;
