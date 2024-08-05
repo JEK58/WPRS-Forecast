@@ -97,7 +97,9 @@ export async function getSwissleagueComp(url: string) {
 
 function isConfirmed(status?: string) {
   return (
-    status?.toLowerCase() == "paid" || status?.toLowerCase() == "free entry"
+    status?.toLowerCase() == "paid" ||
+    status?.toLowerCase() == "free entry" ||
+    status?.toLowerCase() == "signed in"
   );
 }
 function generateSwissleagueCompUrl(url: string) {
