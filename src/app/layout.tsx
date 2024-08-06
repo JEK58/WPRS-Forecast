@@ -30,11 +30,7 @@ export default function RootLayout({
   return (
     <html lang="en">
       <head>
-        <PlausibleProvider
-          domain="wprs-forecast.org"
-          selfHosted={true}
-          customDomain={env.NEXT_PUBLIC_PLAUSIBLE_URL}
-        />
+        <PlausibleProvider domain="wprs-forecast.org" />
       </head>
       <body className={`font-sans ${inter.variable}`}>
         <div className="flex min-h-screen flex-col bg-gradient-to-r from-green-400 to-blue-500 pb-4">
