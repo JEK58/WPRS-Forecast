@@ -30,8 +30,8 @@ export default function RootLayout({
       <head>
         <PlausibleProvider
           domain="wprs-forecast.org"
-          // selfHosted={true}
-          // customDomain={env.NEXT_PUBLIC_PLAUSIBLE_URL}
+          selfHosted={true}
+          customDomain={env.NEXT_PUBLIC_PLAUSIBLE_URL}
         />
       </head>
       <body className={`font-sans ${inter.variable}`}>
