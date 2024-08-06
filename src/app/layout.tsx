@@ -20,6 +20,8 @@ export const metadata = {
 
 export const viewport: Viewport = { themeColor: "#4ade80" };
 
+console.log("Plausible URL:" + env.NEXT_PUBLIC_PLAUSIBLE_URL);
+
 export default function RootLayout({
   children,
 }: {
