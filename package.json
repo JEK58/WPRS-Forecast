@@ -20,7 +20,7 @@
     "@radix-ui/react-slot": "^1.1.0",
     "@sentry/nextjs": "^8.26.0",
     "@t3-oss/env-nextjs": "^0.11.0",
-    "algoliasearch": "^5.0.0",
+    "algoliasearch": "^4.24.0",
     "axios": "^1.7.4",
     "cheerio": "^1.0.0",
     "class-variance-authority": "^0.7.0",
