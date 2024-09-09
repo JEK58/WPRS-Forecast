@@ -18,10 +18,10 @@
   "dependencies": {
     "@braintree/sanitize-url": "^7.1.0",
     "@radix-ui/react-slot": "^1.1.0",
-    "@sentry/nextjs": "^8.26.0",
-    "@t3-oss/env-nextjs": "^0.11.0",
+    "@sentry/nextjs": "^8.29.0",
+    "@t3-oss/env-nextjs": "^0.11.1",
     "algoliasearch": "^4.24.0",
-    "axios": "^1.7.4",
+    "axios": "^1.7.7",
     "cheerio": "^1.0.0",
     "class-variance-authority": "^0.7.0",
     "clsx": "^2.1.1",
@@ -29,9 +29,9 @@
     "drizzle-orm": "^0.33.0",
     "ioredis": "^5.4.1",
     "minisearch": "^7.1.0",
-    "next": "^14.2.5",
-    "next-plausible": "^3.12.1",
-    "openai": "^4.56.0",
+    "next": "^14.2.8",
+    "next-plausible": "^3.12.2",
+    "openai": "^4.58.1",
     "postgres": "^3.4.4",
     "react": "18.2.0",
     "react-dom": "18.2.0",
@@ -41,16 +41,16 @@
     "zod": "^3.23.8"
   },
   "devDependencies": {
-    "@types/bun": "^1.1.6",
-    "@types/eslint": "^8.56.11",
-    "@types/node": "^22.4.0",
-    "@types/react": "^18.3.3",
+    "@types/bun": "^1.1.8",
+    "@types/eslint": "^8.56.12",
+    "@types/node": "^22.5.4",
+    "@types/react": "^18.3.5",
     "@types/react-dom": "^18.3.0",
     "@typescript-eslint/eslint-plugin": "^7.18.0",
     "@typescript-eslint/parser": "^7.18.0",
-    "drizzle-kit": "^0.24.0",
+    "drizzle-kit": "^0.24.2",
     "eslint": "^8.57.0",
-    "eslint-config-next": "^14.2.5",
+    "eslint-config-next": "^14.2.8",
     "eslint-plugin-drizzle": "^0.2.3",
     "pg": "^8.12.0",
     "prettier": "^3.3.3",
@@ -64,5 +64,5 @@
   "engines": {
     "node": ">=18.17.0"
   },
-  "packageManager": "pnpm@9.7.1"
+  "packageManager": "pnpm@9.9.0"
 }
