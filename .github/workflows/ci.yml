@@ -14,7 +14,7 @@ jobs:
     runs-on: ubuntu-latest
 
     env:
-      DATABASE_URL: "postgres://postgres:postgres@postgres"
+      DATABASE_URL: "postgres://postgres:postgres@postgres:postgres/postgres"
       API_KEY: ${{ secrets.API_KEY }}
       REDIS_URL: ${{ secrets.REDIS_URL }}
       OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
