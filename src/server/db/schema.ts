@@ -44,8 +44,8 @@ export const usage = pgTable("Usage", {
     precision: 3,
     mode: "string",
   })
-    .notNull()
-    .defaultNow(),
+    .defaultNow()
+    .notNull(),
   compUrl: text("compUrl").notNull(),
   wprs: doublePrecision("wprs"),
   compTitle: text("compTitle"),

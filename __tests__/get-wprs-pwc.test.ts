@@ -4,7 +4,7 @@ import { getPwcComp } from "@/utils/get-pwc-comp";
 
 describe("Get WPRS for PWC comps", () => {
   it("should reject a comp that lies in the past", async () => {
-    const url = "https://pwca.org/events/2023-world-cup-castelo-brazil-2023";
+    const url = "https://pwca.events/world-cup-gourdon-france-2024/";
     const res = await getForecast(url);
     expect(res).toHaveProperty("error");
     if ("error" in res) {
@@ -13,8 +13,7 @@ describe("Get WPRS for PWC comps", () => {
   }, 80000);
 
   it("should get the correct amount of confirmed pilots", async () => {
-    const url =
-      "https://pwca.org/events/2023-world-cup-pico-do-gaviao-brazil-2023/selection";
+    const url = "https://pwca.events/world-cup-gourdon-france-2024/selection";
     const res = await getPwcComp(url);
     if (res) expect(res.pilots.filter((p) => p.confirmed).length).toBe(103);
   }, 20000);

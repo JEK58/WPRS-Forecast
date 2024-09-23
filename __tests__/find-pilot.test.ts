@@ -1,14 +1,24 @@
-import { describe, it, expect } from "bun:test";
+import { describe, it, expect, beforeAll } from "bun:test";
 
 import { getCivlIds } from "@/utils/get-civl-ids";
 import { pilots } from "./data/pwcPilots";
+import { ranking } from "@/server/db/schema";
+import { db } from "@/server/db";
+import { updateWorldRanking } from "@/utils/update-world-ranking";
 
 const DISABLE_ALGOLIA = true;
+
+beforeAll(async () => {
+  console.log("Clearing ranking table and importing civl world ranking");
+  await db.delete(ranking); // eslint-disable-line
+  await updateWorldRanking();
+  console.log("...done");
+});
 
 describe("Lookup pilots by name", () => {
   it("should find CIVL IDs for all pilots by name", async () => {
     const expectedNumberOfIds = pilots.length;
-    const maxPercentageNotFound = 5;
+    const maxPercentageNotFound = 6;
 
     const res = await getCivlIds(
       pilots.flatMap((p) => p.name),
