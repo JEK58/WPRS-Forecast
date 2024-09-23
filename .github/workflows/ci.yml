@@ -48,4 +48,4 @@ jobs:
         run: |
           bun install
           bun db:push
-    #      bun test:ci
+          bun test:ci
