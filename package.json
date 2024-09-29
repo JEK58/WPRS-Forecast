@@ -18,7 +18,7 @@
   "dependencies": {
     "@braintree/sanitize-url": "^7.1.0",
     "@radix-ui/react-slot": "^1.1.0",
-    "@sentry/nextjs": "^8.30.0",
+    "@sentry/nextjs": "^8.32.0",
     "@t3-oss/env-nextjs": "^0.11.1",
     "algoliasearch": "^4.24.0",
     "axios": "^1.7.7",
@@ -31,7 +31,7 @@
     "minisearch": "^7.1.0",
     "next": "^14.2.13",
     "next-plausible": "^3.12.2",
-    "openai": "^4.63.0",
+    "openai": "^4.65.0",
     "postgres": "^3.4.4",
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
@@ -43,8 +43,8 @@
   "devDependencies": {
     "@types/bun": "^1.1.10",
     "@types/eslint": "^8.56.12",
-    "@types/node": "^22.5.5",
-    "@types/react": "^18.3.8",
+    "@types/node": "^22.7.4",
+    "@types/react": "^18.3.10",
     "@types/react-dom": "^18.3.0",
     "@typescript-eslint/eslint-plugin": "^7.18.0",
     "@typescript-eslint/parser": "^7.18.0",
@@ -54,8 +54,8 @@
     "eslint-plugin-drizzle": "^0.2.3",
     "pg": "^8.13.0",
     "prettier": "^3.3.3",
-    "prettier-plugin-tailwindcss": "^0.6.6",
-    "tailwindcss": "^3.4.12",
+    "prettier-plugin-tailwindcss": "^0.6.8",
+    "tailwindcss": "^3.4.13",
     "typescript": "^5.6.2"
   },
   "ct3aMetadata": {
