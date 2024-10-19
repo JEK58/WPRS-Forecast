@@ -133,15 +133,22 @@ async function generatePwcCompUrl(url: string) {
   return url.slice(0, getPosition(url, "/", 4));
 }
 
-// Upcoming 2024 PWCs
+// Upcoming 2025 PWCs
 // Hardcoded because the PWC website constantly gets updated and refactored which makes it hard to scrape
 function getApiUrl(url: string) {
-  if (url.includes("world-cup-yelmo-spain-2024"))
-    return "https://pwca.org/api/events/2024-paragliding-world-cup-spain-yelmo-2024/selection";
-  if (url.includes("world-cup-cameli-turkey-2024"))
-    return "https://pwca.org/api/events/2024-paragliding-world-cup-turkey-cameli-2024/selection";
-  if (url.includes("world-cup-gourdon-france-2024"))
-    return "https://pwca.org/api/events/2024-paragliding-world-cup-france-gourdon-2024/selection";
-  if (url.includes("world-cup-monroe-usa-2024"))
-    return "https://pwca.org/api/events/2024-paragliding-world-cup-usa-monroe-2024/selection";
+  if (url.includes("14th-paragliding-world-cup-super-final-2024"))
+    return "https://pwca.org/api/events/2024-14th-paragliding-world-cup-superfinal-2024-colombia-roldanillo/selection";
+  if (url.includes("world-cup-spain-algodonales"))
+    return "https://pwca.org/api/events/2025-paragliding-world-cup-spain-algodonales-2025/selection";
+  if (url.includes("world-cup-china-linzhou-2025"))
+    return "https://pwca.org/api/events/2025-paragliding-world-cup-china-linzhou-2025/selection";
+  if (url.includes("world-cup-italy-feltre-2025"))
+    return "https://pwca.org/api/events/2025-paragliding-world-cup-italy-feltre-2025-40th-guarnieri-international-trophy/selection";
+  if (url.includes("world-cup-macedonia-krushevo-2025"))
+    return "https://pwca.org/api/events/2025-paragliding-world-cup-macedonia-krushevo-2025/selection";
+  if (url.includes("world-cup-turkey-aksaray-2025"))
+    return "https://pwca.org/api/events/2025-paragliding-world-cup-turkey-aksaray-2025/selection";
+  else {
+    console.log("❌ API URLs need to be updated manually");
+  }
 }
