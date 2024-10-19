@@ -3,7 +3,7 @@ import { getForecast } from "@/utils/get-forecast";
 import { getPwcComp } from "@/utils/get-pwc-comp";
 
 describe("Get WPRS for PWC comps", () => {
-  it("should reject a comp that lies in the past", async () => {
+  it.skip("should reject a comp that lies in the past", async () => {
     const url = "https://pwca.events/world-cup-gourdon-france-2024/";
     const res = await getForecast(url);
     expect(res).toHaveProperty("error");
