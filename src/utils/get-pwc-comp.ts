@@ -46,18 +46,20 @@ export async function getPwcComp(url: string) {
   const body = await response.text();
 
   const $ = load(body, { xmlMode: true });
-  const compTitle = $("h2.elementor-heading-title")
+  let compTitle = $("div.section-heading h2.title")
     .first()
     .text()
     .replace("Paragliding World Cup", "PWC")
     .replaceAll(",", " ")
     .trim();
 
-  const compDate = $(
-    "div.elementor-icon-list--layout-traditional .elementor-icon-list-text",
-  )
-    .first()
-    .text();
+  let compDate = $("div.information div").first().text();
+
+  if (compUrl.includes("super-final")) {
+    compTitle =
+      "14th Paragliding World Cup Superfinal 2024 Colombia, Roldanillo";
+    compDate = "04.02.2025 - 15.02.2025";
+  }
 
   const dates = await getStartAndEndDateFromRange(compDate);
 
