@@ -1,7 +1,7 @@
 import OpenAI from "openai";
 import { env } from "@/env.js";
-import Redis from "ioredis";
 import * as Sentry from "@sentry/nextjs";
+import { redis } from "@/server/cache/redis";
 
 const openai = new OpenAI({
   apiKey: env.OPENAI_API_KEY,
@@ -13,7 +13,6 @@ interface RedisCompDate {
 }
 
 export async function getStartAndEndDateFromRange(input?: string) {
-  const redis = new Redis({ host: env.REDIS_URL });
   if (!input) return;
 
   // Check cache before asking GPT-3

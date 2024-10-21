@@ -1,17 +1,15 @@
 /* eslint-disable drizzle/enforce-delete-with-where */
 import MiniSearch from "minisearch";
 import algoliasearch from "algoliasearch";
-import Redis from "ioredis";
 import { env } from "@/env.js";
 import { db } from "@/server/db";
 import { ranking } from "@/server/db/schema";
 import { type InferSelectModel, inArray } from "drizzle-orm";
 import * as Sentry from "@sentry/nextjs";
+import { redis } from "@/server/cache/redis";
 
 export const CIVL_PLACEHOLDER_ID = 99999;
 const REDIS_EXP_TIME = 60 * 60 * 24 * 10; // 10 days
-
-const redis = new Redis({ host: env.REDIS_URL });
 
 /**
  * Looks up the CIVL ID for each pilot in the list.

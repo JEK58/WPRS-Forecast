@@ -1,9 +1,9 @@
 import type { NextApiRequest, NextApiResponse } from "next";
 import { env } from "@/env.js";
-import Redis from "ioredis";
 import { db } from "@/server/db";
 import { ranking } from "@/server/db/schema";
 import * as Sentry from "@sentry/nextjs";
+import { redis } from "@/server/cache/redis";
 
 async function handler(req: NextApiRequest, res: NextApiResponse) {
   const { apiKey } = req.query;
@@ -26,8 +26,6 @@ async function handler(req: NextApiRequest, res: NextApiResponse) {
 }
 
 async function populateCache() {
-  const redis = new Redis({ host: env.REDIS_URL });
-
   const res = await db.select().from(ranking);
 
   const keyValuePairs = res.map((item) => [
