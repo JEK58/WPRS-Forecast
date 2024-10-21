@@ -2,16 +2,14 @@ import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
 
 const requestRecords: Record<string, number[]> = {};
-const ALLOWED_REQUESTS = 100;
-const TIME_FRAME = 5 * 60 * 1000; // 5 minute
+const ALLOWED_REQUESTS = 15;
+const TIME_FRAME = 1 * 60 * 1000; // 1 minute
 
 // This function can be marked `async` if using `await` inside
 export function middleware(req: NextRequest) {
   const ip = req.headers.get("x-forwarded-for") ?? req.ip;
 
   if (!ip) return NextResponse.next();
-
-  console.log("👮 Too many requests from: " + ip);
 
   const currentTimestamp = Date.now();
   if (!requestRecords[ip]) requestRecords[ip] = [];
@@ -23,7 +21,10 @@ export function middleware(req: NextRequest) {
 
   // Checking if the user has exceeded the rate limit
   if ((requestRecords[ip]?.length ?? 0) >= ALLOWED_REQUESTS) {
-    return new NextResponse("Rate limit exceeded.", { status: 429 });
+    console.log("👮 Too many requests from: " + ip);
+    return new NextResponse("Too many requests, please try again later.", {
+      status: 429,
+    });
   }
 
   // Recording the new timestamp
@@ -32,5 +33,5 @@ export function middleware(req: NextRequest) {
 }
 
 export const config = {
-  matcher: "/bogus/",
+  matcher: "/forecast",
 };
