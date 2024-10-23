@@ -95,6 +95,8 @@ export async function fetchForecastData(
   const val = urlSchema.safeParse({ url });
 
   if (!val.success) return { error: "NO_URL" };
+
+  // Airtribune creates some funny deep nested links that bots like to follow - ignore them
   if (
     val.data.url.includes("blog/blog/") ||
     val.data.url.includes("info/info/")
