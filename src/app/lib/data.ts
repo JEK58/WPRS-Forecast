@@ -95,7 +95,10 @@ export async function fetchForecastData(
   const val = urlSchema.safeParse({ url });
 
   if (!val.success) return { error: "NO_URL" };
-  if (val.data.url.includes("blog/blog/")) {
+  if (
+    val.data.url.includes("blog/blog/") ||
+    val.data.url.includes("info/info/")
+  ) {
     console.log("🤖 Bot detected:", url);
     return { error: "NO_URL" };
   }
