@@ -139,9 +139,6 @@ async function generatePwcCompUrl(url: string) {
 // Hardcoded because the PWC website constantly gets updated and refactored which makes it hard to scrape
 
 function getApiUrl(url: string) {
-  console.log("🚀 ~ url:", url);
-  console.log(url.includes("14th-paragliding-world-cup-super-final"));
-
   if (url.includes("14th-paragliding-world-cup-super"))
     return "https://pwca.org/api/events/2024-14th-paragliding-world-cup-superfinal-2024-colombia-roldanillo/selection";
   if (url.includes("world-cup-spain-algodonales"))
