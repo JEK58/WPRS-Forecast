@@ -137,8 +137,12 @@ async function generatePwcCompUrl(url: string) {
 
 // Upcoming 2025 PWCs
 // Hardcoded because the PWC website constantly gets updated and refactored which makes it hard to scrape
+
 function getApiUrl(url: string) {
-  if (url.includes("14th-paragliding-world-cup-super-final-2024"))
+  console.log("🚀 ~ url:", url);
+  console.log(url.includes("14th-paragliding-world-cup-super-final"));
+
+  if (url.includes("14th-paragliding-world-cup-super"))
     return "https://pwca.org/api/events/2024-14th-paragliding-world-cup-superfinal-2024-colombia-roldanillo/selection";
   if (url.includes("world-cup-spain-algodonales"))
     return "https://pwca.org/api/events/2025-paragliding-world-cup-spain-algodonales-2025/selection";
