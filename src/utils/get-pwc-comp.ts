@@ -70,9 +70,10 @@ export async function getPwcComp(url: string) {
   if (!apiUrl) return;
 
   const femaleApiUrl = apiUrl + "?gender=female";
+  const maleApiUrl = apiUrl + "?gender=male";
 
   const [maleRes, femaleRes] = await Promise.all([
-    await fetch(apiUrl, { cache: "no-store" }),
+    await fetch(maleApiUrl, { cache: "no-store" }),
     await fetch(femaleApiUrl, { cache: "no-store" }),
   ]);
 
