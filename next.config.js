@@ -1,5 +1,5 @@
 import { withSentryConfig } from "@sentry/nextjs";
-import { withPlausibleProxy } from "next-plausible";
+// import { withPlausibleProxy } from "next-plausible";
 import { env } from "./src/env.js";
 
 /**
@@ -18,19 +18,21 @@ const config = {
    *
    * @see https://github.com/vercel/next.js/issues/41980
    */
-  i18n: {
-    locales: ["en"],
-    defaultLocale: "en",
-  },
+  // i18n: {
+  //   locales: ["en"],
+  //   defaultLocale: "en",
+  // },
   output: "standalone",
 };
 
-const configWithPlausible = withPlausibleProxy({
-  customDomain: env.NEXT_PUBLIC_PLAUSIBLE_URL,
-})(config);
+// const configWithPlausible = withPlausibleProxy({
+//   customDomain: env.NEXT_PUBLIC_PLAUSIBLE_URL,
+// })(config);
 
+// const configWithSentryAndPlausible = withSentryConfig(
+//   configWithPlausible,
 const configWithSentryAndPlausible = withSentryConfig(
-  configWithPlausible,
+  config,
 
   {
     // For all available options, see:
