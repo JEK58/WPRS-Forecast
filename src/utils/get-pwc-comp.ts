@@ -152,6 +152,8 @@ function getApiUrl(url: string) {
     return "https://pwca.org/api/events/2025-paragliding-world-cup-macedonia-krushevo-2025/selection";
   if (url.includes("world-cup-turkey-aksaray-2025"))
     return "https://pwca.org/api/events/2025-paragliding-world-cup-turkey-aksaray-2025/selection";
+  if (url.includes("pwca-asian-tour-india-bir-2024"))
+    return "https://pwca.org/api/events/2024-pwca-asian-tour-india-bir-2024/selection";
   else {
     console.log("❌ API URLs need to be updated manually");
   }
