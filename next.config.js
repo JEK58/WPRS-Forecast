@@ -1,6 +1,6 @@
 import { withSentryConfig } from "@sentry/nextjs";
-// import { withPlausibleProxy } from "next-plausible";
-// import { env } from "./src/env.js";
+import { withPlausibleProxy } from "next-plausible";
+import { env } from "./src/env.js";
 
 /**
  * Run `build` or `dev` with `SKIP_ENV_VALIDATION` to skip env validation. This is especially useful
@@ -14,14 +14,14 @@ const config = {
   output: "standalone",
 };
 
-// const configWithPlausible = withPlausibleProxy({
-//   customDomain: env.NEXT_PUBLIC_PLAUSIBLE_URL,
-// })(config);
+const configWithPlausible = withPlausibleProxy({
+  customDomain: env.NEXT_PUBLIC_PLAUSIBLE_URL,
+})(config);
 
-// const configWithSentryAndPlausible = withSentryConfig(
-//   configWithPlausible,
 const configWithSentryAndPlausible = withSentryConfig(
-  config,
+  configWithPlausible,
+  // const configWithSentryAndPlausible = withSentryConfig(
+  //   config,
 
   {
     // For all available options, see:
