@@ -22,7 +22,10 @@ const RecentQueriesTable = async () => {
   const uniqueQueries = recentQueries
     .filter(
       (item, index, self) =>
-        index === self.findIndex((i) => i.compTitle === item.compTitle),
+        index ===
+        self.findIndex(
+          (i) => i.compTitle?.toLowerCase() === item.compTitle?.toLowerCase(),
+        ),
     )
     .slice(0, 30);
 
