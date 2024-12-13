@@ -17,46 +17,46 @@
   },
   "dependencies": {
     "@braintree/sanitize-url": "^7.1.0",
-    "@radix-ui/react-slot": "^1.1.0",
-    "@sentry/nextjs": "^8.38.0",
+    "@radix-ui/react-slot": "^1.1.1",
+    "@sentry/nextjs": "^8.45.0",
     "@t3-oss/env-nextjs": "^0.11.1",
     "algoliasearch": "^4.24.0",
-    "axios": "^1.7.7",
+    "axios": "^1.7.9",
     "cheerio": "^1.0.0",
-    "class-variance-authority": "^0.7.0",
+    "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
-    "daisyui": "^4.12.14",
-    "drizzle-orm": "^0.36.1",
+    "daisyui": "^4.12.22",
+    "drizzle-orm": "^0.36.4",
     "ioredis": "^5.4.1",
-    "minisearch": "^7.1.0",
-    "next": "^14.2.17",
+    "minisearch": "^7.1.1",
+    "next": "^14.2.20",
     "next-plausible": "^3.12.4",
-    "openai": "^4.72.0",
+    "openai": "^4.76.2",
     "postgres": "^3.4.5",
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
-    "recharts": "^2.13.3",
-    "tailwind-merge": "^2.5.4",
+    "recharts": "^2.15.0",
+    "tailwind-merge": "^2.5.5",
     "xlsx": "https://cdn.sheetjs.com/xlsx-0.20.0/xlsx-0.20.0.tgz",
-    "zod": "^3.23.8"
+    "zod": "^3.24.1"
   },
   "devDependencies": {
-    "@types/bun": "^1.1.13",
+    "@types/bun": "^1.1.14",
     "@types/eslint": "^8.56.12",
-    "@types/node": "^22.9.0",
-    "@types/react": "^18.3.12",
-    "@types/react-dom": "^18.3.1",
+    "@types/node": "^22.10.2",
+    "@types/react": "^18.3.16",
+    "@types/react-dom": "^18.3.5",
     "@typescript-eslint/eslint-plugin": "^7.18.0",
     "@typescript-eslint/parser": "^7.18.0",
     "drizzle-kit": "^0.26.2",
     "eslint": "^8.57.1",
-    "eslint-config-next": "^14.2.17",
+    "eslint-config-next": "^14.2.20",
     "eslint-plugin-drizzle": "^0.2.3",
     "pg": "^8.13.1",
-    "prettier": "^3.3.3",
-    "prettier-plugin-tailwindcss": "^0.6.8",
-    "tailwindcss": "^3.4.14",
-    "typescript": "^5.6.3"
+    "prettier": "^3.4.2",
+    "prettier-plugin-tailwindcss": "^0.6.9",
+    "tailwindcss": "^3.4.16",
+    "typescript": "^5.7.2"
   },
   "ct3aMetadata": {
     "initVersion": "7.30.0"
@@ -64,5 +64,5 @@
   "engines": {
     "node": ">=18.17.0"
   },
-  "packageManager": "pnpm@9.12.3"
+  "packageManager": "pnpm@9.15.0"
 }
