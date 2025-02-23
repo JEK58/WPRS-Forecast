@@ -18,15 +18,15 @@
   "dependencies": {
     "@braintree/sanitize-url": "^7.1.1",
     "@radix-ui/react-slot": "^1.1.2",
-    "@sentry/nextjs": "^8.55.0",
-    "@t3-oss/env-nextjs": "^0.11.1",
+    "@sentry/nextjs": "^9.1.0",
+    "@t3-oss/env-nextjs": "^0.12.0",
     "algoliasearch": "^4.24.0",
     "axios": "^1.7.9",
     "cheerio": "^1.0.0",
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
     "daisyui": "^4.12.23",
-    "drizzle-orm": "^0.36.4",
+    "drizzle-orm": "^0.39.3",
     "ioredis": "^5.5.0",
     "minisearch": "^7.1.2",
     "next": "^14.2.24",
@@ -36,7 +36,7 @@
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
     "recharts": "^2.15.1",
-    "tailwind-merge": "^2.6.0",
+    "tailwind-merge": "^3.0.2",
     "xlsx": "https://cdn.sheetjs.com/xlsx-0.20.0/xlsx-0.20.0.tgz",
     "zod": "^3.24.2"
   },
@@ -48,7 +48,7 @@
     "@types/react-dom": "^18.3.5",
     "@typescript-eslint/eslint-plugin": "^7.18.0",
     "@typescript-eslint/parser": "^7.18.0",
-    "drizzle-kit": "^0.26.2",
+    "drizzle-kit": "^0.30.4",
     "eslint": "^8.57.1",
     "eslint-config-next": "^14.2.24",
     "eslint-plugin-drizzle": "^0.2.3",
@@ -64,5 +64,5 @@
   "engines": {
     "node": ">=18.17.0"
   },
-  "packageManager": "pnpm@9.15.5"
+  "packageManager": "pnpm@10.4.1"
 }
