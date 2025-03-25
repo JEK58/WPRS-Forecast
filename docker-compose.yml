@@ -12,15 +12,14 @@ services:
       - db
     labels:
       traefik.enable: true
-      traefik.http.routers.wprs-forecast.rule: "Host(`wprs-forecast.org`) || Host(`www.wprs-forecast.org`)"
       traefik.http.routers.wprs-forecast.entrypoints: websecure
-      traefik.http.routers.wprs-forecast.tls.certresolver: myresolver
-      traefik.http.routers.wprs-forecast.priority: 100
-      traefik.port: 3000
-      traefik.docker.network: traefik
+      traefik.http.routers.wprs-forecast.middlewares: global-compress
+      traefik.http.routers.wprs-forecast.rule: "Host(`wprs-forecast.org`) || Host(`www.wprs-forecast.org`)"
+      traefik.http.routers.wprs-forecast.tls.certresolver: letsencrypt
+      traefik.http.services.wprs-forecast.loadbalancer.server.port: 3000
     networks:
       - internal
-      - traefik
+      - coolify
 
   db:
     image: postgres:16-alpine
@@ -63,7 +62,7 @@ services:
       - internal
 
 networks:
-  traefik:
+  coolify:
     external: true
   internal:
     driver: bridge
