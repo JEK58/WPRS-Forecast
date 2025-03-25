@@ -12,11 +12,14 @@ services:
       - db
     labels:
       traefik.enable: true
-      traefik.http.routers.wprs-forecast.entrypoints: websecure
-      traefik.http.routers.wprs-forecast.middlewares: global-compress
+      traefik.http.middlewares.gzip.compress: true
+      traefik.http.middlewares.redirect-to-https.redirectscheme.scheme: https
+      traefik.http.routers.wprs-forecast.entryPoints: http
+      traefik.http.routers.wprs-forecast.middlewares: gzip,global-compress
       traefik.http.routers.wprs-forecast.rule: "Host(`wprs-forecast.org`) || Host(`www.wprs-forecast.org`)"
       traefik.http.routers.wprs-forecast.tls.certresolver: letsencrypt
       traefik.http.services.wprs-forecast.loadbalancer.server.port: 3000
+
     networks:
       - internal
       - coolify
