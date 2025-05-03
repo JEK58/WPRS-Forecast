@@ -40,7 +40,17 @@ export async function updateWorldRanking() {
   XLSX.set_fs(fs);
   console.log("Reading excel file");
 
+  // After download completes
+  await new Promise((resolve) => setTimeout(resolve, 500)); // Give filesystem time to sync
+
+  // Or better: verify file integrity
+  const stats = fs.statSync(FILE_PATH);
+  if (stats.size === 0) {
+    throw new Error("Downloaded file is empty");
+  }
+
   const fileBuffer = fs.readFileSync(FILE_PATH);
+
   const workbook = XLSX.read(fileBuffer, { type: "buffer" });
 
   const sheetName = workbook.SheetNames[0];
