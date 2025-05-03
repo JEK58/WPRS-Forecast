@@ -38,7 +38,11 @@ export async function updateWorldRanking() {
   }
 
   XLSX.set_fs(fs);
-  const workbook = XLSX.readFile(FILE_PATH);
+  console.log("Reading excel file");
+
+  const fileBuffer = fs.readFileSync(FILE_PATH);
+  const workbook = XLSX.read(fileBuffer, { type: "buffer" });
+
   const sheetName = workbook.SheetNames[0];
   const worksheet = workbook.Sheets[sheetName ?? ""];
 
