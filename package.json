@@ -17,46 +17,46 @@
   },
   "dependencies": {
     "@braintree/sanitize-url": "^7.1.1",
-    "@radix-ui/react-slot": "^1.1.2",
-    "@sentry/nextjs": "^9.1.0",
+    "@radix-ui/react-slot": "^1.2.0",
+    "@sentry/nextjs": "^9.15.0",
     "@t3-oss/env-nextjs": "^0.12.0",
     "algoliasearch": "^4.24.0",
-    "axios": "^1.7.9",
+    "axios": "^1.9.0",
     "cheerio": "^1.0.0",
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
-    "daisyui": "^4.12.23",
+    "daisyui": "^4.12.24",
     "drizzle-orm": "^0.39.3",
-    "ioredis": "^5.5.0",
+    "ioredis": "^5.6.1",
     "minisearch": "^7.1.2",
-    "next": "^14.2.24",
+    "next": "^14.2.28",
     "next-plausible": "^3.12.4",
-    "openai": "^4.85.4",
+    "openai": "^4.97.0",
     "postgres": "^3.4.5",
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
-    "recharts": "^2.15.1",
-    "tailwind-merge": "^3.0.2",
+    "recharts": "^2.15.3",
+    "tailwind-merge": "^3.2.0",
     "xlsx": "https://cdn.sheetjs.com/xlsx-0.20.0/xlsx-0.20.0.tgz",
-    "zod": "^3.24.2"
+    "zod": "^3.24.3"
   },
   "devDependencies": {
-    "@types/bun": "^1.2.3",
+    "@types/bun": "^1.2.11",
     "@types/eslint": "^8.56.12",
-    "@types/node": "^22.13.5",
-    "@types/react": "^18.3.18",
-    "@types/react-dom": "^18.3.5",
+    "@types/node": "^22.15.3",
+    "@types/react": "^18.3.20",
+    "@types/react-dom": "^18.3.7",
     "@typescript-eslint/eslint-plugin": "^7.18.0",
     "@typescript-eslint/parser": "^7.18.0",
-    "drizzle-kit": "^0.30.4",
+    "drizzle-kit": "^0.30.6",
     "eslint": "^8.57.1",
-    "eslint-config-next": "^14.2.24",
+    "eslint-config-next": "^14.2.28",
     "eslint-plugin-drizzle": "^0.2.3",
-    "pg": "^8.13.3",
-    "prettier": "^3.5.2",
+    "pg": "^8.15.6",
+    "prettier": "^3.5.3",
     "prettier-plugin-tailwindcss": "^0.6.11",
     "tailwindcss": "^3.4.17",
-    "typescript": "^5.7.3"
+    "typescript": "^5.8.3"
   },
   "ct3aMetadata": {
     "initVersion": "7.30.0"
@@ -64,5 +64,5 @@
   "engines": {
     "node": ">=18.17.0"
   },
-  "packageManager": "pnpm@10.4.1"
+  "packageManager": "pnpm@10.10.0"
 }
