@@ -14,6 +14,7 @@ import {
 } from "@/components/ui/Table";
 
 const MAX_TITLE_LENGTH = 45;
+const NUMBER_RECENT_QUERIES = 50;
 
 const RecentQueriesTable = async () => {
   noStore();
@@ -27,7 +28,7 @@ const RecentQueriesTable = async () => {
           (i) => i.compTitle?.toLowerCase() === item.compTitle?.toLowerCase(),
         ),
     )
-    .slice(0, 30);
+    .slice(0, NUMBER_RECENT_QUERIES);
 
   const recentQueriesTableRows = uniqueQueries?.map((stat) => {
     let compTitle = stat.compTitle ?? stat.compUrl;
