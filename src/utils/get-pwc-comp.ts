@@ -132,9 +132,9 @@ function getApiUrl(url: string) {
   if (url.includes("world-cup-spain-algodonales"))
     return "https://pwca.org/api/events/2025-paragliding-world-cup-spain-algodonales-2025/selection";
   if (url.includes("world-cup-india-panchgani-2026"))
-    return "https://pwca.org/api/events/paragliding-world-cup-india-panchgani-2026/selection";
+    return "https://pwca.org/api/events/2025-paragliding-world-cup-india-panchgani-2026-season-2025/selection";
   if (url.includes("world-cup-brazil-governador-valadares"))
-    return "https://pwca.org/api/events/paragliding-world-cup-brazil-governador-valadares-2026-2025-season/selection";
+    return "https://pwca.org/api/events/2025-paragliding-world-cup-brazil-governador-valadares-2026-2025-season/selection";
   if (url.includes("world-cup-china-linzhou-2025"))
     return "https://pwca.org/api/events/2025-paragliding-world-cup-china-linzhou-2025/selection";
   if (url.includes("world-cup-italy-feltre-2025"))
