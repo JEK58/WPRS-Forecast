@@ -18,11 +18,11 @@
   "dependencies": {
     "@braintree/sanitize-url": "^7.1.1",
     "@radix-ui/react-slot": "^1.2.3",
-    "@sentry/nextjs": "^9.30.0",
+    "@sentry/nextjs": "^9.42.1",
     "@t3-oss/env-nextjs": "^0.12.0",
-    "algoliasearch": "^4.25.0",
-    "axios": "^1.10.0",
-    "cheerio": "^1.1.0",
+    "algoliasearch": "^4.25.2",
+    "axios": "^1.11.0",
+    "cheerio": "^1.1.2",
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
     "daisyui": "^4.12.24",
@@ -35,15 +35,15 @@
     "postgres": "^3.4.7",
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
-    "recharts": "^2.15.3",
+    "recharts": "^2.15.4",
     "tailwind-merge": "^3.3.1",
     "xlsx": "https://cdn.sheetjs.com/xlsx-0.20.0/xlsx-0.20.0.tgz",
-    "zod": "^3.25.67"
+    "zod": "^3.25.76"
   },
   "devDependencies": {
-    "@types/bun": "^1.2.16",
+    "@types/bun": "^1.2.19",
     "@types/eslint": "^8.56.12",
-    "@types/node": "^22.15.32",
+    "@types/node": "^22.16.5",
     "@types/react": "^18.3.23",
     "@types/react-dom": "^18.3.7",
     "@typescript-eslint/eslint-plugin": "^7.18.0",
@@ -52,9 +52,9 @@
     "eslint": "^8.57.1",
     "eslint-config-next": "^14.2.30",
     "eslint-plugin-drizzle": "^0.2.3",
-    "pg": "^8.16.1",
-    "prettier": "^3.5.3",
-    "prettier-plugin-tailwindcss": "^0.6.13",
+    "pg": "^8.16.3",
+    "prettier": "^3.6.2",
+    "prettier-plugin-tailwindcss": "^0.6.14",
     "tailwindcss": "^3.4.17",
     "typescript": "^5.8.3"
   },
@@ -64,5 +64,5 @@
   "engines": {
     "node": ">=18.17.0"
   },
-  "packageManager": "pnpm@10.12.1"
+  "packageManager": "pnpm@10.13.1"
 }
