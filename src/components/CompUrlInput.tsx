@@ -12,7 +12,7 @@ export function CompUrlInput() {
       {/* Notes */}
       <div className="mt-4 border-t border-gray-200 py-2 dark:border-slate-600">
         <ul className="list-outside list-disc px-4 text-gray-500 dark:text-inherit">
-          <li>This only works for paragliding competitions.</li>
+          <li>This only works for XC paragliding competitions.</li>
           <li>
             Make sure to paste the correct link from the platform that actually
             hosts the comp - even if civlcomps.org lists them all.
@@ -22,10 +22,7 @@ export function CompUrlInput() {
             <span className="font-semibold">more accurate</span> as the
             competition date approaches.
           </li>
-          <li>
-            PWC events may currently not give correct results or not work at
-            all. I have to adapt to the new events page.
-          </li>
+
           <li> It will not work for past events. It&apos;s a forecast!</li>
         </ul>
         <p className="mt-2 text-gray-500 dark:text-inherit">
