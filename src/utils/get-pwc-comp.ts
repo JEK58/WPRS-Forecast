@@ -95,6 +95,33 @@ async function getPwcApiDetails(compUrl: string) {
   }
 }
 
+function parseGermanDate(dateString: string): Date {
+  const parts = dateString.split(".");
+  if (parts.length !== 3) {
+    throw new Error(`Invalid date format: ${dateString}`);
+  }
+
+  const [dayStr, monthStr, yearStr] = parts;
+  const day = Number(dayStr);
+  const month = Number(monthStr) - 1; // JS months are 0-indexed
+  const year = Number(yearStr);
+
+  // Basic validation
+  if (
+    Number.isNaN(day) ||
+    Number.isNaN(month) ||
+    Number.isNaN(year) ||
+    day < 1 ||
+    month < 0 ||
+    month > 11 ||
+    year < 0
+  ) {
+    throw new Error(`Invalid date components: ${dateString}`);
+  }
+
+  return new Date(year, month, day);
+}
+
 export async function getPwcComp(url: string) {
   const compUrl = normalizePwcUrl(url);
 
@@ -109,8 +136,8 @@ export async function getPwcComp(url: string) {
   }
 
   const compTitle = details?.name;
-  const startDate = new Date(details?.startDate ?? "");
-  const endDate = new Date(details?.endDate ?? "");
+  const startDate = parseGermanDate(details?.startDate ?? "");
+  const endDate = parseGermanDate(details?.endDate ?? "");
 
   const femaleApiUrl = details.apiUrl + "?gender=female";
   const maleApiUrl = details.apiUrl + "?gender=male";
