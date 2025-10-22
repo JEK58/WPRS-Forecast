@@ -1,12 +1,12 @@
 import type { NextApiRequest, NextApiResponse } from "next";
 import { env } from "@/env.js";
 import { db } from "@/server/db";
-import { ilike } from "drizzle-orm";
+import { eq } from "drizzle-orm";
 import { ranking } from "@/server/db/schema";
 import * as Sentry from "@sentry/nextjs";
 
 async function handler(req: NextApiRequest, res: NextApiResponse) {
-  const { apiKey, gender } = req.query;
+  const { apiKey, civlId } = req.query;
 
   if (
     !apiKey ||
@@ -22,18 +22,15 @@ async function handler(req: NextApiRequest, res: NextApiResponse) {
     console.info("World ranking queried by Pilot Union");
   }
 
-  console.info(
-    "World ranking endpoint called with gender: " + gender?.toString(),
-  );
-
-  const useOptions =
-    typeof gender === "string" && ["M", "m", "F", "f"].includes(gender);
+  if (!civlId || typeof civlId !== "string") {
+    return res.status(400).json({ message: "Missing civlId" });
+  }
 
   try {
     const result = await db
       .select()
       .from(ranking)
-      .where(useOptions ? ilike(ranking.gender, gender) : undefined);
+      .where(eq(ranking.id, +civlId));
 
     res.status(200).json(result);
   } catch (error) {
