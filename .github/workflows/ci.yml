@@ -16,7 +16,7 @@ jobs:
     env:
       DATABASE_URL: "postgres://postgres:postgres@localhost"
       API_KEY: ${{ secrets.API_KEY }}
-      REDIS_URL: ${{ secrets.REDIS_URL }}
+      REDIS_URL: "localhost"
       OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
       ALGOLIA_APP_ID: ${{ secrets.ALGOLIA_APP_ID }}
       ALGOLIA_API_KEY: ${{ secrets.ALGOLIA_API_KEY }}
@@ -36,11 +36,17 @@ jobs:
           --health-retries 5
         ports:
           - 5432:5432
+      redis:
+        image: redis:latest
+        options: >-
+          --health-cmd "redis-cli ping"
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+        ports:
+          - 6379:6379
 
     steps:
-      - name: Start Redis
-        uses: supercharge/redis-github-action@1.7.0
-
       - uses: actions/checkout@v4
       - uses: oven-sh/setup-bun@v1
 
