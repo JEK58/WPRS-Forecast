@@ -21,6 +21,7 @@ jobs:
       ALGOLIA_APP_ID: ${{ secrets.ALGOLIA_APP_ID }}
       ALGOLIA_API_KEY: ${{ secrets.ALGOLIA_API_KEY }}
       AIRTRIBUNE_API_KEY: ${{ secrets.AIRTRIBUNE_API_KEY }}
+      PILOT_UNION_API_KEY: ${{ secrets.PILOT_UNION_API_KEY || 'ci-pilot-union-key' }}
 
     services:
       postgres:
