@@ -13,7 +13,7 @@ beforeAll(async () => {
   await db.delete(ranking); // eslint-disable-line
   await updateWorldRanking();
   console.log("...done");
-});
+}, 120000);
 
 describe("Lookup pilots by name", () => {
   it("should find CIVL IDs for all pilots by name", async () => {
