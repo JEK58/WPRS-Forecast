@@ -5,12 +5,14 @@ import { load } from "cheerio";
 export async function updateRecentComps() {
   const comps = await scrapeRecentCivlComps();
 
-  // Update DB
-  // eslint-disable-next-line drizzle/enforce-delete-with-where
-  const deleted = await db.delete(compRanking).returning();
+  // Update DB atomically so we never leave the table empty on partial failures.
+  const { deleted, entries } = await db.transaction(async (tx) => {
+    // eslint-disable-next-line drizzle/enforce-delete-with-where
+    const deleted = await tx.delete(compRanking).returning();
+    const entries = await tx.insert(compRanking).values(comps).returning();
+    return { deleted, entries };
+  });
   console.log("🗑️ ~ Deleted comp ranking entries:", deleted.length);
-
-  const entries = await db.insert(compRanking).values(comps).returning();
   console.log("🧪 ~ New comp ranking entries:", entries.length);
 }
 

@@ -95,12 +95,14 @@ export async function updateWorldRanking() {
       });
     });
 
-  // Update DB
-  // eslint-disable-next-line drizzle/enforce-delete-with-where
-  const deleted = await db.delete(ranking).returning();
+  // Update DB atomically so we never leave the table empty on partial failures.
+  const { deleted, entries } = await db.transaction(async (tx) => {
+    // eslint-disable-next-line drizzle/enforce-delete-with-where
+    const deleted = await tx.delete(ranking).returning();
+    const entries = await tx.insert(ranking).values(data).returning();
+    return { deleted, entries };
+  });
   console.log("🗑️ ~ Deleted entries:", deleted.length);
-
-  const entries = await db.insert(ranking).values(data).returning();
   console.log("🧪 ~ New entries:", entries.length);
 }
 
