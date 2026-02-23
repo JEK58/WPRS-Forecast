@@ -2,6 +2,7 @@ import Box from "@/components/ui/Box";
 import { ForecastView } from "@/components/ForecastView";
 import { Suspense } from "react";
 import { ForecastSkeleton } from "@/components/ui/skeletons";
+import { PageContainer } from "@/components/layout/PageContainer";
 
 export default async function Page({
   searchParams,
@@ -15,14 +16,12 @@ export default async function Page({
       : undefined;
 
   return (
-    <>
-      <div className="mx-auto flex w-full flex-col p-3 md:max-w-3xl">
-        <Box>
-          <Suspense fallback={<ForecastSkeleton />}>
-            <ForecastView url={url} />
-          </Suspense>
-        </Box>
-      </div>
-    </>
+    <PageContainer spaced={false}>
+      <Box>
+        <Suspense fallback={<ForecastSkeleton />}>
+          <ForecastView url={url} />
+        </Suspense>
+      </Box>
+    </PageContainer>
   );
 }

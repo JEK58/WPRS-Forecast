@@ -4,19 +4,18 @@ export function ForecastSkeleton() {
   return (
     <>
       <div className="animate-pulse overflow-hidden">
-        <div className="justify-content-between flex items-start">
+        <div className="flex items-start justify-between">
           <div className="grow">
             <div className="mb-4 h-6 w-56 rounded-md bg-gray-500"></div>
             <div className="mb-4 flex h-5 w-32 rounded-md bg-gray-400"></div>
           </div>
-          {/* Back button */}
           <Link
             href="/"
             aria-label="Back"
-            className="animate-none shrink-0 rounded-full px-0.5 py-0.5 hover:bg-green-500 focus:bg-gray-400 focus:outline-none"
+            className="btn btn-circle btn-ghost btn-sm animate-none"
           >
             <svg
-              className="h-6 w-6 fill-current stroke-black dark:stroke-white"
+              className="h-5 w-5 fill-current stroke-current"
               viewBox="0 0 20 20"
               xmlns="http://www.w3.org/2000/svg"
             >
@@ -41,7 +40,7 @@ export function ForecastSkeleton() {
         <div className="mb-2 flex h-5 w-32 rounded-md bg-gray-400"></div>
         <div className="mb-2 flex h-5 rounded-md bg-gray-400"></div>
         <div className="mb-5 flex h-5 w-72 rounded-md bg-gray-400"></div>
-        <div className="mb-3 flex h-14 rounded-md bg-gray-300 dark:bg-gray-500"></div>
+        <div className="mb-3 flex h-14 rounded-md bg-gray-300"></div>
         <progress className="progress progress-success"></progress>
         <div className="">Getting pilots details and ranking...</div>
       </div>

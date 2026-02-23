@@ -29,7 +29,7 @@ export function Nationalities({ data }: { data: Forecast["nationalities"] }) {
 
   const renderLegend = (value: string, entry: EntryType) => {
     return (
-      <span className="text-sm text-black dark:text-slate-200">
+      <span className="text-sm text-black">
         {value}: {entry?.payload?.payload?.value}
       </span>
     );

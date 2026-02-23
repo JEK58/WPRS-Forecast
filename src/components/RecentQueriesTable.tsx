@@ -26,10 +26,7 @@ const RecentQueriesTable = async () => {
     }
 
     return (
-      <TableRow
-        key={stat.id}
-        className="border-slate-300 dark:border-slate-600"
-      >
+      <TableRow key={stat.id}>
         <TableCell>
           <a
             className="decoration-green-500 hover:underline hover:decoration-dotted"
@@ -68,7 +65,8 @@ const RecentQueriesTable = async () => {
           <Button
             asChild
             aria-label="Update"
-            className="md:text-md rounded bg-green-500 px-2 py-1 font-bold text-white hover:bg-green-700 sm:text-xs"
+            size="sm"
+            className="border-transparent bg-green-500 text-white hover:bg-green-700"
           >
             <Link href={`/forecast?url=${stat.compUrl}`}>
               <span className="hidden sm:inline">Update</span>
@@ -98,11 +96,11 @@ const RecentQueriesTable = async () => {
 
   return (
     <>
-      <h2 className="text-lg font-bold dark:text-slate-200">Recent Queries</h2>
+      <h2 className="card-title">Recent Queries</h2>
       <div className="w-full overflow-x-auto">
         <Table className="w-full text-left">
           <TableHeader>
-            <TableRow className="border-slate-300 dark:border-slate-600">
+            <TableRow>
               <TableHead></TableHead>
               <TableHead>Begins</TableHead>
               <TableHead>WPRS</TableHead>

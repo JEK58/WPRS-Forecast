@@ -4,6 +4,7 @@ import { Button } from "@/components/ui/Button";
 import { useEffect, useState, useCallback } from "react";
 import { isValidUrl } from "@/utils/check-valid-url";
 import Link from "next/link";
+import { cn } from "@/utils/utils";
 
 export function CompUrlInputField() {
   const [url, setUrl] = useState("");
@@ -38,7 +39,7 @@ export function CompUrlInputField() {
 
   return (
     <>
-      <form className="mt-4 flex flex-col space-y-2 md:flex-row md:space-x-2 md:space-y-0">
+      <form className="mt-4 flex flex-col gap-2 md:flex-row">
         <div className="relative grow">
           <Input
             name="url"
@@ -47,28 +48,31 @@ export function CompUrlInputField() {
             type="text"
             value={url}
             onChange={(e) => setUrl(e.target.value)}
-            className="h-12 w-full rounded-md border-2 border-gray-300 p-2 pr-10 text-base focus:outline-none focus:ring-2 focus:ring-blue-500 "
+            className="input-lg h-12 border-2 border-gray-300 pr-10 text-base focus:outline-none focus:ring-2 focus:ring-blue-500"
             placeholder="CIVL, PWC, Airtribune or Swissleague"
           />
-          {/* Paste/Clear button */}
           {url.length > 0 ? (
-            <button
+            <Button
               type="button"
+              aria-label="Clear URL"
               onClick={() => setUrl("")}
-              className="absolute right-2 top-1/2 -translate-y-1/2 transform rounded  px-2 py-1 font-bold text-gray-500 hover:text-green-500"
+              variant="ghost"
+              size="sm"
+              className="btn-circle absolute right-1 top-1/2 h-8 min-h-8 w-8 -translate-y-1/2 text-gray-500 hover:text-green-500"
             >
               X
-            </button>
+            </Button>
           ) : (
-            // Only show the button when the browser supports reading from clipboard.
             clipboardApiSupported && (
               <Button
                 type="button"
-                className="absolute right-2 top-1/2 -translate-y-1/2 transform rounded bg-transparent px-2 py-1 font-bold text-gray-500 hover:text-gray-700"
+                variant="ghost"
+                size="sm"
+                className="btn-circle absolute right-1 top-1/2 h-8 min-h-8 w-8 -translate-y-1/2 text-gray-500 hover:text-gray-700"
                 onClick={handlePaste}
               >
                 <svg
-                  className=" h-4 w-4"
+                  className="h-4 w-4"
                   fill="none"
                   height="24"
                   stroke="currentColor"
@@ -88,18 +92,24 @@ export function CompUrlInputField() {
           )}
         </div>
 
-        <Link
-          href={`/forecast?url=${url}`}
-          className={`inline-flex h-12 w-full items-center justify-center rounded bg-blue-500 px-4 py-2 font-bold whitespace-nowrap text-white hover:bg-blue-700 md:w-auto md:self-center ${
-            !isValidLink ? "pointer-events-none opacity-50" : ""
-          }`}
-          aria-disabled={!isValidLink}
-          tabIndex={!isValidLink ? -1 : undefined}
+        <Button
+          asChild
+          size="lg"
+          className={cn(
+            "h-12 min-h-12 w-full md:w-auto md:self-center",
+            "border-transparent bg-blue-500 text-white hover:bg-blue-700",
+            !isValidLink && "btn-disabled pointer-events-none",
+          )}
         >
-          Calculate
-        </Link>
+          <Link
+            href={`/forecast?url=${url}`}
+            aria-disabled={!isValidLink}
+            tabIndex={!isValidLink ? -1 : undefined}
+          >
+            Calculate
+          </Link>
+        </Button>
       </form>
-      {/* Error message */}
       <div className="text-sm text-red-500">
         {!isValidLink && url.length > 0 && <p>This is not a valid link</p>}
       </div>

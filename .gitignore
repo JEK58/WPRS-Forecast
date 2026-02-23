@@ -5,6 +5,9 @@
 /.pnp
 .pnp.js
 
+
+AGENTS.md
+
 # testing
 /coverage
 

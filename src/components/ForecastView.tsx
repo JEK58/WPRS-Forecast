@@ -23,28 +23,27 @@ export async function ForecastView({ url }: { url?: string }) {
       errMessage = "Something went wrong. Please try again.";
 
     return (
-      <div>
-        <h2>{errMessage}</h2>
+      <div role="alert" className="alert alert-error">
+        <span>{errMessage}</span>
       </div>
     );
   }
 
   return (
     <>
-      <div className="justify-content-between flex items-start">
+      <div className="flex items-start justify-between">
         <div className="grow">
-          <h2 className="mb-1 text-lg font-bold sm:text-2xl dark:text-slate-200">
+          <h2 className="mb-1 text-xl font-bold sm:text-2xl">
             {data.compTitle}
           </h2>
         </div>
-        {/* Close button */}
         <Link
           href="/"
           aria-label="Close forecast"
-          className="rounded-full px-0.5 py-0.5 hover:bg-green-500 focus:bg-gray-400 focus:outline-none"
+          className="btn btn-circle btn-ghost btn-sm"
         >
           <svg
-            className="h-6 w-6 fill-current stroke-black dark:stroke-white"
+            className="h-5 w-5 fill-current stroke-current"
             viewBox="0 0 20 20"
             xmlns="http://www.w3.org/2000/svg"
           >
@@ -59,7 +58,7 @@ export async function ForecastView({ url }: { url?: string }) {
       </div>
       {data.pilotsUrl && (
         <Link
-          className="flex max-w-full items-center overflow-hidden text-sm text-ellipsis underline decoration-green-500 decoration-dotted hover:decoration-solid dark:text-slate-300"
+          className="mt-1 block max-w-full truncate text-sm underline decoration-green-500 decoration-dotted hover:decoration-solid"
           target="_blank"
           href={data.pilotsUrl}
         >

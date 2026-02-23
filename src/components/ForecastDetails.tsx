@@ -9,11 +9,11 @@ import {
 
 export function ForecastDetails({ data }: { data: Forecast }) {
   return (
-    <div className="collapse collapse-arrow mt-6 rounded-box border border-slate-300 ">
+    <div className="collapse collapse-arrow mt-6 border border-slate-300">
       <input type="checkbox" />
-      <div className="collapse-title font-medium">Stats for nerds</div>
+      <div className="collapse-title font-semibold">Stats for nerds</div>
       <div className="collapse-content">
-        <Table>
+        <Table className="table-sm">
           <TableCaption>
             Latest world ranking update:{" "}
             {new Date(data?.all?.worldRankingDate ?? "").toLocaleString()}

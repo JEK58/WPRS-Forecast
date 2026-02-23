@@ -1,7 +1,15 @@
-export default function Card({ children }: { children: React.ReactNode }) {
+import { cn } from "@/utils/utils";
+
+export default function Box({
+  children,
+  className,
+}: {
+  children: React.ReactNode;
+  className?: string;
+}) {
   return (
-    <div className="rounded-xl bg-zinc-50 p-6 shadow-md dark:bg-cyan-950">
-      {children}
-    </div>
+    <section className={cn("card rounded-xl bg-zinc-50 shadow-md", className)}>
+      <div className="card-body p-5 sm:p-6">{children}</div>
+    </section>
   );
 }

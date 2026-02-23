@@ -14,6 +14,8 @@ export function Footer() {
         <Link
           className="whitespace-nowrap py-1 align-middle hover:underline"
           href="https://github.com/JEK58/wprs-forecast"
+          target="_blank"
+          rel="noopener noreferrer"
         >
           Made with
           <svg

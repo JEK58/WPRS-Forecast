@@ -1,15 +1,15 @@
 import Box from "@/components/ui/Box";
 import RecentQueriesTable from "@/components/RecentQueriesTable";
 import { CompUrlInput } from "@/components/CompUrlInput";
+import { PageContainer } from "@/components/layout/PageContainer";
 
 export default function HomePage() {
   return (
-    <div className="mx-auto flex w-full flex-col space-y-4 p-3 md:max-w-3xl">
+    <PageContainer>
       <CompUrlInput />
-      {/* Recent queries */}
       <Box>
         <RecentQueriesTable />
       </Box>
-    </div>
+    </PageContainer>
   );
 }

@@ -3,6 +3,7 @@
 import Box from "@/components/ui/Box";
 import { useEffect } from "react";
 import * as Sentry from "@sentry/nextjs";
+import { PageContainer } from "@/components/layout/PageContainer";
 
 export default function Error({
   error,
@@ -16,10 +17,12 @@ export default function Error({
   }, [error]);
 
   return (
-    <div className="mx-auto flex w-full flex-col space-y-4 p-3 md:max-w-3xl">
+    <PageContainer>
       <Box>
-        <h2 className="text-center">Oooops... something went wrong!</h2>
+        <h2 className="text-center text-xl font-semibold">
+          Oooops... something went wrong!
+        </h2>
       </Box>
-    </div>
+    </PageContainer>
   );
 }

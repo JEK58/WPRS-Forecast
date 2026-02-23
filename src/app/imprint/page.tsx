@@ -1,10 +1,11 @@
 import Box from "@/components/ui/Box";
+import { PageContainer } from "@/components/layout/PageContainer";
 
 export default async function Page() {
   return (
-    <div className="mx-auto flex w-full flex-col p-3 md:max-w-3xl">
+    <PageContainer spaced={false}>
       <Box>
-        <h2 className="mb-6 text-2xl font-bold">Imprint</h2>
+        <h2 className="card-title mb-6 text-2xl">Imprint</h2>
         <p className="mb-6">This website is operated by:</p>
 
         <div className="mb-6">
@@ -31,7 +32,7 @@ export default async function Page() {
           </p>
         </div>
 
-        <h2 className="mb-6 mt-8 text-2xl font-bold">Privacy Policy</h2>
+        <h2 className="card-title mb-6 mt-8 text-2xl">Privacy Policy</h2>
 
         <p className="mb-6">
           Effective Date: <span className="font-semibold">2024-JUL-10</span>
@@ -42,7 +43,7 @@ export default async function Page() {
           we use it, and how we safeguard your information.
         </p>
 
-        <h3 className="text-1xl mb-4 font-semibold">Information We Collect</h3>
+        <h3 className="mb-4 text-xl font-semibold">Information We Collect</h3>
         <ol className="mb-6 list-inside list-decimal">
           <li className="mb-4">
             <span className="font-semibold">Analytics Data:</span> We use
@@ -63,7 +64,7 @@ export default async function Page() {
           </li>
         </ol>
 
-        <h3 className="text-1xl mb-4 font-semibold">
+        <h3 className="mb-4 text-xl font-semibold">
           How We Use Your Information
         </h3>
         <ul className="mb-6 list-inside list-disc">
@@ -81,7 +82,7 @@ export default async function Page() {
           </li>
         </ul>
 
-        <h3 className="text-1xl mb-4 font-semibold">Data Security</h3>
+        <h3 className="mb-4 text-xl font-semibold">Data Security</h3>
         <p className="mb-6">
           We take appropriate measures to protect the information collected
           through Plausible Analytics and Sentry from unauthorized access,
@@ -90,7 +91,7 @@ export default async function Page() {
           industry-standard security protocols to safeguard this information.
         </p>
 
-        <h3 className="text-1xl mb-4 font-semibold">Third-Party Services</h3>
+        <h3 className="mb-4 text-xl font-semibold">Third-Party Services</h3>
         <ul className="mb-6 list-inside list-disc">
           <li className="mb-4">
             <span className="font-semibold">Plausible Analytics:</span> For more
@@ -117,7 +118,7 @@ export default async function Page() {
           </li>
         </ul>
 
-        <h3 className="text-1xl mb-4 font-semibold">
+        <h3 className="mb-4 text-xl font-semibold">
           Changes to This Privacy Policy
         </h3>
         <p className="mb-6">
@@ -128,7 +129,7 @@ export default async function Page() {
           top of this page.
         </p>
 
-        <h3 className="text-1xl mb-4 font-semibold">Contact Us</h3>
+        <h3 className="mb-4 text-xl font-semibold">Contact Us</h3>
         <p>
           If you have any questions about this Privacy Policy or our data
           practices, please contact us at{" "}
@@ -146,6 +147,6 @@ export default async function Page() {
           information as described in this Privacy Policy.
         </p>
       </Box>
-    </div>
+    </PageContainer>
   );
 }
