@@ -45,19 +45,19 @@ export async function scrapeRecentCivlComps() {
         pn: parseFloat(row.find("td").eq(4).text()),
         pq: parseFloat(row.find("td").eq(5).text()),
         td: parseFloat(row.find("td").eq(6).text()),
-        tasks: parseInt(row.find("td").eq(7).text()),
-        pilots: parseInt(row.find("td").eq(8).text()),
-        pilotsLast12Months: parseInt(row.find("td").eq(9).text()),
-        compsLast12Months: parseInt(row.find("td").eq(10).text()),
-        daysSinceCompEnd: parseInt(row.find("td").eq(11).text()),
+        tasks: parseInt(row.find("td").eq(7).text(), 10),
+        pilots: parseInt(row.find("td").eq(8).text(), 10),
+        pilotsLast12Months: parseInt(row.find("td").eq(9).text(), 10),
+        compsLast12Months: parseInt(row.find("td").eq(10).text(), 10),
+        daysSinceCompEnd: parseInt(row.find("td").eq(11).text(), 10),
         lastScore: parseFloat(row.find("td").eq(12).text()),
         winnerScore: parseFloat(row.find("td").eq(13).text()),
         resultsUpdated: new Date(resultsUpdated).toISOString(),
       };
 
       if (
-        !comp.tasks ||
-        comp.winnerScore === Number.NaN ||
+        Number.isNaN(comp.tasks) ||
+        Number.isNaN(comp.winnerScore) ||
         !comp.resultsUpdated
       )
         return;
