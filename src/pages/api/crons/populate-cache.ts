@@ -6,9 +6,10 @@ import * as Sentry from "@sentry/nextjs";
 import { redis } from "@/server/cache/redis";
 
 async function handler(req: NextApiRequest, res: NextApiResponse) {
-  const { apiKey } = req.query;
+  const apiKeyQuery = req.query.apiKey;
+  const apiKey = Array.isArray(apiKeyQuery) ? apiKeyQuery[0] : apiKeyQuery;
 
-  if (!apiKey || apiKey !== env.API_KEY) {
+  if (typeof apiKey !== "string" || apiKey.trim() !== env.API_KEY) {
     console.info("Attempted to populate cache with invalid API key");
     return res.status(401).json({ message: "Invalid API key" });
   }
@@ -31,6 +32,8 @@ async function populateCache() {
     return;
   }
 
+  await ensureRedisReady();
+
   const res = await db.select().from(ranking);
 
   const keyValuePairs = res.map((item) => [
@@ -39,6 +42,47 @@ async function populateCache() {
   ]);
 
   await redis.mset(...keyValuePairs.flat());
+}
+
+async function ensureRedisReady() {
+  if (!redis) return;
+
+  try {
+    await redis.ping();
+    return;
+  } catch {
+    // Connection is not ready yet. Continue with connect/wait flow.
+  }
+
+  try {
+    await redis.connect();
+  } catch (error) {
+    const message = error instanceof Error ? error.message : String(error);
+    const alreadyConnectingOrConnected =
+      message.includes("already connecting") ||
+      message.includes("already connected");
+
+    if (!alreadyConnectingOrConnected) throw error;
+  }
+
+  const maxAttempts = 25;
+  const delayInMs = 200;
+
+  for (let attempt = 1; attempt <= maxAttempts; attempt += 1) {
+    try {
+      await redis.ping();
+      return;
+    } catch (error) {
+      if (attempt === maxAttempts) {
+        throw new Error(
+          `Timed out waiting for Redis connection after ${maxAttempts * delayInMs
+          }ms`,
+          { cause: error },
+        );
+      }
+      await new Promise((resolve) => setTimeout(resolve, delayInMs));
+    }
+  }
 }
 
 export default handler;
