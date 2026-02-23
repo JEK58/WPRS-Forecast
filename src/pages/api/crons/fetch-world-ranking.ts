@@ -23,9 +23,9 @@ async function handler(req: NextApiRequest, res: NextApiResponse) {
 
     res.status(200).send("done");
   } catch (error) {
-    res.status(500).json({ error: "internal error", message: error });
     console.error(error);
     Sentry.captureException(error);
+    res.status(500).json({ message: "Internal error" });
   }
 }
 export default handler;
