@@ -148,9 +148,12 @@ export function PilotSelfProjection({
         </span>
         <h3 className="text-base font-semibold">Personal Ranking Projection</h3>
       </div>
-      <p className="mt-1 text-sm text-slate-600 dark:text-slate-300">
-        Search your name or CIVL ID to preview your projected place and points.
-      </p>
+      {isHydrated && !selectedPilot && (
+        <p className="mt-1 text-sm text-slate-600 dark:text-slate-300">
+          Search your name or CIVL ID to preview your projected place and
+          points.
+        </p>
+      )}
 
       {isHydrated && !selectedPilot && (
         <div className="relative mt-3">
