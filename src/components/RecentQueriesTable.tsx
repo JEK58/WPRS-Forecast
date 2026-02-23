@@ -65,11 +65,12 @@ const RecentQueriesTable = async () => {
           {formatAge(stat.ageInHours)}
         </TableCell>
         <TableCell className="text-right">
-          <Link href={`/forecast?url=${stat.compUrl}`}>
-            <Button
-              aria-label="Update"
-              className="md:text-md rounded bg-green-500 px-2 py-1 font-bold text-white hover:bg-green-700 sm:text-xs"
-            >
+          <Button
+            asChild
+            aria-label="Update"
+            className="md:text-md rounded bg-green-500 px-2 py-1 font-bold text-white hover:bg-green-700 sm:text-xs"
+          >
+            <Link href={`/forecast?url=${stat.compUrl}`}>
               <span className="hidden sm:inline">Update</span>
               <svg
                 className="inline sm:hidden"
@@ -88,8 +89,8 @@ const RecentQueriesTable = async () => {
                 <path d="M21 12a9 9 0 0 1-9 9 9.75 9.75 0 0 1-6.74-2.74L3 16" />
                 <path d="M8 16H3v5" />
               </svg>
-            </Button>
-          </Link>
+            </Link>
+          </Button>
         </TableCell>
       </TableRow>
     );

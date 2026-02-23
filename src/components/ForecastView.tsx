@@ -38,24 +38,23 @@ export async function ForecastView({ url }: { url?: string }) {
           </h2>
         </div>
         {/* Close button */}
-        <Link href="/">
-          <button
-            className="rounded-full px-0.5 py-0.5 hover:bg-green-500 focus:bg-gray-400 focus:outline-none"
-            type="button"
+        <Link
+          href="/"
+          aria-label="Close forecast"
+          className="rounded-full px-0.5 py-0.5 hover:bg-green-500 focus:bg-gray-400 focus:outline-none"
+        >
+          <svg
+            className="h-6 w-6 fill-current stroke-black dark:stroke-white"
+            viewBox="0 0 20 20"
+            xmlns="http://www.w3.org/2000/svg"
           >
-            <svg
-              className="h-6 w-6 fill-current stroke-black dark:stroke-white"
-              viewBox="0 0 20 20"
-              xmlns="http://www.w3.org/2000/svg"
-            >
-              <path
-                d="M6.4 6.4l7.2 7.2m0-7.2l-7.2 7.2"
-                strokeWidth="2"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-              />
-            </svg>
-          </button>
+            <path
+              d="M6.4 6.4l7.2 7.2m0-7.2l-7.2 7.2"
+              strokeWidth="2"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+            />
+          </svg>
         </Link>
       </div>
       {data.pilotsUrl && (

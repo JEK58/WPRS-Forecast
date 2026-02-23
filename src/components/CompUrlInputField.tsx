@@ -90,17 +90,13 @@ export function CompUrlInputField() {
 
         <Link
           href={`/forecast?url=${url}`}
-          className={!isValidLink ? "pointer-events-none" : ""}
+          className={`inline-flex h-12 w-full items-center justify-center rounded bg-blue-500 px-4 py-2 font-bold whitespace-nowrap text-white hover:bg-blue-700 md:w-auto md:self-center ${
+            !isValidLink ? "pointer-events-none opacity-50" : ""
+          }`}
           aria-disabled={!isValidLink}
           tabIndex={!isValidLink ? -1 : undefined}
         >
-          <Button
-            className="h-12 w-full rounded bg-blue-500 px-4 py-2 font-bold text-white hover:bg-blue-700 md:self-center"
-            type="submit"
-            disabled={!isValidLink}
-          >
-            Calculate
-          </Button>
+          Calculate
         </Link>
       </form>
       {/* Error message */}
