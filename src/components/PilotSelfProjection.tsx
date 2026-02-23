@@ -141,8 +141,16 @@ export function PilotSelfProjection({
   if (!confirmedWprs?.length && !registeredWprs?.length) return null;
 
   return (
-    <div className="rounded-box mt-6 border border-slate-300 p-4">
-      <h3 className="text-base font-semibold">Your Potential Ranking</h3>
+    <div className="rounded-box mt-6 border border-green-300/80 bg-gradient-to-br from-green-50/70 to-white p-4 dark:border-green-700/60 dark:from-green-950/25 dark:to-slate-950">
+      <div className="flex items-center gap-2">
+        <span className="rounded-full bg-green-500 px-2 py-0.5 text-xs font-semibold tracking-wide text-white uppercase">
+          New
+        </span>
+        <h3 className="text-base font-semibold">Personal Ranking Projection</h3>
+      </div>
+      <p className="mt-1 text-sm text-slate-600 dark:text-slate-300">
+        Search your name or CIVL ID to preview your projected place and points.
+      </p>
 
       {isHydrated && !selectedPilot && (
         <div className="relative mt-3">
