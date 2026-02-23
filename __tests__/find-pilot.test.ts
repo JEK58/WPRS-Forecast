@@ -31,7 +31,7 @@ describe("Lookup pilots by name", () => {
     );
   });
 
-  it("should find pilot with exact name", async () => {
+  it("should find second pilot with exact name", async () => {
     const name = "Stephan Schöpe";
     const expectedPilotCivl = 39705;
 

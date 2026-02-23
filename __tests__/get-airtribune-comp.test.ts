@@ -9,9 +9,12 @@ describe("Airtribune", () => {
 
     const url = "https://airtribune.com/pre-world-cup-reunion-island-2023/info";
     const res = await getAirtribuneComp(url);
+    if (!res?.compDate?.startDate || !res.compDate.endDate) {
+      throw new Error("Expected valid competition dates from Airtribune");
+    }
 
-    expect(res?.compDate?.startDate?.toISOString()).toBe(expectedStartDate);
-    expect(res?.compDate?.endDate?.toISOString()).toBe(expectedEndDate);
+    expect(res.compDate.startDate.toISOString()).toBe(expectedStartDate);
+    expect(res.compDate.endDate.toISOString()).toBe(expectedEndDate);
   });
 
   it("finds the correct comp date for comp dates spanning over two different months", async () => {
@@ -20,9 +23,12 @@ describe("Airtribune", () => {
 
     const url = "https://airtribune.com/tennessee-paragliding-open-2023/";
     const res = await getAirtribuneComp(url);
+    if (!res?.compDate?.startDate || !res.compDate.endDate) {
+      throw new Error("Expected valid competition dates from Airtribune");
+    }
 
-    expect(res?.compDate?.startDate?.toISOString()).toBe(expectedStartDate);
-    expect(res?.compDate?.endDate?.toISOString()).toBe(expectedEndDate);
+    expect(res.compDate.startDate.toISOString()).toBe(expectedStartDate);
+    expect(res.compDate.endDate.toISOString()).toBe(expectedEndDate);
   });
 
   it("should reject a comp that lies in the past", async () => {

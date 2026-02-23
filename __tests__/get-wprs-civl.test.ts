@@ -8,8 +8,10 @@ describe("Get data for CIVL comps", () => {
 
     const url = "https://civlcomps.org/event/german-open-2023/participants";
     const res = await getCivlcompsComp(url);
+    expect(res).toBeDefined();
+    if (!res) throw new Error("Expected CIVL competition response");
 
-    expect(res?.pilots.length).toBe(expectedNumOfPilots);
+    expect(res.pilots.length).toBe(expectedNumOfPilots);
   }, 30000);
 
   it("should reject a comp that lies in the past", async () => {
