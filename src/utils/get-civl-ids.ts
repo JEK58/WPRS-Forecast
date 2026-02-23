@@ -1,4 +1,3 @@
-/* eslint-disable drizzle/enforce-delete-with-where */
 import MiniSearch from "minisearch";
 import { algoliasearch } from "algoliasearch";
 import { env } from "@/env.js";
@@ -44,9 +43,16 @@ export async function getCivlIds(pilots: string[], disableAlgolia?: boolean) {
     cacheWrites.push(addToCache(name, civl));
   };
 
+  const removeFromSearchQueue = (name: string) => {
+    if (!searchQueue.has(name)) return;
+    const remaining = [...searchQueue].filter((pilot) => pilot !== name);
+    searchQueue.clear();
+    remaining.forEach((pilot) => searchQueue.add(pilot));
+  };
+
   const setCivlId = (name: string, civl: number) => {
     civlIds.set(name, civl);
-    searchQueue.delete(name);
+    removeFromSearchQueue(name);
     queueCacheWrite(name, civl);
   };
 
@@ -76,7 +82,7 @@ export async function getCivlIds(pilots: string[], disableAlgolia?: boolean) {
       const cachedId = Number(id);
       if (Number.isFinite(cachedId)) {
         civlIds.set(name, cachedId);
-        searchQueue.delete(name);
+        removeFromSearchQueue(name);
       }
     }
   });
