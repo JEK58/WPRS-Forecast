@@ -26,6 +26,11 @@ async function handler(req: NextApiRequest, res: NextApiResponse) {
 }
 
 async function populateCache() {
+  if (!redis) {
+    console.info("Redis is not configured, skipping cache population");
+    return;
+  }
+
   const res = await db.select().from(ranking);
 
   const keyValuePairs = res.map((item) => [

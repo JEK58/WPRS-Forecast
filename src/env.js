@@ -20,7 +20,7 @@ export const env = createEnv({
     API_KEY: z.string(),
     AIRTRIBUNE_API_KEY: z.string(),
     PILOT_UNION_API_KEY: z.string(),
-    REDIS_URL: z.string(),
+    REDIS_URL: z.string().optional(),
     OPENAI_API_KEY: z.string(),
     ALGOLIA_APP_ID: z.string(),
     ALGOLIA_API_KEY: z.string(),

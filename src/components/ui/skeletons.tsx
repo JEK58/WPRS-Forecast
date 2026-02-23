@@ -10,24 +10,23 @@ export function ForecastSkeleton() {
             <div className="mb-4 flex h-5 w-32 rounded-md bg-gray-400"></div>
           </div>
           {/* Back button */}
-          <Link href="/" className="animate-none">
-            <button
-              className="shrink-0 rounded-full px-0.5 py-0.5  hover:bg-green-500 focus:bg-gray-400 focus:outline-none"
-              type="button"
+          <Link
+            href="/"
+            aria-label="Back"
+            className="animate-none shrink-0 rounded-full px-0.5 py-0.5 hover:bg-green-500 focus:bg-gray-400 focus:outline-none"
+          >
+            <svg
+              className="h-6 w-6 fill-current stroke-black dark:stroke-white"
+              viewBox="0 0 20 20"
+              xmlns="http://www.w3.org/2000/svg"
             >
-              <svg
-                className="h-6 w-6 fill-current stroke-black dark:stroke-white"
-                viewBox="0 0 20 20"
-                xmlns="http://www.w3.org/2000/svg"
-              >
-                <path
-                  d="M6.4 6.4l7.2 7.2m0-7.2l-7.2 7.2"
-                  strokeWidth="2"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                />
-              </svg>
-            </button>
+              <path
+                d="M6.4 6.4l7.2 7.2m0-7.2l-7.2 7.2"
+                strokeWidth="2"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              />
+            </svg>
           </Link>
         </div>
         <div className="mb-4 flex h-5 w-24 rounded-md bg-gray-400"></div>

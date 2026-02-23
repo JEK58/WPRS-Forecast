@@ -45,8 +45,13 @@ export async function getCivlIds(pilots: string[], disableAlgolia?: boolean) {
    */
 
   const search = [...searchQueue];
-  const redisPromises = search.map((pilot) => redis.get(`name:${pilot}`));
-  const cachedCivlIds = await Promise.all(redisPromises);
+  let cachedCivlIds: Array<string | null> = search.map(() => null);
+  if (redis) {
+    const redisClient = redis;
+    cachedCivlIds = await Promise.all(
+      search.map((pilot) => redisClient.get(`name:${pilot}`).catch(() => null)),
+    );
+  }
 
   cachedCivlIds.forEach((id, index) => {
     const name = search[index];
@@ -208,6 +213,7 @@ export async function getCivlIds(pilots: string[], disableAlgolia?: boolean) {
 }
 
 async function addToCache(name: string, civl: number) {
+  if (!redis) return;
   const redisKey = `name:${name.toLowerCase()}`;
   await redis.set(redisKey, civl, "EX", REDIS_EXP_TIME).catch((err) => {
     console.log(err);

@@ -11,12 +11,15 @@ interface RedisCompDate {
   startDate: string;
   endDate: string;
 }
+const COMP_DATE_CACHE_TTL = 60 * 60 * 24 * 20; // 20 days
 
 export async function getStartAndEndDateFromRange(input?: string) {
   if (!input) return;
 
   // Check cache before asking GPT-3
-  const cachedDate = await redis.get(`compDate:${input}`);
+  const cachedDate = redis
+    ? await redis.get(`compDate:${input}`).catch(() => null)
+    : null;
 
   if (cachedDate) {
     try {
@@ -64,7 +67,16 @@ export async function getStartAndEndDateFromRange(input?: string) {
     };
 
     // Cache result
-    await redis.set(`compDate:${input}`, JSON.stringify(compDate));
+    if (redis) {
+      await redis
+        .set(
+          `compDate:${input}`,
+          JSON.stringify(compDate),
+          "EX",
+          COMP_DATE_CACHE_TTL,
+        )
+        .catch(() => null);
+    }
 
     return compDate;
   } catch (error) {

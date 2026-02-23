@@ -1,6 +1,12 @@
 import { beforeAll, afterAll } from "bun:test";
 import { redis } from "@/server/cache/redis";
 
-beforeAll(async () => await redis.flushall());
+beforeAll(async () => {
+  if (!redis) return;
+  await redis.flushall().catch(() => undefined);
+});
 
-afterAll(async () => await redis.quit());
+afterAll(async () => {
+  if (!redis) return;
+  await redis.quit().catch(() => undefined);
+});
