@@ -11,6 +11,8 @@ import path from "path";
 const CIVL_URL = "https://civlcomps.org/ranking/paragliding-xc/pilots";
 const CIVL_DOWNLOAD_ENDPOINT = "https://civlcomps.org/ranking/export-new";
 const FILE_PATH = "./tmp/input.xlsx";
+const POLL_INTERVAL_MS = 1000;
+const MAX_POLL_ATTEMPTS = 120;
 
 export async function updateWorldRanking() {
   // Download world ranking excel and get date of world ranking
@@ -160,17 +162,28 @@ async function downloadExcel() {
   const hash = resHash?.data.hash;
   const fileUrl = excelDownloadLink + "&hash=" + hash;
 
-  let fileReady = false;
   let link = "";
-  while (!fileReady) {
-    await new Promise((resolve) => setTimeout(resolve, 1000));
-    const res = await fetch(fileUrl, { cache: "no-store" });
-    const dl = (await res.json()) as HashResponse;
+  for (let attempt = 1; attempt <= MAX_POLL_ATTEMPTS; attempt++) {
+    await new Promise((resolve) => setTimeout(resolve, POLL_INTERVAL_MS));
 
+    const res = await fetch(fileUrl, { cache: "no-store" });
+    if (!res.ok) {
+      continue;
+    }
+
+    const dl = (await res.json()) as HashResponse;
     if (typeof dl.url === "string") {
       link = dl.url;
-      fileReady = true;
+      break;
     }
+  }
+
+  if (!link) {
+    throw new Error(
+      `Timed out waiting for CIVL download URL after ${
+        (MAX_POLL_ATTEMPTS * POLL_INTERVAL_MS) / 1000
+      }s`,
+    );
   }
   console.log("Starting download");
 
