@@ -39,7 +39,7 @@ export function Genders({ data }: { data: Forecast["genders"] }) {
 
   const renderLegend = (value: string, entry: EntryType) => {
     return (
-      <span className="text-sm text-black">
+      <span className="text-sm text-black dark:text-slate-200">
         {value}: {Math.round(entry?.payload?.payload?.percentage ?? 0)}%
       </span>
     );

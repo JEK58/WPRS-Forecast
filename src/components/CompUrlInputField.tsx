@@ -48,7 +48,7 @@ export function CompUrlInputField() {
             type="text"
             value={url}
             onChange={(e) => setUrl(e.target.value)}
-            className="input-lg h-12 border-2 border-gray-300 pr-10 text-base focus:outline-none focus:ring-2 focus:ring-blue-500"
+            className="input-lg h-12 border-2 border-gray-300 pr-10 text-base focus:outline-none focus:ring-2 focus:ring-blue-500 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-100"
             placeholder="CIVL, PWC, Airtribune or Swissleague"
           />
           {url.length > 0 ? (
@@ -58,7 +58,7 @@ export function CompUrlInputField() {
               onClick={() => setUrl("")}
               variant="ghost"
               size="sm"
-              className="btn-circle absolute right-1 top-1/2 h-8 min-h-8 w-8 -translate-y-1/2 text-gray-500 hover:text-green-500"
+              className="btn-circle absolute right-1 top-1/2 h-8 min-h-8 w-8 -translate-y-1/2 text-gray-500 hover:text-green-500 dark:text-slate-300 dark:hover:text-green-500"
             >
               X
             </Button>
@@ -68,7 +68,7 @@ export function CompUrlInputField() {
                 type="button"
                 variant="ghost"
                 size="sm"
-                className="btn-circle absolute right-1 top-1/2 h-8 min-h-8 w-8 -translate-y-1/2 text-gray-500 hover:text-gray-700"
+                className="btn-circle absolute right-1 top-1/2 h-8 min-h-8 w-8 -translate-y-1/2 text-gray-500 hover:text-gray-700 dark:text-slate-300 dark:hover:text-white"
                 onClick={handlePaste}
               >
                 <svg

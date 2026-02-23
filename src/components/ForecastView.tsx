@@ -33,14 +33,14 @@ export async function ForecastView({ url }: { url?: string }) {
     <>
       <div className="flex items-start justify-between">
         <div className="grow">
-          <h2 className="mb-1 text-xl font-bold sm:text-2xl">
+          <h2 className="mb-1 text-xl font-bold sm:text-2xl dark:text-slate-200">
             {data.compTitle}
           </h2>
         </div>
         <Link
           href="/"
           aria-label="Close forecast"
-          className="btn btn-circle btn-ghost btn-sm"
+          className="btn btn-circle btn-ghost btn-sm text-black dark:text-white"
         >
           <svg
             className="h-5 w-5 fill-current stroke-current"
@@ -58,7 +58,7 @@ export async function ForecastView({ url }: { url?: string }) {
       </div>
       {data.pilotsUrl && (
         <Link
-          className="mt-1 block max-w-full truncate text-sm underline decoration-green-500 decoration-dotted hover:decoration-solid"
+          className="mt-1 block max-w-full truncate text-sm underline decoration-green-500 decoration-dotted hover:decoration-solid dark:text-slate-300"
           target="_blank"
           href={data.pilotsUrl}
         >

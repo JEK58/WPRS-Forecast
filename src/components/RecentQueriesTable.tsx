@@ -96,9 +96,9 @@ const RecentQueriesTable = async () => {
 
   return (
     <>
-      <h2 className="card-title">Recent Queries</h2>
+      <h2 className="card-title dark:text-slate-200">Recent Queries</h2>
       <div className="w-full overflow-x-auto">
-        <Table className="w-full text-left">
+        <Table className="w-full text-left [&_tbody_tr:nth-child(even)]:bg-zinc-100/45 [&_tbody_tr:nth-child(odd)]:bg-transparent dark:[&_tbody_tr:nth-child(even)]:bg-slate-800/35 dark:[&_tbody_tr:nth-child(odd)]:bg-transparent">
           <TableHeader>
             <TableRow>
               <TableHead></TableHead>

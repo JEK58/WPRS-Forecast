@@ -1,6 +1,5 @@
 import { describe, it, expect } from "bun:test";
 import { getForecast } from "@/utils/get-forecast";
-import { getPwcComp } from "@/utils/get-pwc-comp";
 
 describe("Get WPRS for PWC comps", () => {
   it.skip("should reject a comp that lies in the past", async () => {

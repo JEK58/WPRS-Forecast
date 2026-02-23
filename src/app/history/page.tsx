@@ -12,7 +12,7 @@ export default async function History() {
     return (
       <li className="mb-2" key={item.id}>
         <p>{item.compTitle}</p>
-        <p className="text-gray-500">
+        <p className="text-gray-500 dark:text-inherit">
           Forecast: <span className="me-1 text-green-500">{item.wprs}</span>
           <br />
           Actual: <span className="me-1 text-green-500">{item.actualWprs}</span>
@@ -27,7 +27,7 @@ export default async function History() {
   return (
     <PageContainer>
       <Box>
-        <h2 className="card-title">History</h2>
+        <h2 className="card-title dark:text-slate-200">History</h2>
         <p className="mt-4">
           Compare the forecasted points to the points actually awarded in the
           official{" "}

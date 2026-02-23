@@ -15,7 +15,7 @@ export function ForecastSkeleton() {
             className="btn btn-circle btn-ghost btn-sm animate-none"
           >
             <svg
-              className="h-5 w-5 fill-current stroke-current"
+              className="h-5 w-5 fill-current stroke-current dark:stroke-white"
               viewBox="0 0 20 20"
               xmlns="http://www.w3.org/2000/svg"
             >
@@ -40,7 +40,7 @@ export function ForecastSkeleton() {
         <div className="mb-2 flex h-5 w-32 rounded-md bg-gray-400"></div>
         <div className="mb-2 flex h-5 rounded-md bg-gray-400"></div>
         <div className="mb-5 flex h-5 w-72 rounded-md bg-gray-400"></div>
-        <div className="mb-3 flex h-14 rounded-md bg-gray-300"></div>
+        <div className="mb-3 flex h-14 rounded-md bg-gray-300 dark:bg-gray-500"></div>
         <progress className="progress progress-success"></progress>
         <div className="">Getting pilots details and ranking...</div>
       </div>

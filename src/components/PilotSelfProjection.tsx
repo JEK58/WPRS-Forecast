@@ -141,7 +141,7 @@ export function PilotSelfProjection({
   if (!confirmedWprs?.length && !registeredWprs?.length) return null;
 
   return (
-    <div className="rounded-box mt-6 border border-green-300/80 bg-gradient-to-br from-green-50/70 to-white p-4">
+    <div className="rounded-box mt-6 border border-green-300/80 bg-white p-4 dark:border-green-700/60 dark:bg-slate-950">
       <div className="flex items-center gap-2">
         <span className="rounded-full bg-green-500 px-2 py-0.5 text-xs font-semibold tracking-wide text-white uppercase">
           New
@@ -149,7 +149,7 @@ export function PilotSelfProjection({
         <h3 className="text-base font-semibold">Personal Ranking Projection</h3>
       </div>
       {isHydrated && !selectedPilot && (
-        <p className="mt-1 text-sm text-slate-600">
+        <p className="mt-1 text-sm text-slate-600 dark:text-slate-300">
           Search your name or CIVL ID to preview your projected place and
           points.
         </p>
@@ -165,9 +165,9 @@ export function PilotSelfProjection({
           />
 
           {!!query.trim().length && (
-            <div className="absolute inset-x-0 top-full z-20 mt-1 rounded-lg border border-slate-200 bg-white shadow-lg">
+            <div className="absolute inset-x-0 top-full z-20 mt-1 rounded-lg border border-slate-200 bg-white shadow-lg dark:border-slate-700 dark:bg-slate-900">
               {isSearching ? (
-                <div className="px-3 py-2 text-sm text-slate-500">
+                <div className="px-3 py-2 text-sm text-slate-500 dark:text-slate-300">
                   Searching...
                 </div>
               ) : results.length > 0 ? (
@@ -176,11 +176,11 @@ export function PilotSelfProjection({
                     <li key={pilot.id}>
                       <button
                         type="button"
-                        className="w-full border-b border-slate-200 px-3 py-2 text-left text-sm last:border-b-0 hover:bg-slate-100"
+                        className="w-full border-b border-slate-200 px-3 py-2 text-left text-sm last:border-b-0 hover:bg-slate-100 dark:border-slate-700 dark:hover:bg-slate-800"
                         onClick={() => onSelectPilot(pilot)}
                       >
                         <span className="font-medium">{pilot.name}</span>{" "}
-                        <span className="text-slate-500">
+                        <span className="text-slate-500 dark:text-slate-300">
                           CIVL {pilot.id} | WR #{pilot.rank} | {pilot.points}{" "}
                           pts
                         </span>
@@ -189,7 +189,7 @@ export function PilotSelfProjection({
                   ))}
                 </ul>
               ) : (
-                <div className="px-3 py-2 text-sm text-slate-500">
+                <div className="px-3 py-2 text-sm text-slate-500 dark:text-slate-300">
                   No matches found.
                 </div>
               )}
@@ -199,7 +199,7 @@ export function PilotSelfProjection({
       )}
 
       {selectedPilot && (
-        <div className="mt-4 rounded-lg bg-slate-100 p-3 text-sm">
+        <div className="mt-4 rounded-lg bg-slate-100 p-3 text-sm dark:bg-slate-900">
           <div className="flex items-start justify-between gap-3">
             <div className="font-semibold">
               {selectedPilot.name} (CIVL {selectedPilot.id})
@@ -208,13 +208,13 @@ export function PilotSelfProjection({
               type="button"
               variant="outline"
               size="sm"
-              className="h-7 min-h-7 border-slate-300/60 text-slate-600 hover:border-green-500 hover:bg-green-500 hover:text-white"
+              className="h-7 min-h-7 border-slate-300/60 text-slate-600 hover:border-green-500 hover:bg-green-500 hover:text-white dark:border-slate-700/60 dark:text-slate-300 dark:hover:border-green-500 dark:hover:bg-green-500 dark:hover:text-white"
               onClick={onClearPilot}
             >
               Clear
             </Button>
           </div>
-          <div className="text-slate-500">
+          <div className="text-slate-500 dark:text-slate-300">
             World rank #{selectedPilot.rank} | {selectedPilot.points} pts
           </div>
         </div>
@@ -269,7 +269,7 @@ function ProjectionCard({
   projection?: Projection;
 }) {
   return (
-    <div className="rounded-lg border border-slate-200 p-3">
+    <div className="rounded-lg border border-slate-200 p-3 dark:border-slate-700">
       <div className="font-medium">{title}</div>
       {projection ? (
         <>
@@ -286,13 +286,13 @@ function ProjectionCard({
               </span>{" "}
             </div>
           ) : (
-            <div className="mt-1 text-sm text-slate-500">
+            <div className="mt-1 text-sm text-slate-500 dark:text-slate-300">
               Outside current scoring range.
             </div>
           )}
         </>
       ) : (
-        <div className="mt-2 text-sm text-slate-500">
+        <div className="mt-2 text-sm text-slate-500 dark:text-slate-300">
           No projection available.
         </div>
       )}
