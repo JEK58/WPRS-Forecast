@@ -125,7 +125,7 @@ export function PilotSelfProjection({
             value={query}
             onChange={(e) => setQuery(e.target.value)}
             placeholder="Search by name or CIVL ID"
-            className="h-10"
+            className="h-10 border-slate-300/55 focus-visible:border-slate-400/50 focus-visible:ring-slate-300/45 dark:border-slate-700/55 dark:focus-visible:border-slate-600/45 dark:focus-visible:ring-slate-700/45"
           />
 
           {!!query.trim().length && (
