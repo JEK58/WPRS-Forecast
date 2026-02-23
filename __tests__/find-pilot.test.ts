@@ -16,7 +16,7 @@ beforeAll(async () => {
 }, 120000);
 
 describe("Lookup pilots by name", () => {
-  it.only("should find CIVL IDs for all pilots by name", async () => {
+  it("should find CIVL IDs for all pilots by name", async () => {
     const expectedNumberOfIds = pilots.length;
     const maxPercentageNotFound = 10;
 
