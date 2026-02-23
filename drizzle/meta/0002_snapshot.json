@@ -1,5 +1,5 @@
 {
-  "version": "6",
+  "version": "7",
   "dialect": "postgresql",
   "tables": {
     "public.CompRanking": {
@@ -112,7 +112,10 @@
       "indexes": {},
       "foreignKeys": {},
       "compositePrimaryKeys": {},
-      "uniqueConstraints": {}
+      "uniqueConstraints": {},
+      "policies": {},
+      "isRLSEnabled": false,
+      "checkConstraints": {}
     },
     "public.Ranking": {
       "name": "Ranking",
@@ -184,7 +187,10 @@
       "indexes": {},
       "foreignKeys": {},
       "compositePrimaryKeys": {},
-      "uniqueConstraints": {}
+      "uniqueConstraints": {},
+      "policies": {},
+      "isRLSEnabled": false,
+      "checkConstraints": {}
     },
     "public.Usage": {
       "name": "Usage",
@@ -275,7 +281,10 @@
       "indexes": {},
       "foreignKeys": {},
       "compositePrimaryKeys": {},
-      "uniqueConstraints": {}
+      "uniqueConstraints": {},
+      "policies": {},
+      "isRLSEnabled": false,
+      "checkConstraints": {}
     }
   },
   "enums": {},
@@ -286,5 +295,9 @@
     "columns": {}
   },
   "id": "5a8ac940-c96e-444d-bb97-164038df8206",
-  "prevId": "9824bcfa-56d4-48e8-838e-40a346879c42"
+  "prevId": "9824bcfa-56d4-48e8-838e-40a346879c42",
+  "sequences": {},
+  "policies": {},
+  "views": {},
+  "roles": {}
 }

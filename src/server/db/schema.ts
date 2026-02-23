@@ -47,6 +47,8 @@ export const usage = pgTable("Usage", {
     .defaultNow()
     .notNull(),
   compUrl: text("compUrl").notNull(),
+  civlId: integer("civlId"),
+  civlName: text("civlName"),
   wprs: doublePrecision("wprs"),
   compTitle: text("compTitle"),
   error: text("error"),

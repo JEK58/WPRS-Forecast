@@ -7,6 +7,10 @@ import { isValidUrl } from "@/utils/check-valid-url";
 import { type GetForecastError, getForecast } from "@/utils/get-forecast";
 import { type Forecast } from "@/types/common";
 import * as Sentry from "@sentry/nextjs";
+import { cookies } from "next/headers";
+
+const PILOT_COOKIE_NAME = "wprs_selected_pilot";
+const MAX_CIVL_ID = 10_000_000;
 
 export const fetchHistory = async () => {
   const MAX_DAYS_AGO = 120;
@@ -88,28 +92,65 @@ export const fetchHistory = async () => {
 
 type Error = { error: "NO_URL" | "SOMETHING_WENT_WRONG" };
 
+type PilotCookiePayload = {
+  id?: unknown;
+  name?: unknown;
+};
+
+async function getPilotIdentityFromCookie() {
+  try {
+    const cookieStore = await cookies();
+    const rawCookie = cookieStore.get(PILOT_COOKIE_NAME)?.value;
+
+    if (!rawCookie) return {};
+
+    const parsed = JSON.parse(decodeURIComponent(rawCookie)) as
+      | PilotCookiePayload
+      | null;
+    if (!parsed) return {};
+
+    const parsedId = parsed.id;
+    const civlId =
+      typeof parsedId === "number" &&
+      Number.isInteger(parsedId) &&
+      parsedId > 0 &&
+      parsedId < MAX_CIVL_ID
+        ? parsedId
+        : undefined;
+
+    const parsedName =
+      typeof parsed.name === "string" ? parsed.name.trim() : undefined;
+    const civlName = parsedName ? parsedName.slice(0, 120) : undefined;
+
+    return { civlId, civlName };
+  } catch {
+    return {};
+  }
+}
+
+async function markUsageWithError(queryID: string | undefined, error: string) {
+  if (!queryID) return;
+
+  try {
+    await db.update(usage).set({ error }).where(eq(usage.id, queryID));
+  } catch (dbError) {
+    console.error("Error updating usage");
+    console.log(dbError);
+    Sentry.captureException(dbError);
+  }
+}
+
 export async function fetchForecastData(
   url?: string,
 ): Promise<Forecast | GetForecastError | Error> {
-  const urlSchema = z.object({ url: z.string().url() });
-  const val = urlSchema.safeParse({ url });
-
-  if (!val.success) return { error: "NO_URL" };
-
-  // Airtribune creates some funny deep nested links that bots like to follow - ignore them
-  if (
-    val.data.url.includes("blog/blog/") ||
-    val.data.url.includes("info/info/")
-  ) {
-    console.log("🤖 Bot detected:", url);
-    return { error: "NO_URL" };
-  }
+  const submittedUrl = typeof url === "string" ? url : "";
+  const { civlId, civlName } = await getPilotIdentityFromCookie();
 
   let queryID: string | undefined = undefined;
   try {
     const res = await db
       .insert(usage)
-      .values({ compUrl: val.data.url })
+      .values({ compUrl: submittedUrl, civlId, civlName })
       .returning({ id: usage.id });
 
     queryID = res[0]?.id;
@@ -119,9 +160,30 @@ export async function fetchForecastData(
     Sentry.captureException(error);
   }
 
+  const urlSchema = z.object({ url: z.string().url() });
+  const val = urlSchema.safeParse({ url });
+
+  if (!val.success) {
+    await markUsageWithError(queryID, "NO_URL");
+    return { error: "NO_URL" };
+  }
+
+  // Airtribune creates some funny deep nested links that bots like to follow - ignore them
+  if (
+    val.data.url.includes("blog/blog/") ||
+    val.data.url.includes("info/info/")
+  ) {
+    console.log("🤖 Bot detected:", url);
+    await markUsageWithError(queryID, "NO_URL");
+    return { error: "NO_URL" };
+  }
+
   const sanitizedUrl = sanitizeUrl(val.data.url);
 
-  if (!isValidUrl(sanitizedUrl)) return { error: "NO_URL" };
+  if (!isValidUrl(sanitizedUrl)) {
+    await markUsageWithError(queryID, "NO_URL");
+    return { error: "NO_URL" };
+  }
 
   // Calculate WPRS and measure processing time
   const startTime = performance.now();
@@ -152,7 +214,7 @@ export async function fetchForecastData(
     const wprs = forecast?.confirmed?.WPRS?.[0]?.Ta3;
     const potentialWprs = forecast.all?.WPRS?.[0]?.Ta3;
     const compTitle = forecast?.compTitle?.trim();
-    if (queryID && (wprs ?? potentialWprs)) {
+    if (queryID) {
       await db
         .update(usage)
         .set({

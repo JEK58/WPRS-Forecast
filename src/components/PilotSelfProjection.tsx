@@ -25,7 +25,32 @@ type Projection = {
   alreadyInList: boolean;
 };
 
-const STORAGE_KEY = "wprs:selected-pilot";
+const PILOT_COOKIE_NAME = "wprs_selected_pilot";
+const COOKIE_MAX_AGE_SECONDS = 60 * 60 * 24 * 365;
+
+function getCookie(name: string) {
+  if (typeof document === "undefined") return undefined;
+
+  const cookie = document.cookie
+    .split("; ")
+    .find((entry) => entry.startsWith(`${name}=`));
+
+  if (!cookie) return undefined;
+  return cookie.slice(name.length + 1);
+}
+
+function savePilotCookie(pilot: Pilot) {
+  if (typeof document === "undefined") return;
+
+  document.cookie = `${PILOT_COOKIE_NAME}=${encodeURIComponent(
+    JSON.stringify(pilot),
+  )}; Path=/; Max-Age=${COOKIE_MAX_AGE_SECONDS}; SameSite=Lax`;
+}
+
+function clearPilotCookie() {
+  if (typeof document === "undefined") return;
+  document.cookie = `${PILOT_COOKIE_NAME}=; Path=/; Max-Age=0; SameSite=Lax`;
+}
 
 export function PilotSelfProjection({
   confirmedPilots,
@@ -47,15 +72,15 @@ export function PilotSelfProjection({
   useEffect(() => {
     if (typeof window === "undefined") return;
 
-    const raw = window.localStorage.getItem(STORAGE_KEY);
+    const raw = getCookie(PILOT_COOKIE_NAME);
     if (raw) {
       try {
-        const parsed = JSON.parse(raw) as Pilot;
+        const parsed = JSON.parse(decodeURIComponent(raw)) as Pilot;
         if (parsed?.id && parsed?.name) {
           setSelectedPilot(parsed);
         }
       } catch {
-        window.localStorage.removeItem(STORAGE_KEY);
+        clearPilotCookie();
       }
     }
 
@@ -103,14 +128,14 @@ export function PilotSelfProjection({
     setSelectedPilot(pilot);
     setQuery("");
     setResults([]);
-    window.localStorage.setItem(STORAGE_KEY, JSON.stringify(pilot));
+    savePilotCookie(pilot);
   };
 
   const onClearPilot = () => {
     setSelectedPilot(null);
     setQuery("");
     setResults([]);
-    window.localStorage.removeItem(STORAGE_KEY);
+    clearPilotCookie();
   };
 
   if (!confirmedWprs?.length && !registeredWprs?.length) return null;

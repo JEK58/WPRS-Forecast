@@ -1,4 +1,6 @@
 {
+  "id": "4f0cac02-69a7-4f62-839b-61201006f8a8",
+  "prevId": "5a8ac940-c96e-444d-bb97-164038df8206",
   "version": "7",
   "dialect": "postgresql",
   "tables": {
@@ -114,8 +116,8 @@
       "compositePrimaryKeys": {},
       "uniqueConstraints": {},
       "policies": {},
-      "isRLSEnabled": false,
-      "checkConstraints": {}
+      "checkConstraints": {},
+      "isRLSEnabled": false
     },
     "public.Ranking": {
       "name": "Ranking",
@@ -138,7 +140,8 @@
           "name": "updatedAt",
           "type": "timestamp(3)",
           "primaryKey": false,
-          "notNull": true
+          "notNull": true,
+          "default": "now()"
         },
         "name": {
           "name": "name",
@@ -188,8 +191,8 @@
       "compositePrimaryKeys": {},
       "uniqueConstraints": {},
       "policies": {},
-      "isRLSEnabled": false,
-      "checkConstraints": {}
+      "checkConstraints": {},
+      "isRLSEnabled": false
     },
     "public.Usage": {
       "name": "Usage",
@@ -197,9 +200,10 @@
       "columns": {
         "id": {
           "name": "id",
-          "type": "text",
+          "type": "uuid",
           "primaryKey": true,
-          "notNull": true
+          "notNull": true,
+          "default": "gen_random_uuid()"
         },
         "createdAt": {
           "name": "createdAt",
@@ -212,13 +216,26 @@
           "name": "updatedAt",
           "type": "timestamp(3)",
           "primaryKey": false,
-          "notNull": true
+          "notNull": true,
+          "default": "now()"
         },
         "compUrl": {
           "name": "compUrl",
           "type": "text",
           "primaryKey": false,
           "notNull": true
+        },
+        "civlId": {
+          "name": "civlId",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "civlName": {
+          "name": "civlName",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
         },
         "wprs": {
           "name": "wprs",
@@ -280,21 +297,19 @@
       "compositePrimaryKeys": {},
       "uniqueConstraints": {},
       "policies": {},
-      "isRLSEnabled": false,
-      "checkConstraints": {}
+      "checkConstraints": {},
+      "isRLSEnabled": false
     }
   },
   "enums": {},
   "schemas": {},
-  "_meta": {
-    "schemas": {},
-    "tables": {},
-    "columns": {}
-  },
-  "id": "9824bcfa-56d4-48e8-838e-40a346879c42",
-  "prevId": "00000000-0000-0000-0000-000000000000",
   "sequences": {},
+  "roles": {},
   "policies": {},
   "views": {},
-  "roles": {}
+  "_meta": {
+    "columns": {},
+    "schemas": {},
+    "tables": {}
+  }
 }
