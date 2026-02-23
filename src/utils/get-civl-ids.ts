@@ -11,6 +11,10 @@ import { normalizeName } from "@/utils/normalize-name";
 
 export const CIVL_PLACEHOLDER_ID = 99999;
 const REDIS_EXP_TIME = 60 * 60 * 24 * 10; // 10 days
+type Ranking = InferSelectModel<typeof ranking>;
+type SearchIndexEntry = Pick<Ranking, "id" | "name"> & {
+  normalizedName: string;
+};
 
 /**
  * Looks up the CIVL ID for each pilot in the list.
@@ -27,16 +31,29 @@ const REDIS_EXP_TIME = 60 * 60 * 24 * 10; // 10 days
  * If a pilot still can't be found, a placeholder value is used for the CIVL ID.
  */
 export async function getCivlIds(pilots: string[], disableAlgolia?: boolean) {
+
   const startTime = performance.now();
   const numberOfPilots = pilots.length;
-  const searchQueue = new Set(pilots.map((p) => p.toLowerCase()));
+  const preparedPilots = pilots.map((pilot) => pilot.trim().toLowerCase());
+  const searchQueue = new Set(preparedPilots.filter((pilot) => pilot.length > 0));
   const civlIds = new Map<string, number>();
-  const normalizedSearchQueue = new Map<string, string[]>();
+  const normalizedSearchQueue = new Map<string, Set<string>>();
+  const cacheWrites: Promise<void>[] = [];
+
+  const queueCacheWrite = (name: string, civl: number) => {
+    cacheWrites.push(addToCache(name, civl));
+  };
+
+  const setCivlId = (name: string, civl: number) => {
+    civlIds.set(name, civl);
+    searchQueue.delete(name);
+    queueCacheWrite(name, civl);
+  };
 
   for (const pilot of searchQueue) {
-    const normalized = normalizeName(pilot).toLowerCase();
-    const existing = normalizedSearchQueue.get(normalized) ?? [];
-    existing.push(pilot);
+    const normalized = getNormalizedLowercaseName(pilot);
+    const existing = normalizedSearchQueue.get(normalized) ?? new Set<string>();
+    existing.add(pilot);
     normalizedSearchQueue.set(normalized, existing);
   }
 
@@ -56,8 +73,11 @@ export async function getCivlIds(pilots: string[], disableAlgolia?: boolean) {
   cachedCivlIds.forEach((id, index) => {
     const name = search[index];
     if (id && name) {
-      civlIds.set(name, Number(id));
-      searchQueue.delete(name);
+      const cachedId = Number(id);
+      if (Number.isFinite(cachedId)) {
+        civlIds.set(name, cachedId);
+        searchQueue.delete(name);
+      }
     }
   });
 
@@ -68,7 +88,9 @@ export async function getCivlIds(pilots: string[], disableAlgolia?: boolean) {
    */
   if (searchQueue.size > 0) {
     try {
-      const normalizedSearchTerms = [...new Set([...searchQueue].map((name) => normalizeName(name).toLowerCase()))];
+      const normalizedSearchTerms = [
+        ...new Set([...searchQueue].map(getNormalizedLowercaseName)),
+      ];
       const pilotsFoundDb = await db
         .select({
           id: ranking.id,
@@ -88,9 +110,9 @@ export async function getCivlIds(pilots: string[], disableAlgolia?: boolean) {
 
       for (const pilot of pilotsFoundDb) {
         const directName = pilot.name.toLowerCase();
-        const normalizedDbName = normalizeName(
+        const normalizedDbName = getNormalizedLowercaseName(
           pilot.normalizedName ?? pilot.name,
-        ).toLowerCase();
+        );
         const matchedQueries = new Set<string>();
 
         if (searchQueue.has(directName)) {
@@ -103,9 +125,7 @@ export async function getCivlIds(pilots: string[], disableAlgolia?: boolean) {
         });
 
         for (const matchedQuery of matchedQueries) {
-          civlIds.set(matchedQuery, pilot.id);
-          searchQueue.delete(matchedQuery);
-          await addToCache(matchedQuery, pilot.id);
+          setCivlId(matchedQuery, pilot.id);
         }
       }
     } catch (error) {
@@ -119,31 +139,55 @@ export async function getCivlIds(pilots: string[], disableAlgolia?: boolean) {
 
   /**
    * Find locally with fuzzysearch
-   * TODO: Only load and index if there are pilots left to search
    */
+  if (searchQueue.size > 0) {
+    try {
+      const worldRanking = await db
+        .select({
+          id: ranking.id,
+          name: ranking.name,
+          normalizedName: ranking.normalizedName,
+        })
+        .from(ranking);
 
-  const worldRanking = await db.select().from(ranking);
+      const miniSearch = new MiniSearch<SearchIndexEntry>({
+        fields: ["name", "normalizedName"],
+        storeFields: ["id"],
+        searchOptions: { fuzzy: 0.2 },
+      });
 
-  const miniSearch = new MiniSearch({
-    fields: ["name"],
-    storeFields: ["id", "name"],
-    searchOptions: { fuzzy: 0.2 },
-  });
+      miniSearch.addAll(
+        worldRanking.map((pilot) => ({
+          id: pilot.id,
+          name: pilot.name,
+          normalizedName: getNormalizedLowercaseName(
+            pilot.normalizedName ?? pilot.name,
+          ),
+        })),
+      );
 
-  // Create index
-  miniSearch.addAll(worldRanking);
+      for (const pilot of [...searchQueue]) {
+        const normalizedPilot = getNormalizedLowercaseName(pilot);
+        const matchByName = miniSearch.search(pilot, {
+          combineWith: "AND",
+        })[0];
+        const matchByNormalizedName = miniSearch.search(normalizedPilot, {
+          combineWith: "AND",
+          fields: ["normalizedName"],
+        })[0];
+        const result = matchByName ?? matchByNormalizedName;
 
-  type Ranking = InferSelectModel<typeof ranking>;
-
-  for (const pilot of [...searchQueue]) {
-    const res = miniSearch.search(pilot, {
-      combineWith: "AND",
-    })[0] as unknown as Pick<Ranking, "id" | "name">;
-
-    if (res) {
-      civlIds.set(pilot, res.id);
-      searchQueue.delete(pilot);
-      await addToCache(pilot, res.id);
+        if (result) {
+          const civl = Number(result.id);
+          if (Number.isFinite(civl)) {
+            setCivlId(pilot, civl);
+          }
+        }
+      }
+    } catch (error) {
+      console.error("Error during local fuzzy lookup:");
+      console.log(error);
+      Sentry.captureException(error);
     }
   }
 
@@ -152,29 +196,34 @@ export async function getCivlIds(pilots: string[], disableAlgolia?: boolean) {
   /**
    * Find using algolia
    */
-  if (!disableAlgolia) {
-    const client = algoliasearch(env.ALGOLIA_APP_ID, env.ALGOLIA_API_KEY);
-    const pilotsToSearch = [...searchQueue];
-    const promises = pilotsToSearch.map((pilot) =>
-      client.searchSingleIndex<Ranking>({
-        indexName: "civl_ranking",
-        searchParams: {
-          query: pilot,
-        },
-      }),
-    );
-    const algoliaResults = await Promise.all(promises);
+  if (!disableAlgolia && searchQueue.size > 0) {
+    try {
+      const client = algoliasearch(env.ALGOLIA_APP_ID, env.ALGOLIA_API_KEY);
+      const pilotsToSearch = [...searchQueue];
+      const promises = pilotsToSearch.map((pilot) =>
+        client.searchSingleIndex<Ranking>({
+          indexName: "civl_ranking",
+          searchParams: {
+            query: pilot,
+          },
+        }),
+      );
+      const algoliaResults = await Promise.allSettled(promises);
 
-    for (const [index, res] of algoliaResults.entries()) {
-      const query = pilotsToSearch[index];
-      if (!query) continue;
-      const civl = res.hits[0]?.id;
+      for (const [index, result] of algoliaResults.entries()) {
+        if (result.status !== "fulfilled") continue;
+        const query = pilotsToSearch[index];
+        if (!query) continue;
+        const civl = Number(result.value.hits[0]?.id);
 
-      if (civl) {
-        civlIds.set(query, civl);
-        searchQueue.delete(query);
-        await addToCache(query, civl);
+        if (Number.isFinite(civl)) {
+          setCivlId(query, civl);
+        }
       }
+    } catch (error) {
+      console.error("Error during Algolia lookup:");
+      console.log(error);
+      Sentry.captureException(error);
     }
   }
 
@@ -185,18 +234,57 @@ export async function getCivlIds(pilots: string[], disableAlgolia?: boolean) {
    */
 
   for (const pilot of [...searchQueue]) {
-    await addToCache(pilot, CIVL_PLACEHOLDER_ID);
+    queueCacheWrite(pilot, CIVL_PLACEHOLDER_ID);
     civlIds.set(pilot, CIVL_PLACEHOLDER_ID);
   }
+
+  await Promise.allSettled(cacheWrites);
 
   // Perfomance Timer
   const duration = Math.round(performance.now() - startTime);
 
   // Statistics
-  const percentageNotFound = +(
-    (searchQueue.size / numberOfPilots) *
-    100
-  ).toFixed(2);
+  const toPercentage = (value: number) =>
+    numberOfPilots === 0 ? 0 : +((value / numberOfPilots) * 100).toFixed(2);
+
+  const foundInCache = numberOfPilots - missingInCache;
+  const foundInDB = missingInCache - missingInDB;
+  const foundInMinisearch = missingInDB - missingInMinisearch;
+  const foundInAlgolia = missingInMinisearch - missingInAlgolia;
+  const assignedPlaceholder = missingInAlgolia;
+
+  const percentageNotFound = toPercentage(searchQueue.size);
+
+  const stageBreakdown = {
+    cache: {
+      found: foundInCache,
+      foundPercentage: toPercentage(foundInCache),
+      missing: missingInCache,
+      missingPercentage: toPercentage(missingInCache),
+    },
+    db: {
+      found: foundInDB,
+      foundPercentage: toPercentage(foundInDB),
+      missing: missingInDB,
+      missingPercentage: toPercentage(missingInDB),
+    },
+    miniSearch: {
+      found: foundInMinisearch,
+      foundPercentage: toPercentage(foundInMinisearch),
+      missing: missingInMinisearch,
+      missingPercentage: toPercentage(missingInMinisearch),
+    },
+    algolia: {
+      found: foundInAlgolia,
+      foundPercentage: toPercentage(foundInAlgolia),
+      missing: missingInAlgolia,
+      missingPercentage: toPercentage(missingInAlgolia),
+    },
+    placeholder: {
+      assigned: assignedPlaceholder,
+      assignedPercentage: toPercentage(assignedPlaceholder),
+    },
+  };
 
   const statistics = {
     numberOfPilots,
@@ -207,7 +295,33 @@ export async function getCivlIds(pilots: string[], disableAlgolia?: boolean) {
     percentageNotFound,
     civlSearchDurationInMs: duration,
     pilotsNotfound: [...searchQueue],
+    stageBreakdown,
   };
+
+  const formatStageLine = (
+    stage: string,
+    data: { found: number; foundPercentage: number; missing: number; missingPercentage: number },
+  ) =>
+    `  - ${stage.padEnd(10)} found ${String(data.found).padStart(4)} (${data.foundPercentage.toFixed(2)}%) | missing ${String(data.missing).padStart(4)} (${data.missingPercentage.toFixed(2)}%)`;
+
+  const logLines = [
+    "[getCivlIds] lookup summary",
+    `  total pilots: ${numberOfPilots}`,
+    `  duration: ${duration}ms`,
+    `  not found: ${searchQueue.size} (${percentageNotFound.toFixed(2)}%)`,
+    "  stage breakdown:",
+    formatStageLine("cache", stageBreakdown.cache),
+    formatStageLine("db", stageBreakdown.db),
+    formatStageLine("miniSearch", stageBreakdown.miniSearch),
+    formatStageLine("algolia", stageBreakdown.algolia),
+    `  - ${"placeholder".padEnd(10)} assigned ${String(stageBreakdown.placeholder.assigned).padStart(4)} (${stageBreakdown.placeholder.assignedPercentage.toFixed(2)}%)`,
+  ];
+
+  if (statistics.pilotsNotfound.length > 0) {
+    logLines.push(`  unresolved pilots: ${statistics.pilotsNotfound.join(", ")}`);
+  }
+
+  console.log(logLines.join("\n"));
 
   return { civlIds, statistics };
 }
@@ -218,4 +332,8 @@ async function addToCache(name: string, civl: number) {
   await redis.set(redisKey, civl, "EX", REDIS_EXP_TIME).catch((err) => {
     console.log(err);
   });
+}
+
+function getNormalizedLowercaseName(name: string) {
+  return normalizeName(name).toLowerCase();
 }
