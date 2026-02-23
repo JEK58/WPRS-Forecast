@@ -6,8 +6,9 @@ const ALLOWED_REQUESTS = 40;
 const TIME_FRAME = 30 * 1000; // 30 seconds
 
 // This function can be marked `async` if using `await` inside
-export function middleware(req: NextRequest) {
-  const ip = req.headers.get("x-forwarded-for") ?? req.ip;
+export function proxy(req: NextRequest) {
+  const forwardedFor = req.headers.get("x-forwarded-for");
+  const ip = forwardedFor?.split(",")[0]?.trim() ?? req.headers.get("x-real-ip");
 
   if (!ip) return NextResponse.next();
 

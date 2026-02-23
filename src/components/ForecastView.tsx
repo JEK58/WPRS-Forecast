@@ -32,7 +32,7 @@ export async function ForecastView({ url }: { url?: string }) {
   return (
     <>
       <div className="justify-content-between flex items-start">
-        <div className="flex-grow">
+        <div className="grow">
           <h2 className="mb-1 text-lg font-bold sm:text-2xl dark:text-slate-200">
             {data.compTitle}
           </h2>
@@ -60,7 +60,7 @@ export async function ForecastView({ url }: { url?: string }) {
       </div>
       {data.pilotsUrl && (
         <Link
-          className="flex max-w-full items-center overflow-hidden overflow-ellipsis text-sm underline decoration-green-500 decoration-dotted hover:decoration-solid dark:text-slate-300"
+          className="flex max-w-full items-center overflow-hidden text-sm text-ellipsis underline decoration-green-500 decoration-dotted hover:decoration-solid dark:text-slate-300"
           target="_blank"
           href={data.pilotsUrl}
         >
@@ -81,7 +81,7 @@ export async function ForecastView({ url }: { url?: string }) {
       {data.maxPilots && data.maxPilots > 0 && (
         <div className="mt-2">
           Potential WPRS:{" "}
-          <span className="text-primary">{data?.all?.WPRS[0]?.Ta3}</span>
+          <span className="text-green-500">{data?.all?.WPRS[0]?.Ta3}</span>
           <p className="text-sm">
             If the top {data.maxPilots} registered pilots would be confirmed.
           </p>

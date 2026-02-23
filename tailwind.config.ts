@@ -1,5 +1,5 @@
 import { type Config } from "tailwindcss";
-import { fontFamily } from "tailwindcss/defaultTheme";
+import defaultTheme from "tailwindcss/defaultTheme";
 
 export default {
   content: ["./src/**/*.tsx"],
@@ -7,7 +7,7 @@ export default {
     extend: {
       colors: { primary: "#22c55e" },
       fontFamily: {
-        sans: ["var(--font-sans)", ...fontFamily.sans],
+        sans: ["var(--font-sans)", ...defaultTheme.fontFamily.sans],
       },
     },
   },

@@ -112,7 +112,7 @@ const RecentQueriesTable = async () => {
       <div className="w-full overflow-x-auto">
         <Table className="w-full text-left">
           <TableHeader>
-            <TableRow className="dark:border-slate-600">
+            <TableRow className="border-slate-300 dark:border-slate-600">
               <TableHead></TableHead>
               <TableHead>Begins</TableHead>
               <TableHead>WPRS</TableHead>

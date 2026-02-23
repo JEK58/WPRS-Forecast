@@ -39,7 +39,7 @@ export function CompUrlInputField() {
   return (
     <>
       <form className="mt-4 flex flex-col space-y-2 md:flex-row md:space-x-2 md:space-y-0">
-        <div className="relative flex-grow">
+        <div className="relative grow">
           <Input
             name="url"
             autoFocus

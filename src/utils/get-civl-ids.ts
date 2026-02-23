@@ -1,6 +1,6 @@
 /* eslint-disable drizzle/enforce-delete-with-where */
 import MiniSearch from "minisearch";
-import algoliasearch from "algoliasearch";
+import { algoliasearch } from "algoliasearch";
 import { env } from "@/env.js";
 import { db } from "@/server/db";
 import { ranking } from "@/server/db/schema";
@@ -112,20 +112,26 @@ export async function getCivlIds(pilots: string[], disableAlgolia?: boolean) {
    */
   if (!disableAlgolia) {
     const client = algoliasearch(env.ALGOLIA_APP_ID, env.ALGOLIA_API_KEY);
-
-    const index = client.initIndex("civl_ranking");
-    const promises = [...searchQueue].map((pilot) =>
-      index.search<Ranking>(pilot),
+    const pilotsToSearch = [...searchQueue];
+    const promises = pilotsToSearch.map((pilot) =>
+      client.searchSingleIndex<Ranking>({
+        indexName: "civl_ranking",
+        searchParams: {
+          query: pilot,
+        },
+      }),
     );
     const algoliaResults = await Promise.all(promises);
 
-    for (const res of algoliaResults) {
+    for (const [index, res] of algoliaResults.entries()) {
+      const query = pilotsToSearch[index];
+      if (!query) continue;
       const civl = res.hits[0]?.id;
 
       if (civl) {
-        civlIds.set(res.query, civl);
-        searchQueue.delete(res.query);
-        await addToCache(res.query, civl);
+        civlIds.set(query, civl);
+        searchQueue.delete(query);
+        await addToCache(query, civl);
       }
     }
   }

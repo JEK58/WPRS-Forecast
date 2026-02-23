@@ -1,5 +1,5 @@
 import { describe, it, expect, beforeAll } from "bun:test";
-import { calculateWPRS, type Ranking } from "@/utils/calculate-wprs";
+import { calculateWPRS } from "@/utils/calculate-wprs";
 import { db } from "@/server/db";
 import { ranking } from "@/server/db/schema";
 import dummyRanking from "__tests__/data/DummyRanking.json";

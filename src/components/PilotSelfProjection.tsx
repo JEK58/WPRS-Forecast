@@ -116,7 +116,7 @@ export function PilotSelfProjection({
   if (!confirmedWprs?.length && !registeredWprs?.length) return null;
 
   return (
-    <div className="rounded-border mt-6 rounded-box border border-slate-300 p-4">
+    <div className="rounded-box mt-6 border border-slate-300 p-4">
       <h3 className="text-base font-semibold">Your Potential Ranking</h3>
 
       {isHydrated && !selectedPilot && (
@@ -129,7 +129,7 @@ export function PilotSelfProjection({
           />
 
           {!!query.trim().length && (
-            <div className="absolute left-0 right-0 top-full z-20 mt-1 rounded-md border border-slate-200 bg-white shadow-md dark:border-slate-700 dark:bg-slate-900">
+            <div className="absolute top-full right-0 left-0 z-20 mt-1 rounded-md border border-slate-200 bg-white shadow-md dark:border-slate-700 dark:bg-slate-900">
               {isSearching ? (
                 <div className="px-3 py-2 text-sm text-slate-500 dark:text-slate-300">
                   Searching...
@@ -172,7 +172,7 @@ export function PilotSelfProjection({
               type="button"
               variant="outline"
               size="sm"
-              className="h-7 hover:border-green-500 hover:bg-green-500 hover:text-white"
+              className="h-7 border-slate-300/60 text-slate-600 hover:border-green-500 hover:bg-green-500 hover:text-white dark:border-slate-700/60 dark:text-slate-300 dark:hover:border-green-500 dark:hover:bg-green-500 dark:hover:text-white"
               onClick={onClearPilot}
             >
               Clear

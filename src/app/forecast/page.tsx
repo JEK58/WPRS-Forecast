@@ -6,10 +6,13 @@ import { ForecastSkeleton } from "@/components/ui/skeletons";
 export default async function Page({
   searchParams,
 }: {
-  searchParams: Record<string, string | string[] | undefined>;
+  searchParams: Promise<Record<string, string | string[] | undefined>>;
 }) {
+  const resolvedSearchParams = await searchParams;
   const url =
-    typeof searchParams.url === "string" ? searchParams.url : undefined;
+    typeof resolvedSearchParams.url === "string"
+      ? resolvedSearchParams.url
+      : undefined;
 
   return (
     <>
