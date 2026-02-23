@@ -4,9 +4,10 @@ import { algoliasearch } from "algoliasearch";
 import { env } from "@/env.js";
 import { db } from "@/server/db";
 import { ranking } from "@/server/db/schema";
-import { type InferSelectModel, inArray } from "drizzle-orm";
+import { type InferSelectModel, inArray, or, sql } from "drizzle-orm";
 import * as Sentry from "@sentry/nextjs";
 import { redis } from "@/server/cache/redis";
+import { normalizeName } from "@/utils/normalize-name";
 
 export const CIVL_PLACEHOLDER_ID = 99999;
 const REDIS_EXP_TIME = 60 * 60 * 24 * 10; // 10 days
@@ -30,6 +31,14 @@ export async function getCivlIds(pilots: string[], disableAlgolia?: boolean) {
   const numberOfPilots = pilots.length;
   const searchQueue = new Set(pilots.map((p) => p.toLowerCase()));
   const civlIds = new Map<string, number>();
+  const normalizedSearchQueue = new Map<string, string[]>();
+
+  for (const pilot of searchQueue) {
+    const normalized = normalizeName(pilot).toLowerCase();
+    const existing = normalizedSearchQueue.get(normalized) ?? [];
+    existing.push(pilot);
+    normalizedSearchQueue.set(normalized, existing);
+  }
 
   /**
    * Lookup pilots in cache
@@ -54,17 +63,45 @@ export async function getCivlIds(pilots: string[], disableAlgolia?: boolean) {
    */
   if (searchQueue.size > 0) {
     try {
+      const normalizedSearchTerms = [...new Set([...searchQueue].map((name) => normalizeName(name).toLowerCase()))];
       const pilotsFoundDb = await db
-        .select()
+        .select({
+          id: ranking.id,
+          name: ranking.name,
+          normalizedName: ranking.normalizedName,
+        })
         .from(ranking)
-        .where(inArray(ranking.name, [...searchQueue]));
+        .where(
+          or(
+            inArray(sql`lower(${ranking.name})`, [...searchQueue]),
+            inArray(
+              sql`lower(coalesce(${ranking.normalizedName}, ${ranking.name}))`,
+              normalizedSearchTerms,
+            ),
+          ),
+        );
 
       for (const pilot of pilotsFoundDb) {
-        const name = pilot.name.toLowerCase();
-        civlIds.set(name, pilot.id);
-        searchQueue.delete(name);
+        const directName = pilot.name.toLowerCase();
+        const normalizedDbName = normalizeName(
+          pilot.normalizedName ?? pilot.name,
+        ).toLowerCase();
+        const matchedQueries = new Set<string>();
 
-        await addToCache(name, pilot.id);
+        if (searchQueue.has(directName)) {
+          matchedQueries.add(directName);
+        }
+
+        const normalizedMatches = normalizedSearchQueue.get(normalizedDbName);
+        normalizedMatches?.forEach((query) => {
+          if (searchQueue.has(query)) matchedQueries.add(query);
+        });
+
+        for (const matchedQuery of matchedQueries) {
+          civlIds.set(matchedQuery, pilot.id);
+          searchQueue.delete(matchedQuery);
+          await addToCache(matchedQuery, pilot.id);
+        }
       }
     } catch (error) {
       console.error("Error fetching pilot rankings:");
