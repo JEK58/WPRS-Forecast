@@ -5,6 +5,7 @@ import { ListRankings } from "@/components/ForecastListRankings";
 import { Nationalities } from "./ForecastNationalities";
 import { LevelChart } from "./ForecastLevelChart";
 import { Genders } from "./ForecastGenders";
+import { PilotSelfProjection } from "./PilotSelfProjection";
 
 export async function ForecastView({ url }: { url?: string }) {
   const data = await fetchForecastData(url);
@@ -101,6 +102,12 @@ export async function ForecastView({ url }: { url?: string }) {
           Details can be found in the FAI Sporting Code Section 7E
         </Link>
       </div>
+      <PilotSelfProjection
+        confirmedPilots={data.confirmed?.pilots}
+        registeredPilots={data.all?.pilots}
+        confirmedWprs={data.confirmed?.WPRS}
+        registeredWprs={data.all?.WPRS}
+      />
       {!!data?.confirmed?.WPRS[0]?.Ta3 && <ForecastDetails data={data} />}
 
       {data.confirmed?.pilots && <LevelChart data={data.confirmed} />}
