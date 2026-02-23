@@ -14,21 +14,10 @@ import {
 } from "@/components/ui/Table";
 
 const MAX_TITLE_LENGTH = 45;
-const NUMBER_RECENT_QUERIES = 50;
 
 const RecentQueriesTable = async () => {
   noStore();
-  const recentQueries = await fetchRecentQueries();
-
-  const uniqueQueries = recentQueries
-    .filter(
-      (item, index, self) =>
-        index ===
-        self.findIndex(
-          (i) => i.compTitle?.toLowerCase() === item.compTitle?.toLowerCase(),
-        ),
-    )
-    .slice(0, NUMBER_RECENT_QUERIES);
+  const uniqueQueries = await fetchRecentQueries();
 
   const recentQueriesTableRows = uniqueQueries?.map((stat) => {
     let compTitle = stat.compTitle ?? stat.compUrl;

@@ -28,7 +28,9 @@ export const fetchHistory = async () => {
       .from(compRanking)
       .where(gt(compRanking.resultsUpdated, searchDateDaysAgo.toISOString()));
 
-    const compNames = compsInRanking.map((comp) => comp.name);
+    const compByName = new Map(
+      compsInRanking.map((comp) => [comp.name.trim().toLowerCase(), comp]),
+    );
 
     const data = await db
       .select({
@@ -39,46 +41,32 @@ export const fetchHistory = async () => {
       })
       .from(usage)
       .orderBy(desc(usage.createdAt))
-      .where(and(isNotNull(usage.potentialWprs), isNotNull(usage.wprs)));
+      .where(
+        and(
+          isNotNull(usage.potentialWprs),
+          isNotNull(usage.wprs),
+          gt(usage.createdAt, searchDateDaysAgo.toISOString()),
+        ),
+      );
 
-    const trimmedCompNames = compNames.map((name) => name.trim().toLowerCase());
+    const seenCompNames = new Set<string>();
+    const history = [];
+    for (const item of data) {
+      if (!item.compTitle) continue;
+      const key = item.compTitle.trim().toLowerCase();
+      if (seenCompNames.has(key)) continue;
 
-    const filteredData = data.filter((item) => {
-      if (!item.compTitle) return false;
-      return trimmedCompNames.includes(item.compTitle.trim().toLowerCase());
-    });
+      const rankingEntry = compByName.get(key);
+      if (!rankingEntry) continue;
 
-    const history = filteredData
-      // Convert createdAt to milliseconds because of serialization issues with dates
-      .map(({ createdAt, ...rest }) => {
-        return { createdAt: new Date(createdAt).getTime(), ...rest };
-      })
-      // Filter out duplicate entries (due to sort only the most recent one stays)
-      .filter(
-        (item, index, self) =>
-          index === self.findIndex((i) => i.compTitle === item.compTitle),
-      )
-      // Add wprs and # of tasks to each entry
-      .map((el) => {
-        const actualWprs = compsInRanking.find(
-          (comp) =>
-            comp.name.toLowerCase().trim() ===
-            el.compTitle?.toLowerCase().trim(),
-        )?.winnerScore;
-        const tasks = compsInRanking.find(
-          (comp) =>
-            comp.name.toLowerCase().trim() ===
-            el.compTitle?.toLowerCase().trim(),
-        )?.tasks;
-        return {
-          ...el,
-          actualWprs,
-          tasks,
-        };
-      })
-
-      // sort by date
-      .sort((a, b) => b.createdAt - a.createdAt);
+      seenCompNames.add(key);
+      history.push({
+        ...item,
+        createdAt: new Date(item.createdAt).getTime(),
+        actualWprs: rankingEntry.winnerScore,
+        tasks: rankingEntry.tasks,
+      });
+    }
 
     return history;
   } catch (error) {
@@ -243,6 +231,9 @@ export async function fetchForecastData(
 }
 
 export async function fetchRecentQueries() {
+  const MAX_RECENT_ROWS = 500;
+  const MAX_UNIQUE_QUERIES = 50;
+
   const res = await db
     .select()
     .from(usage)
@@ -254,9 +245,17 @@ export async function fetchRecentQueries() {
       ),
     )
     .orderBy(desc(usage.createdAt))
+    .limit(MAX_RECENT_ROWS)
     .execute();
 
-  const comps = res.map(({ createdAt, startDate, endDate, ...rest }) => {
+  const uniqueCompKeys = new Set<string>();
+  const comps = [];
+
+  for (const { createdAt, startDate, endDate, ...rest } of res) {
+    const key = (rest.compTitle ?? rest.compUrl).trim().toLowerCase();
+    if (uniqueCompKeys.has(key)) continue;
+    uniqueCompKeys.add(key);
+
     const now = new Date();
     const timeDiff = now.getTime() - new Date(createdAt).getTime(); // in milliseconds
 
@@ -276,14 +275,17 @@ export async function fetchRecentQueries() {
       daysSinceCompEnd = Math.ceil(diffInMilliseconds / (1000 * 60 * 60 * 24));
     }
 
-    return {
+    comps.push({
       ...rest,
       ageInHours: hoursDiff,
       daysTillCompStart,
       daysSinceCompEnd,
       startDate,
       endDate,
-    };
-  });
+    });
+
+    if (comps.length >= MAX_UNIQUE_QUERIES) break;
+  }
+
   return comps;
 }
