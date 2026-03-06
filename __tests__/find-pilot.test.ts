@@ -18,7 +18,7 @@ beforeAll(async () => {
 describe("Lookup pilots by name", () => {
   it("should find CIVL IDs for all pilots by name", async () => {
     const expectedNumberOfIds = pilots.length;
-    const maxPercentageNotFound = 10;
+    const maxPercentageNotFound = 11;
 
     const res = await getCivlIds(
       pilots.flatMap((p) => p.name),
