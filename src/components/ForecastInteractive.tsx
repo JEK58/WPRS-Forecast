@@ -233,6 +233,139 @@ export function ForecastInteractive({ data }: { data: Forecast }) {
     return "text-green-600 dark:text-green-400";
   };
 
+  const pilotImpactSection =
+    allPilotEntries.length > 0 ? (
+      <div className="collapse-arrow collapse mt-4 border border-slate-300 dark:border-slate-600">
+        <input type="checkbox" />
+        <div className="collapse-title font-semibold">
+          <span className="mr-2 rounded-full bg-green-500 px-2 py-0.5 text-xs font-semibold tracking-wide text-white uppercase">
+            New
+          </span>
+          Pilot impact ({selectedPilots.length}/{allPilotEntries.length})
+        </div>
+        <div className="collapse-content">
+          <div className="mb-3 flex flex-wrap items-center gap-2">
+            <Button
+              type="button"
+              size="sm"
+              variant="outline"
+              onClick={onSelectConfirmed}
+              disabled={isDefaultSelection}
+            >
+              All confirmed
+            </Button>
+            <Button
+              type="button"
+              size="sm"
+              variant="outline"
+              onClick={onClearAll}
+              disabled={selectedPilots.length === 0}
+            >
+              Clear all
+            </Button>
+            {isRecalculating && (
+              <span className="text-sm text-slate-500 dark:text-slate-300">
+                Recalculating...
+              </span>
+            )}
+            {simulationError && (
+              <span className="text-sm text-red-500">{simulationError}</span>
+            )}
+          </div>
+
+          <div
+            className="not-prose relative mt-2 mb-2 h-[25rem] overflow-x-hidden overflow-y-auto overscroll-contain rounded-md border border-slate-200 dark:border-slate-700"
+            onWheel={(event) => event.stopPropagation()}
+            onTouchMove={(event) => event.stopPropagation()}
+          >
+            <table className="table-pin-rows table-sm table w-full">
+              <thead>
+                <tr className="border-b-0">
+                  <th className="bg-base-200">Pilot</th>
+                  <th className="bg-base-200">Impact</th>
+                  <th className="bg-base-200 text-right">Include</th>
+                </tr>
+              </thead>
+              <tbody>
+                {!!confirmedEntries.length && (
+                  <tr>
+                    <td
+                      colSpan={3}
+                      className="pt-3 pb-1 text-xs font-semibold text-slate-500 uppercase dark:text-slate-300"
+                    >
+                      Confirmed pilots
+                    </td>
+                  </tr>
+                )}
+                {confirmedEntries.map((entry, rowIndex) => {
+                  const isSelected = selectedPilotSet.has(entry.key);
+                  return (
+                    <tr key={entry.key}>
+                      <td className="font-medium">
+                        {rowIndex + 1}.{" "}
+                        {entry.pilot.name ?? `Pilot ${entry.index + 1}`}
+                      </td>
+                      <td
+                        className={`font-mono text-xs ${contributionClass(entry.key)}`}
+                      >
+                        {renderContribution(entry.key, isSelected)}
+                      </td>
+                      <td className="text-right">
+                        <input
+                          type="checkbox"
+                          checked={isSelected}
+                          onChange={() => onTogglePilot(entry.key)}
+                          className="checkbox checkbox-sm"
+                        />
+                      </td>
+                    </tr>
+                  );
+                })}
+                {!!unconfirmedEntries.length && (
+                  <tr>
+                    <td
+                      colSpan={3}
+                      className="pt-4 pb-1 text-xs font-semibold text-slate-500 uppercase dark:text-slate-300"
+                    >
+                      Registered but not confirmed pilots
+                    </td>
+                  </tr>
+                )}
+                {unconfirmedEntries.map((entry, rowIndex) => {
+                  const isSelected = selectedPilotSet.has(entry.key);
+                  return (
+                    <tr key={entry.key}>
+                      <td className="font-medium">
+                        {confirmedEntries.length + rowIndex + 1}.{" "}
+                        {entry.pilot.name ?? `Pilot ${entry.index + 1}`}
+                        <span className="rounded-full bg-green-500 px-2 py-0.5 text-xs font-semibold tracking-wide text-white uppercase">
+                          New
+                        </span>
+                      </td>
+                      <td
+                        className={`font-mono text-xs ${contributionClass(entry.key)}`}
+                      >
+                        {renderContribution(entry.key, isSelected)}
+                      </td>
+                      <td className="text-right">
+                        <input
+                          type="checkbox"
+                          checked={isSelected}
+                          onChange={() => onTogglePilot(entry.key)}
+                          className="checkbox checkbox-sm"
+                        />
+                      </td>
+                    </tr>
+                  );
+                })}
+              </tbody>
+            </table>
+            <div className="bg-base-100 pointer-events-none sticky bottom-0 -mt-6 flex h-16 [mask-image:linear-gradient(transparent,#000000)]" />
+          </div>
+        </div>
+      </div>
+    ) : null;
+
   return (
     <>
       <div className="mt-4 font-semibold">
@@ -258,132 +391,6 @@ export function ForecastInteractive({ data }: { data: Forecast }) {
         </div>
       )}
 
-      {!!allPilotEntries.length && (
-        <div className="collapse-arrow collapse mt-4 border border-slate-300 dark:border-slate-600">
-          <input type="checkbox" defaultChecked />
-          <div className="collapse-title font-semibold">
-            Pilot impact ({selectedPilots.length}/{allPilotEntries.length})
-          </div>
-          <div className="collapse-content">
-            <div className="mb-3 flex flex-wrap items-center gap-2">
-              <Button
-                type="button"
-                size="sm"
-                variant="outline"
-                onClick={onSelectConfirmed}
-                disabled={isDefaultSelection}
-              >
-                All confirmed
-              </Button>
-              <Button
-                type="button"
-                size="sm"
-                variant="outline"
-                onClick={onClearAll}
-                disabled={selectedPilots.length === 0}
-              >
-                Clear all
-              </Button>
-              {isRecalculating && (
-                <span className="text-sm text-slate-500 dark:text-slate-300">
-                  Recalculating...
-                </span>
-              )}
-              {simulationError && (
-                <span className="text-sm text-red-500">{simulationError}</span>
-              )}
-            </div>
-
-            <div
-              className="not-prose relative mt-2 mb-2 h-[25rem] overflow-x-hidden overflow-y-auto overscroll-contain rounded-md border border-slate-200 dark:border-slate-700"
-              onWheel={(event) => event.stopPropagation()}
-              onTouchMove={(event) => event.stopPropagation()}
-            >
-              <table className="table-pin-rows table-sm table w-full">
-                <thead>
-                  <tr className="border-b-0">
-                    <th className="bg-base-200">Pilot</th>
-                    <th className="bg-base-200">Impact</th>
-                    <th className="bg-base-200 text-right">Include</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {!!confirmedEntries.length && (
-                    <tr>
-                      <td
-                        colSpan={3}
-                        className="pt-3 pb-1 text-xs font-semibold text-slate-500 uppercase dark:text-slate-300"
-                      >
-                        Confirmed pilots
-                      </td>
-                    </tr>
-                  )}
-                  {confirmedEntries.map((entry, rowIndex) => {
-                    const isSelected = selectedPilotSet.has(entry.key);
-                    return (
-                      <tr key={entry.key}>
-                        <td className="font-medium">
-                          {rowIndex + 1}.{" "}
-                          {entry.pilot.name ?? `Pilot ${entry.index + 1}`}
-                        </td>
-                        <td
-                          className={`font-mono text-xs ${contributionClass(entry.key)}`}
-                        >
-                          {renderContribution(entry.key, isSelected)}
-                        </td>
-                        <td className="text-right">
-                          <input
-                            type="checkbox"
-                            checked={isSelected}
-                            onChange={() => onTogglePilot(entry.key)}
-                            className="checkbox checkbox-sm"
-                          />
-                        </td>
-                      </tr>
-                    );
-                  })}
-                  {!!unconfirmedEntries.length && (
-                    <tr>
-                      <td
-                        colSpan={3}
-                        className="pt-4 pb-1 text-xs font-semibold text-slate-500 uppercase dark:text-slate-300"
-                      >
-                        Registered but not confirmed pilots
-                      </td>
-                    </tr>
-                  )}
-                  {unconfirmedEntries.map((entry, rowIndex) => {
-                    const isSelected = selectedPilotSet.has(entry.key);
-                    return (
-                      <tr key={entry.key}>
-                        <td className="font-medium">
-                          {confirmedEntries.length + rowIndex + 1}.{" "}
-                          {entry.pilot.name ?? `Pilot ${entry.index + 1}`}
-                        </td>
-                        <td
-                          className={`font-mono text-xs ${contributionClass(entry.key)}`}
-                        >
-                          {renderContribution(entry.key, isSelected)}
-                        </td>
-                        <td className="text-right">
-                          <input
-                            type="checkbox"
-                            checked={isSelected}
-                            onChange={() => onTogglePilot(entry.key)}
-                            className="checkbox checkbox-sm"
-                          />
-                        </td>
-                      </tr>
-                    );
-                  })}
-                </tbody>
-              </table>
-              <div className="bg-base-100 pointer-events-none sticky bottom-0 -mt-6 flex h-16 [mask-image:linear-gradient(transparent,#000000)]" />
-            </div>
-          </div>
-        </div>
-      )}
-
       <p className="mt-4 text-sm">
         This forecast is based on the currently confirmed/registered pilots and
         their CIVL rankings. The calculation will become more accurate as the
@@ -404,6 +411,7 @@ export function ForecastInteractive({ data }: { data: Forecast }) {
         confirmedWprs={displayData.confirmed?.WPRS}
         registeredWprs={data.all?.WPRS}
       />
+      {pilotImpactSection}
       {hasCurrentTa3 && <ForecastDetails data={displayData} />}
 
       {displayData.confirmed?.pilots && (
