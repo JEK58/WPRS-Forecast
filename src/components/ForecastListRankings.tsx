@@ -24,12 +24,11 @@ export function ListRankings({ data }: { data: Forecast["confirmed"] }) {
   };
 
   return (
-    <div className="collapse collapse-arrow mt-4 border border-slate-300 dark:border-slate-600">
-      <input type="checkbox" />
-      <div className="collapse-title font-semibold">
+    <details className="collapse collapse-arrow mt-4 border border-slate-300 dark:border-slate-600">
+      <summary className="collapse-title cursor-pointer list-none font-semibold">
         Show points for every position
-      </div>
-      <div className="collapse-content">
+      </summary>
+      <div className="border-t border-slate-200 px-4 py-3 dark:border-slate-700">
         <div className="overflow-x-auto">
           <Table>
             <TableHeader>
@@ -44,6 +43,6 @@ export function ListRankings({ data }: { data: Forecast["confirmed"] }) {
           </Table>
         </div>
       </div>
-    </div>
+    </details>
   );
 }

@@ -27,10 +27,11 @@ function formatWorldRankingDate(date: Date | string | undefined) {
 
 export function ForecastDetails({ data }: { data: Forecast }) {
   return (
-    <div className="collapse collapse-arrow mt-6 border border-slate-300 dark:border-slate-600">
-      <input type="checkbox" />
-      <div className="collapse-title font-semibold">Stats for nerds</div>
-      <div className="collapse-content">
+    <details className="collapse collapse-arrow mt-6 border border-slate-300 dark:border-slate-600">
+      <summary className="collapse-title cursor-pointer list-none font-semibold">
+        Stats for nerds
+      </summary>
+      <div className="border-t border-slate-200 px-4 py-3 dark:border-slate-700">
         <Table className="table-sm">
           <TableCaption>
             Latest world ranking update:{" "}
@@ -90,6 +91,6 @@ export function ForecastDetails({ data }: { data: Forecast }) {
           </TableBody>
         </Table>
       </div>
-    </div>
+    </details>
   );
 }
