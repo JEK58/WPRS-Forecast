@@ -45,6 +45,7 @@ export function ForecastInteractive({ data }: { data: Forecast }) {
 
   const [isRecalculating, setIsRecalculating] = useState(false);
   const [simulationError, setSimulationError] = useState<string | null>(null);
+  const [hasSimulationResponse, setHasSimulationResponse] = useState(false);
   const simulationRequestIdRef = useRef(0);
   const [simulation, setSimulation] = useState<ForecastSimulation>({
     confirmed: data.confirmed,
@@ -130,6 +131,7 @@ export function ForecastInteractive({ data }: { data: Forecast }) {
       genders: data.genders,
       contributions: undefined,
     });
+    setHasSimulationResponse(false);
     setSimulationError(null);
   }, [
     data.confirmed,
@@ -169,6 +171,7 @@ export function ForecastInteractive({ data }: { data: Forecast }) {
       .then((payload) => {
         if (requestId !== simulationRequestIdRef.current) return;
         setSimulation(payload);
+        setHasSimulationResponse(true);
       })
       .catch((error: { name?: string }) => {
         if (requestId !== simulationRequestIdRef.current) return;
@@ -202,9 +205,11 @@ export function ForecastInteractive({ data }: { data: Forecast }) {
 
   const displayData: Forecast = {
     ...data,
-    confirmed: simulation.confirmed ?? data.confirmed,
-    nationalities: simulation.nationalities ?? data.nationalities,
-    genders: simulation.genders ?? data.genders,
+    confirmed: hasSimulationResponse ? simulation.confirmed : data.confirmed,
+    nationalities: hasSimulationResponse
+      ? simulation.nationalities
+      : data.nationalities,
+    genders: hasSimulationResponse ? simulation.genders : data.genders,
   };
 
   const currentTa3 = displayData.confirmed?.WPRS?.[0]?.Ta3;
@@ -223,14 +228,6 @@ export function ForecastInteractive({ data }: { data: Forecast }) {
 
     if (isSelected) return signedValue;
     return `would add ${signedValue}`;
-  };
-
-  const contributionClass = (entryKey: string) => {
-    const rawValue = simulation.contributions?.[entryKey];
-    const value =
-      typeof rawValue === "number" ? Math.max(0, rawValue) : rawValue;
-    if (typeof value !== "number") return "text-slate-400 dark:text-slate-400";
-    return "text-green-600 dark:text-green-400";
   };
 
   const pilotImpactSection =
@@ -305,9 +302,7 @@ export function ForecastInteractive({ data }: { data: Forecast }) {
                         {rowIndex + 1}.{" "}
                         {entry.pilot.name ?? `Pilot ${entry.index + 1}`}
                       </td>
-                      <td
-                        className={`font-mono text-xs ${contributionClass(entry.key)}`}
-                      >
+                      <td className="font-mono text-xs">
                         {renderContribution(entry.key, isSelected)}
                       </td>
                       <td className="text-right">
@@ -339,9 +334,7 @@ export function ForecastInteractive({ data }: { data: Forecast }) {
                         {confirmedEntries.length + rowIndex + 1}.{" "}
                         {entry.pilot.name ?? `Pilot ${entry.index + 1}`}
                       </td>
-                      <td
-                        className={`font-mono text-xs ${contributionClass(entry.key)}`}
-                      >
+                      <td className="font-mono text-xs">
                         {renderContribution(entry.key, isSelected)}
                       </td>
                       <td className="text-right">
