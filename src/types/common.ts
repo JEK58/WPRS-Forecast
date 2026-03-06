@@ -32,6 +32,8 @@ export type Forecast = {
   pilotsUrl?: string;
   all?: CompForecast;
   confirmed?: CompForecast;
+  confirmedPilots?: Pilot[];
+  registeredPilots?: Pilot[];
   compUrl: string;
   meta?: Statistics;
   compDate?: {
@@ -63,4 +65,11 @@ export type Statistics = {
   percentageNotFound: number;
   civlSearchDurationInMs: number;
   pilotsNotfound: string[];
+};
+
+export type ForecastSimulation = {
+  confirmed?: CompForecast;
+  nationalities?: Nationalities;
+  genders?: { male: number; female: number };
+  contributions?: Record<string, number | null>;
 };

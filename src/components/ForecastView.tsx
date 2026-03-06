@@ -1,11 +1,6 @@
-import { ForecastDetails } from "@/components/ForecastDetails";
 import Link from "next/link";
 import { fetchForecastData } from "@/app/lib/data";
-import { ListRankings } from "@/components/ForecastListRankings";
-import { Nationalities } from "./ForecastNationalities";
-import { LevelChart } from "./ForecastLevelChart";
-import { Genders } from "./ForecastGenders";
-import { PilotSelfProjection } from "./PilotSelfProjection";
+import { ForecastInteractive } from "./ForecastInteractive";
 
 export async function ForecastView({ url }: { url?: string }) {
   const data = await fetchForecastData(url);
@@ -65,60 +60,7 @@ export async function ForecastView({ url }: { url?: string }) {
           {data.pilotsUrl}{" "}
         </Link>
       )}
-      <div className="mt-4 font-semibold">
-        WPRS:{" "}
-        {data?.confirmed?.WPRS[0]?.Ta3 ? (
-          <span className="font-semibold text-green-500">
-            {data?.confirmed?.WPRS[0]?.Ta3}
-          </span>
-        ) : (
-          <span>No confirmed pilots yet.</span>
-        )}
-      </div>
-
-      {data.maxPilots && data.maxPilots > 0 && (
-        <div className="mt-2">
-          Potential WPRS:{" "}
-          <span className="text-green-500">{data?.all?.WPRS[0]?.Ta3}</span>
-          <p className="text-sm">
-            If the top {data.maxPilots} registered pilots would be confirmed.
-          </p>
-        </div>
-      )}
-
-      <p className="mt-4 text-sm">
-        This forecast is based on the currently confirmed/registered pilots and
-        their CIVL rankings. The calculation will become more accurate as the
-        competition date approaches.
-      </p>
-      <div className="mt-2">
-        <Link
-          className="text-sm underline decoration-green-500 decoration-dotted hover:decoration-solid"
-          target="_blank"
-          href="https://www.fai.org/sites/default/files/civl/documents/sporting_code_s7_e_-_wprs_2022.pdf"
-        >
-          Details can be found in the FAI Sporting Code Section 7E
-        </Link>
-      </div>
-      <PilotSelfProjection
-        confirmedPilots={data.confirmed?.pilots}
-        registeredPilots={data.all?.pilots}
-        confirmedWprs={data.confirmed?.WPRS}
-        registeredWprs={data.all?.WPRS}
-      />
-      {!!data?.confirmed?.WPRS[0]?.Ta3 && <ForecastDetails data={data} />}
-
-      {data.confirmed?.pilots && <LevelChart data={data.confirmed} />}
-      {data.nationalities && <Nationalities data={data.nationalities} />}
-      {data.genders && <Genders data={data.genders} />}
-      {(data.nationalities ?? data.genders) && (
-        <div className="mt-4 text-sm">
-          The sum of pilots may not be equal to the number of confirmed pilots
-          because of lookup mismatches.
-        </div>
-      )}
-
-      {data.confirmed?.WPRS.length && <ListRankings data={data.confirmed} />}
+      <ForecastInteractive key={data.compUrl} data={data} />
     </>
   );
 }
