@@ -7,6 +7,24 @@ import {
   TableRow,
 } from "@/components/ui/Table";
 
+function formatWorldRankingDate(date: Date | string | undefined) {
+  if (!date) return "-";
+
+  const parsed = date instanceof Date ? date : new Date(date);
+  if (Number.isNaN(parsed.getTime())) return "-";
+
+  return new Intl.DateTimeFormat("en-GB", {
+    year: "numeric",
+    month: "2-digit",
+    day: "2-digit",
+    hour: "2-digit",
+    minute: "2-digit",
+    second: "2-digit",
+    timeZone: "UTC",
+    hour12: false,
+  }).format(parsed);
+}
+
 export function ForecastDetails({ data }: { data: Forecast }) {
   return (
     <div className="collapse collapse-arrow mt-6 border border-slate-300 dark:border-slate-600">
@@ -16,7 +34,7 @@ export function ForecastDetails({ data }: { data: Forecast }) {
         <Table className="table-sm">
           <TableCaption>
             Latest world ranking update:{" "}
-            {new Date(data?.all?.worldRankingDate ?? "").toLocaleString()}
+            {formatWorldRankingDate(data?.all?.worldRankingDate)}
           </TableCaption>
 
           <TableBody>
