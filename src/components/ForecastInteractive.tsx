@@ -10,6 +10,7 @@ import {
 import { Button } from "@/components/ui/Button";
 import { ForecastDetails } from "@/components/ForecastDetails";
 import { ListRankings } from "@/components/ForecastListRankings";
+import { cn } from "@/utils/utils";
 import { Nationalities } from "./ForecastNationalities";
 import { LevelChart } from "./ForecastLevelChart";
 import { Genders } from "./ForecastGenders";
@@ -46,6 +47,7 @@ export function ForecastInteractive({ data }: { data: Forecast }) {
   const [isRecalculating, setIsRecalculating] = useState(false);
   const [simulationError, setSimulationError] = useState<string | null>(null);
   const [hasSimulationResponse, setHasSimulationResponse] = useState(false);
+  const [isPilotImpactOpen, setIsPilotImpactOpen] = useState(false);
   const simulationRequestIdRef = useRef(0);
   const [simulation, setSimulation] = useState<ForecastSimulation>({
     confirmed: data.confirmed,
@@ -223,17 +225,21 @@ export function ForecastInteractive({ data }: { data: Forecast }) {
       typeof rawValue === "number" ? Math.max(0, rawValue) : rawValue;
     if (typeof value !== "number") return isRecalculating ? "..." : "-";
 
-    const signedValue =
+    const activeValue =
       value > 0 && value < 0.01 ? "+<0.01" : `+${value.toFixed(2)}`;
+    const inactiveValue = value > 0 && value < 0.01 ? "<0.01" : value.toFixed(2);
 
-    if (isSelected) return signedValue;
-    return `would add ${signedValue}`;
+    return isSelected ? activeValue : inactiveValue;
   };
 
   const pilotImpactSection =
     allPilotEntries.length > 0 ? (
       <div className="collapse-arrow collapse mt-4 border border-green-300/80 dark:border-green-700/60">
-        <input type="checkbox" />
+        <input
+          type="checkbox"
+          checked={isPilotImpactOpen}
+          onChange={(event) => setIsPilotImpactOpen(event.target.checked)}
+        />
         <div className="collapse-title font-semibold">
           <span className="mr-2 rounded-full bg-green-500 px-2 py-0.5 text-xs font-semibold tracking-wide text-white uppercase">
             New
@@ -241,7 +247,9 @@ export function ForecastInteractive({ data }: { data: Forecast }) {
           Pilot impact ({selectedPilots.length}/{allPilotEntries.length})
         </div>
         <div className="collapse-content">
-          <div className="mb-3 flex flex-wrap items-center gap-2">
+          {isPilotImpactOpen && (
+            <>
+              <div className="mb-3 flex flex-wrap items-center gap-2">
             <Button
               type="button"
               size="sm"
@@ -278,90 +286,102 @@ export function ForecastInteractive({ data }: { data: Forecast }) {
             {simulationError && (
               <span className="text-sm text-red-500">{simulationError}</span>
             )}
-          </div>
+              </div>
 
-          <div
-            className="not-prose relative mt-2 mb-2 h-[25rem] overflow-x-hidden overflow-y-auto overscroll-contain rounded-md border border-slate-200 dark:border-slate-700"
-            onWheel={(event) => event.stopPropagation()}
-            onTouchMove={(event) => event.stopPropagation()}
-          >
-            <table className="table-pin-rows table-sm table w-full">
-              <thead>
-                <tr className="border-b-0">
-                  <th className="bg-base-200">Pilot</th>
-                  <th className="bg-base-200">Impact</th>
-                  <th className="bg-base-200 text-right">Include</th>
-                </tr>
-              </thead>
-              <tbody>
-                {!!confirmedEntries.length && (
-                  <tr>
-                    <td
-                      colSpan={3}
-                      className="pt-3 pb-1 text-xs font-semibold text-slate-500 uppercase dark:text-slate-300"
-                    >
-                      Confirmed pilots
-                    </td>
-                  </tr>
-                )}
-                {confirmedEntries.map((entry, rowIndex) => {
-                  const isSelected = selectedPilotSet.has(entry.key);
-                  return (
-                    <tr key={entry.key}>
-                      <td className="font-medium">
-                        {rowIndex + 1}.{" "}
-                        {entry.pilot.name ?? `Pilot ${entry.index + 1}`}
-                      </td>
-                      <td className="font-mono text-xs">
-                        {renderContribution(entry.key, isSelected)}
-                      </td>
-                      <td className="text-right">
-                        <input
-                          type="checkbox"
-                          checked={isSelected}
-                          onChange={() => onTogglePilot(entry.key)}
-                          className="checkbox checkbox-sm"
-                        />
-                      </td>
+              <div
+                className="not-prose relative mt-2 mb-2 h-[25rem] overflow-x-hidden overflow-y-auto overscroll-contain rounded-md border border-slate-200 dark:border-slate-700"
+                onWheel={(event) => event.stopPropagation()}
+                onTouchMove={(event) => event.stopPropagation()}
+              >
+                <table className="table-pin-rows table-sm table w-full">
+                  <thead>
+                    <tr className="border-b-0">
+                      <th className="bg-base-200">Pilot</th>
+                      <th className="bg-base-200">Impact</th>
+                      <th className="bg-base-200 text-right">Include</th>
                     </tr>
-                  );
-                })}
-                {!!unconfirmedEntries.length && (
-                  <tr>
-                    <td
-                      colSpan={3}
-                      className="pt-4 pb-1 text-xs font-semibold text-slate-500 uppercase dark:text-slate-300"
-                    >
-                      Registered but not confirmed pilots
-                    </td>
-                  </tr>
-                )}
-                {unconfirmedEntries.map((entry, rowIndex) => {
-                  const isSelected = selectedPilotSet.has(entry.key);
-                  return (
-                    <tr key={entry.key}>
-                      <td className="font-medium">
-                        {confirmedEntries.length + rowIndex + 1}.{" "}
-                        {entry.pilot.name ?? `Pilot ${entry.index + 1}`}
-                      </td>
-                      <td className="font-mono text-xs">
-                        {renderContribution(entry.key, isSelected)}
-                      </td>
-                      <td className="text-right">
-                        <input
-                          type="checkbox"
-                          checked={isSelected}
-                          onChange={() => onTogglePilot(entry.key)}
-                          className="checkbox checkbox-sm"
-                        />
-                      </td>
-                    </tr>
-                  );
-                })}
-              </tbody>
-            </table>
-            <div className="bg-base-100 pointer-events-none sticky bottom-0 -mt-6 flex h-16 [mask-image:linear-gradient(transparent,#000000)]" />
-          </div>
+                  </thead>
+                  <tbody>
+                    {!!confirmedEntries.length && (
+                      <tr>
+                        <td
+                          colSpan={3}
+                          className="pt-3 pb-1 text-xs font-semibold text-slate-500 uppercase dark:text-slate-300"
+                        >
+                          Confirmed pilots
+                        </td>
+                      </tr>
+                    )}
+                    {confirmedEntries.map((entry, rowIndex) => {
+                      const isSelected = selectedPilotSet.has(entry.key);
+                      return (
+                        <tr key={entry.key}>
+                          <td className="font-medium">
+                            {rowIndex + 1}.{" "}
+                            {entry.pilot.name ?? `Pilot ${entry.index + 1}`}
+                          </td>
+                          <td
+                            className={cn(
+                              "font-mono text-xs",
+                              isSelected && "text-green-600 dark:text-green-400",
+                            )}
+                          >
+                            {renderContribution(entry.key, isSelected)}
+                          </td>
+                          <td className="text-right">
+                            <input
+                              type="checkbox"
+                              checked={isSelected}
+                              onChange={() => onTogglePilot(entry.key)}
+                              className="checkbox checkbox-sm"
+                            />
+                          </td>
+                        </tr>
+                      );
+                    })}
+                    {!!unconfirmedEntries.length && (
+                      <tr>
+                        <td
+                          colSpan={3}
+                          className="pt-4 pb-1 text-xs font-semibold text-slate-500 uppercase dark:text-slate-300"
+                        >
+                          Registered but not confirmed pilots
+                        </td>
+                      </tr>
+                    )}
+                    {unconfirmedEntries.map((entry, rowIndex) => {
+                      const isSelected = selectedPilotSet.has(entry.key);
+                      return (
+                        <tr key={entry.key}>
+                          <td className="font-medium">
+                            {confirmedEntries.length + rowIndex + 1}.{" "}
+                            {entry.pilot.name ?? `Pilot ${entry.index + 1}`}
+                          </td>
+                          <td
+                            className={cn(
+                              "font-mono text-xs",
+                              isSelected && "text-green-600 dark:text-green-400",
+                            )}
+                          >
+                            {renderContribution(entry.key, isSelected)}
+                          </td>
+                          <td className="text-right">
+                            <input
+                              type="checkbox"
+                              checked={isSelected}
+                              onChange={() => onTogglePilot(entry.key)}
+                              className="checkbox checkbox-sm"
+                            />
+                          </td>
+                        </tr>
+                      );
+                    })}
+                  </tbody>
+                </table>
+                <div className="bg-base-100 pointer-events-none sticky bottom-0 -mt-6 flex h-16 [mask-image:linear-gradient(transparent,#000000)]" />
+              </div>
+            </>
+          )}
         </div>
       </div>
     ) : null;
