@@ -362,7 +362,7 @@ export function ForecastInteractive({ data }: { data: Forecast }) {
         WPRS:{" "}
         {hasCurrentTa3 ? (
           <span className="font-semibold text-green-500">
-            {currentTa3?.toFixed(2)}
+            {currentTa3?.toFixed(1)}
           </span>
         ) : (
           <span>No confirmed pilots yet.</span>
@@ -373,7 +373,7 @@ export function ForecastInteractive({ data }: { data: Forecast }) {
         <div className="mt-2">
           Potential WPRS:{" "}
           <span className="text-green-500">
-            {hasPotentialTa3 ? potentialTa3?.toFixed(2) : "-"}
+            {hasPotentialTa3 ? potentialTa3?.toFixed(1) : "-"}
           </span>
           <p className="text-sm">
             If the top {data.maxPilots} registered pilots would be confirmed.
