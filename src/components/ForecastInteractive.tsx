@@ -232,7 +232,7 @@ export function ForecastInteractive({ data }: { data: Forecast }) {
 
   const pilotImpactSection =
     allPilotEntries.length > 0 ? (
-      <div className="collapse-arrow collapse mt-4 border border-slate-300 dark:border-slate-600">
+      <div className="collapse-arrow collapse mt-4 border border-green-300/80 dark:border-green-700/60">
         <input type="checkbox" />
         <div className="collapse-title font-semibold">
           <span className="mr-2 rounded-full bg-green-500 px-2 py-0.5 text-xs font-semibold tracking-wide text-white uppercase">
@@ -246,6 +246,11 @@ export function ForecastInteractive({ data }: { data: Forecast }) {
               type="button"
               size="sm"
               variant="outline"
+              className={
+                isDefaultSelection
+                  ? "border-slate-300 text-slate-400 dark:border-slate-600 dark:text-slate-500"
+                  : "border-green-500 text-green-600 hover:border-green-600 hover:bg-green-500 hover:text-white dark:text-green-400"
+              }
               onClick={onSelectConfirmed}
               disabled={isDefaultSelection}
             >
@@ -255,6 +260,11 @@ export function ForecastInteractive({ data }: { data: Forecast }) {
               type="button"
               size="sm"
               variant="outline"
+              className={
+                selectedPilots.length === 0
+                  ? "border-slate-300 text-slate-400 dark:border-slate-600 dark:text-slate-500"
+                  : "border-green-500 text-green-600 hover:border-green-600 hover:bg-green-500 hover:text-white dark:text-green-400"
+              }
               onClick={onClearAll}
               disabled={selectedPilots.length === 0}
             >
@@ -395,13 +405,13 @@ export function ForecastInteractive({ data }: { data: Forecast }) {
           Details can be found in the FAI Sporting Code Section 7E
         </Link>
       </div>
+      {pilotImpactSection}
       <PilotSelfProjection
         confirmedPilots={displayData.confirmed?.pilots}
         registeredPilots={data.all?.pilots}
         confirmedWprs={displayData.confirmed?.WPRS}
         registeredWprs={data.all?.WPRS}
       />
-      {pilotImpactSection}
       {hasCurrentTa3 && <ForecastDetails data={displayData} />}
 
       {displayData.confirmed?.pilots && (

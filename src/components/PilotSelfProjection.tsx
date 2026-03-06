@@ -141,7 +141,7 @@ export function PilotSelfProjection({
   if (!confirmedWprs?.length && !registeredWprs?.length) return null;
 
   return (
-    <div className="rounded-box mt-6 border border-green-300/80 bg-white p-4 dark:border-green-700/60 dark:bg-slate-950">
+    <div className="rounded-box mt-6 border border-green-300/80 bg-slate-50 p-4 dark:border-green-700/60 dark:bg-slate-950">
       <div className="flex items-center gap-2">
         <span className="rounded-full bg-green-500 px-2 py-0.5 text-xs font-semibold tracking-wide text-white uppercase">
           New
