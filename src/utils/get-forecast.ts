@@ -63,6 +63,8 @@ export async function getForecast(
     compTitle: comp.compTitle,
     all: await calculateWPRS(pilots, comp.maxPilots),
     confirmed: await calculateWPRS(confirmedPilots, numberOfConfirmed),
+    confirmedPilots: confirmed,
+    registeredPilots: comp.pilots,
     compUrl: url,
     pilotsUrl: comp.pilotsUrl,
     meta: comp.statistics,
@@ -72,7 +74,7 @@ export async function getForecast(
   };
 }
 
-function calculateNationalities(pilots: Ranking[]) {
+export function calculateNationalities(pilots: Ranking[]) {
   if (pilots.length === 0) return;
   const nationalitiesCount: Record<string, number> = {};
   pilots.forEach((pilot) => {
@@ -97,7 +99,7 @@ function calculateNationalities(pilots: Ranking[]) {
   return { count: nationalitiesCount, percentage: nationalitiesPercentage };
 }
 
-function calculateGender(pilots: Ranking[]) {
+export function calculateGender(pilots: Ranking[]) {
   if (pilots.length === 0) return;
   let female = 0;
   let male = 0;
@@ -109,7 +111,7 @@ function calculateGender(pilots: Ranking[]) {
   return { male, female };
 }
 
-async function getPilotRankings(pilots: Pilot[]) {
+export async function getPilotRankings(pilots: Pilot[]) {
   if (pilots.length === 0) return [];
   const civlIds = pilots
     .map((pilot) => pilot.civlID)
