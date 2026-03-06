@@ -338,9 +338,6 @@ export function ForecastInteractive({ data }: { data: Forecast }) {
                       <td className="font-medium">
                         {confirmedEntries.length + rowIndex + 1}.{" "}
                         {entry.pilot.name ?? `Pilot ${entry.index + 1}`}
-                        <span className="rounded-full bg-green-500 px-2 py-0.5 text-xs font-semibold tracking-wide text-white uppercase">
-                          New
-                        </span>
                       </td>
                       <td
                         className={`font-mono text-xs ${contributionClass(entry.key)}`}
