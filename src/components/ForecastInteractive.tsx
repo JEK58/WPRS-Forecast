@@ -330,8 +330,11 @@ export function ForecastInteractive({ data }: { data: Forecast }) {
                         <td className="text-right">
                           <input
                             type="checkbox"
+                            id={`pilot-impact-${entry.key}`}
+                            name={`pilot-impact-${entry.key}`}
                             checked={isSelected}
                             onChange={() => onTogglePilot(entry.key)}
+                            aria-label={`Toggle ${entry.pilot.name ?? `Pilot ${entry.index + 1}`}`}
                             className="checkbox checkbox-sm"
                           />
                         </td>
@@ -362,8 +365,11 @@ export function ForecastInteractive({ data }: { data: Forecast }) {
                         <td className="text-right">
                           <input
                             type="checkbox"
+                            id={`pilot-impact-${entry.key}`}
+                            name={`pilot-impact-${entry.key}`}
                             checked={isSelected}
                             onChange={() => onTogglePilot(entry.key)}
+                            aria-label={`Toggle ${entry.pilot.name ?? `Pilot ${entry.index + 1}`}`}
                             className="checkbox checkbox-sm"
                           />
                         </td>
