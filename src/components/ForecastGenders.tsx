@@ -8,15 +8,8 @@ import {
   Tooltip,
   ResponsiveContainer,
   Cell,
+  type LegendPayload,
 } from "recharts";
-interface EntryType {
-  payload?: {
-    payload?: {
-      value?: string;
-      percentage?: number;
-    };
-  };
-}
 
 export function Genders({ data }: { data: Forecast["genders"] }) {
   if (!data) return null;
@@ -37,10 +30,12 @@ export function Genders({ data }: { data: Forecast["genders"] }) {
     },
   ];
 
-  const renderLegend = (value: string, entry: EntryType) => {
+  const renderLegend = (value: string | undefined, entry: LegendPayload) => {
+    const payload = entry.payload as { percentage?: number } | undefined;
+
     return (
       <span className="text-sm text-black dark:text-slate-200">
-        {value}: {Math.round(entry?.payload?.payload?.percentage ?? 0)}%
+        {value}: {Math.round(payload?.percentage ?? 0)}%
       </span>
     );
   };

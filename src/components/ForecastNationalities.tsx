@@ -8,6 +8,7 @@ import {
   Tooltip,
   ResponsiveContainer,
   Cell,
+  type LegendPayload,
 } from "recharts";
 
 export function Nationalities({ data }: { data: Forecast["nationalities"] }) {
@@ -19,18 +20,12 @@ export function Nationalities({ data }: { data: Forecast["nationalities"] }) {
     })
     .sort((a, b) => b.value - a.value);
 
-  interface EntryType {
-    payload?: {
-      payload?: {
-        value?: string;
-      };
-    };
-  }
+  const renderLegend = (value: string | undefined, entry: LegendPayload) => {
+    const payload = entry.payload as { value?: number } | undefined;
 
-  const renderLegend = (value: string, entry: EntryType) => {
     return (
       <span className="text-sm text-black dark:text-slate-200">
-        {value}: {entry?.payload?.payload?.value}
+        {value}: {payload?.value}
       </span>
     );
   };
