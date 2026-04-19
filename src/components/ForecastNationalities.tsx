@@ -53,7 +53,6 @@ export function Nationalities({ data }: { data: Forecast["nationalities"] }) {
               />
             ))}
           </Pie>
-          {/* @ts-expect-error It does not seem to be typed correctly in recharts */}
           <Legend formatter={renderLegend} iconType="circle" />
           <Tooltip />
         </PieChart>
