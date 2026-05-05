@@ -9,9 +9,19 @@ interface PWCApiResponse {
 
 type PWCApiDetails = {
   apiUrl?: string;
+  scoringUrl?: string;
+  selectionTable?: PwcSelectionTableDetails;
   startDate: string;
   endDate: string;
   name: string;
+};
+
+type PwcSelectionTableDetails = {
+  csrf: string;
+  updateUri: string;
+  snapshot: string;
+  lazyPayload: string;
+  cookie: string;
 };
 
 type SubscriptionStatusKeys =
@@ -43,7 +53,9 @@ interface PilotDetails {
 // https://pwca.org/storage/3539/PWCA-Competition-Rules-2023.pdf
 const MAX_PILOTS = 125;
 
-async function getPwcApiDetails(compUrl: string): Promise<PWCApiDetails | null> {
+async function getPwcApiDetails(
+  compUrl: string,
+): Promise<PWCApiDetails | null> {
   try {
     // Fetch the main page and grab the iframe src
     const res = await fetch(compUrl, { cache: "no-store" });
@@ -52,9 +64,10 @@ async function getPwcApiDetails(compUrl: string): Promise<PWCApiDetails | null> 
       return null;
     }
 
+    const cookie = getCookieHeader(res);
     const $ = load(await res.text());
     const iframeSrc = $("#advanced_iframe").attr("src");
-    if (!iframeSrc) return getPwcEventDetails($);
+    if (!iframeSrc) return getPwcEventDetails($, cookie);
 
     const name = $("h2.elementor-heading-title").first().text().trim();
     const dateText = $("i.u-icon-clock")
@@ -93,18 +106,25 @@ async function getPwcApiDetails(compUrl: string): Promise<PWCApiDetails | null> 
   }
 }
 
-function getPwcEventDetails($: ReturnType<typeof load>): PWCApiDetails | null {
+function getPwcEventDetails(
+  $: ReturnType<typeof load>,
+  cookie: string,
+): PWCApiDetails | null {
   const event = $("[data-event]").first();
   const name = event.find("[data-flux-heading]").first().text().trim();
   const dateText = event.find("[data-date] span").first().text().trim();
   const dateRange = parsePwcDateRange(dateText);
+  const scoringUrl = $('a[href*="scoring.pwca.org"][href$="ranking0.html"]')
+    .first()
+    .attr("href");
+  const selectionTable = getPwcSelectionTableDetails($, cookie);
 
   if (!name || !dateRange) {
     console.error("PWC event details not found in the page");
     return null;
   }
 
-  return { name, ...dateRange };
+  return { name, scoringUrl, selectionTable, ...dateRange };
 }
 
 function parsePwcDateRange(dateText: string) {
@@ -164,6 +184,39 @@ export async function getPwcComp(url: string) {
   const compTitle = details?.name;
   const startDate = parseGermanDate(details?.startDate ?? "");
   const endDate = parseGermanDate(details?.endDate ?? "");
+
+  if (!details.apiUrl && (details.selectionTable || details.scoringUrl)) {
+    const fallbackPilots = details.selectionTable
+      ? await getPwcSelectionPilots(details.selectionTable)
+      : [];
+    const scoringPilots =
+      fallbackPilots.length === 0 && details.scoringUrl
+        ? await getPwcScoringPilots(details.scoringUrl)
+        : [];
+    const pilots = fallbackPilots.length > 0 ? fallbackPilots : scoringPilots;
+
+    if (pilots.length > 0) {
+      console.log("Getting CIVL IDs");
+      const res = await getCivlIds(pilots.map((p) => p.name ?? ""));
+
+      const pilotsWithCivlId = pilots.map((pilot) => {
+        const name = pilot.name ?? "";
+        pilot.civlID = res.civlIds.get(name) ?? CIVL_PLACEHOLDER_ID;
+        return pilot;
+      });
+
+      return {
+        compTitle,
+        maxPilots: MAX_PILOTS,
+        pilots: pilotsWithCivlId,
+        compDate: { startDate, endDate },
+        pilotsUrl: details.selectionTable
+          ? `${compUrl}#pilot-information`
+          : details.scoringUrl,
+        statistics: res.statistics,
+      };
+    }
+  }
 
   if (!details.apiUrl) {
     return {
@@ -225,6 +278,150 @@ export async function getPwcComp(url: string) {
     pilotsUrl: compUrl,
     statistics: res.statistics,
   };
+}
+
+function getPwcSelectionTableDetails(
+  $: ReturnType<typeof load>,
+  cookie: string,
+): PwcSelectionTableDetails | undefined {
+  const csrf = $("script[data-csrf]").attr("data-csrf");
+  const updateUri = $("script[data-update-uri]").attr("data-update-uri");
+  const selectionTable = $("[data-selection-table]").first();
+  const snapshot = selectionTable.attr("wire:snapshot");
+  const lazyPayload = selectionTable
+    .attr("x-intersect")
+    ?.match(/__lazyLoad\('([^']+)'/)?.[1];
+
+  if (!csrf || !updateUri || !snapshot || !lazyPayload) return;
+
+  return { csrf, updateUri, snapshot, lazyPayload, cookie };
+}
+
+function getCookieHeader(res: Response) {
+  const headers = res.headers as Headers & {
+    getSetCookie?: () => string[];
+  };
+  const setCookies = headers.getSetCookie?.() ?? splitSetCookieHeader(headers);
+
+  return setCookies.map((cookie) => cookie.split(";")[0]).join("; ");
+}
+
+function splitSetCookieHeader(headers: Headers) {
+  const setCookie = headers.get("set-cookie");
+  if (!setCookie) return [];
+
+  return setCookie.split(/,(?=\s*[^;=]+=[^;]+)/);
+}
+
+async function getPwcSelectionPilots(details: PwcSelectionTableDetails) {
+  try {
+    const res = await fetch(details.updateUri, {
+      method: "POST",
+      cache: "no-store",
+      headers: {
+        accept: "application/json",
+        "content-type": "application/json",
+        cookie: details.cookie,
+        "x-livewire": "",
+      },
+      body: JSON.stringify({
+        _token: details.csrf,
+        components: [
+          {
+            snapshot: details.snapshot,
+            updates: {},
+            calls: [
+              {
+                path: "",
+                method: "__lazyLoad",
+                params: [details.lazyPayload],
+              },
+            ],
+          },
+        ],
+      }),
+    });
+
+    if (!res.ok) {
+      console.error(`Failed to fetch PWCA selection table: ${res.statusText}`);
+      return [];
+    }
+
+    const data = (await res.json()) as {
+      components?: Array<{ effects?: { html?: string } }>;
+    };
+    const html = data.components?.[0]?.effects?.html;
+    if (!html) return [];
+
+    const $ = load(html);
+    const rows = $("tr").slice(1);
+
+    return rows
+      .map((_, row) => {
+        const cells = $(row)
+          .find("td")
+          .map((_, cell) => $(cell).text().trim().replace(/\s+/g, " "))
+          .get();
+        const status = cells[6];
+        const name = cells[1]?.toLowerCase();
+
+        if (!name || status !== "Confirmed") return null;
+
+        return {
+          name,
+          nationality: cells[2],
+          civlID: CIVL_PLACEHOLDER_ID,
+          wing: cells[3],
+          status,
+          confirmed: true,
+        };
+      })
+      .get()
+      .filter((pilot) => pilot !== null);
+  } catch (error) {
+    console.error("Error fetching or parsing PWC selection table:", error);
+    return [];
+  }
+}
+
+async function getPwcScoringPilots(scoringUrl: string) {
+  try {
+    const res = await fetch(scoringUrl, { cache: "no-store" });
+    if (!res.ok) {
+      console.error(`Failed to fetch ${scoringUrl}: ${res.statusText}`);
+      return [];
+    }
+
+    const $ = load(await res.text());
+    const rows = $("table.result")
+      .eq(1)
+      .find("tr.result_row")
+      .filter((_, row) => $(row).find("td.result").length > 10);
+
+    return rows
+      .map((_, row) => {
+        const cells = $(row).find("td.result");
+        const name = cells.eq(2).text().trim().toLowerCase();
+        const nationality = cells.eq(4).find("span").first().text().trim();
+        const wing = cells.eq(5).text().trim();
+
+        if (!name) return null;
+
+        return {
+          name,
+          nationality,
+          civlID: CIVL_PLACEHOLDER_ID,
+          wing,
+          status: "scored",
+          confirmed: true,
+        };
+      })
+      .get()
+      .filter((pilot) => pilot !== null);
+  } catch (error) {
+    console.error("Error fetching or parsing PWC scoring page:", error);
+    return [];
+  }
 }
 
 function isConfirmed(status?: string) {

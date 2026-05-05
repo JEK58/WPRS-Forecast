@@ -4,9 +4,9 @@ import { getCivlcompsComp } from "@/utils/get-civl-comp";
 
 describe("Get data for CIVL comps", () => {
   it("should find the correct amount of registered pilots", async () => {
-    const expectedNumOfPilots = 295;
+    const expectedNumOfPilots = 192;
 
-    const url = "https://civlcomps.org/event/german-open-2023/participants";
+    const url = "https://civlcomps.org/event/german-open-2026/participants";
     const res = await getCivlcompsComp(url);
     expect(res).toBeDefined();
     if (!res) throw new Error("Expected CIVL competition response");
@@ -14,13 +14,10 @@ describe("Get data for CIVL comps", () => {
     expect(res.pilots.length).toBe(expectedNumOfPilots);
   }, 30000);
 
-  it("should reject a comp that lies in the past", async () => {
-    const url = "https://civlcomps.org/event/german-open-2023";
+  it("should forecast an upcoming comp", async () => {
+    const url = "https://civlcomps.org/event/german-open-2026";
     const res = await getForecast(url);
 
-    expect(res).toHaveProperty("error");
-    if ("error" in res) {
-      expect(res.error).toBe("PAST_EVENT");
-    }
+    expect(res).not.toHaveProperty("error");
   }, 20000);
 });

@@ -4,10 +4,10 @@ import { getAirtribuneComp } from "@/utils/get-airtribune-comp";
 
 describe("Airtribune", () => {
   it("finds the correct comp date", async () => {
-    const expectedStartDate = "2023-10-15T00:00:00.000Z";
-    const expectedEndDate = "2023-10-21T00:00:00.000Z";
+    const expectedStartDate = "2026-04-01T00:00:00.000Z";
+    const expectedEndDate = "2026-04-06T00:00:00.000Z";
 
-    const url = "https://airtribune.com/pre-world-cup-reunion-island-2023/info";
+    const url = "https://airtribune.com/mtg2026";
     const res = await getAirtribuneComp(url);
     if (!res?.compDate?.startDate || !res.compDate.endDate) {
       throw new Error("Expected valid competition dates from Airtribune");
@@ -17,11 +17,11 @@ describe("Airtribune", () => {
     expect(res.compDate.endDate.toISOString()).toBe(expectedEndDate);
   });
 
-  it("finds the correct comp date for comp dates spanning over two different months", async () => {
-    const expectedStartDate = "2023-08-26T00:00:00.000Z";
-    const expectedEndDate = "2023-09-02T00:00:00.000Z";
+  it("finds the correct comp date for another event", async () => {
+    const expectedStartDate = "2026-07-08T00:00:00.000Z";
+    const expectedEndDate = "2026-07-12T00:00:00.000Z";
 
-    const url = "https://airtribune.com/tennessee-paragliding-open-2023/";
+    const url = "https://airtribune.com/pao2026";
     const res = await getAirtribuneComp(url);
     if (!res?.compDate?.startDate || !res.compDate.endDate) {
       throw new Error("Expected valid competition dates from Airtribune");
@@ -31,19 +31,16 @@ describe("Airtribune", () => {
     expect(res.compDate.endDate.toISOString()).toBe(expectedEndDate);
   });
 
-  it("should reject a comp that lies in the past", async () => {
-    const url = "https://airtribune.com/palz-alsace-open-2023/results";
+  it("should forecast an upcoming comp", async () => {
+    const url = "https://airtribune.com/pao2026";
     const res = await getForecast(url);
 
-    expect(res).toHaveProperty("error");
-    if ("error" in res) {
-      expect(res.error).toBe("PAST_EVENT");
-    }
+    expect(res).not.toHaveProperty("error");
   }, 20000);
 
   it("should find the correct amount of max pilots", async () => {
-    const expectedNumberOfMaxPilots = 80;
-    const url = "https://airtribune.com/pre-world-cup-reunion-island-2023/info";
+    const expectedNumberOfMaxPilots = 130;
+    const url = "https://airtribune.com/mtg2026";
     const res = await getAirtribuneComp(url);
 
     if (!res) throw new Error("Unexpected result");

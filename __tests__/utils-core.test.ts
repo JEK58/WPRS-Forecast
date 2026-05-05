@@ -7,10 +7,10 @@ import { getPosition } from "@/utils/utils";
 describe("Core utility functions", () => {
   it("validates supported competition URLs", () => {
     expect(
-      isValidUrl("https://airtribune.com/pre-world-cup-reunion-island-2023/info"),
+      isValidUrl("https://airtribune.com/mtg2026"),
     ).toBe(true);
     expect(
-      isValidUrl("https://civlcomps.org/event/german-open-2023/participants"),
+      isValidUrl("https://civlcomps.org/event/german-open-2026/participants"),
     ).toBe(true);
     expect(
       isValidUrl("https://pwca.events/world-cup-gourdon-france-2024/selection"),
