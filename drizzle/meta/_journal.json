@@ -29,6 +29,13 @@
       "when": 1771841540063,
       "tag": "0003_broken_kid_colt",
       "breakpoints": true
+    },
+    {
+      "idx": 4,
+      "version": "7",
+      "when": 1774293165110,
+      "tag": "0004_many_nick_fury",
+      "breakpoints": true
     }
   ]
 }

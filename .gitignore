@@ -12,6 +12,7 @@ AGENTS.md
 /coverage
 
 # data
+/tmp/*
 input.xlsx
 
 

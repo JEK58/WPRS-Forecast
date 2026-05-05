@@ -1,5 +1,4 @@
 import nextCoreWebVitals from "eslint-config-next/core-web-vitals";
-import tsPlugin from "@typescript-eslint/eslint-plugin";
 import tsParser from "@typescript-eslint/parser";
 import drizzlePlugin from "eslint-plugin-drizzle";
 
@@ -13,7 +12,6 @@ const config = [
   {
     files: ["**/*.{ts,tsx}"],
     plugins: {
-      "@typescript-eslint": tsPlugin,
       drizzle: drizzlePlugin,
     },
     languageOptions: {

@@ -1,4 +1,7 @@
 import {
+  date,
+  index,
+  primaryKey,
   pgTable,
   serial,
   text,
@@ -6,6 +9,7 @@ import {
   integer,
   timestamp,
   jsonb,
+  uniqueIndex,
   uuid,
 } from "drizzle-orm/pg-core";
 
@@ -82,3 +86,63 @@ export const ranking = pgTable("Ranking", {
   date: timestamp("date", { precision: 3, mode: "string" }).notNull(),
   normalizedName: text("normalizedName"),
 });
+
+export const competition = pgTable(
+  "Competition",
+  {
+    id: serial("id").primaryKey().notNull(),
+    competitionId: integer("competitionId").notNull(),
+    schemaVersion: integer("schemaVersion").notNull(),
+    sourceUrl: text("sourceUrl").notNull(),
+    competitionName: text("competitionName").notNull(),
+    period: text("period").notNull(),
+    startDate: date("startDate", { mode: "string" }).notNull(),
+    endDate: date("endDate", { mode: "string" }).notNull(),
+    discipline: text("discipline").notNull(),
+    ta: doublePrecision("ta").notNull(),
+    pn: doublePrecision("pn").notNull(),
+    pq: doublePrecision("pq").notNull(),
+    td: doublePrecision("td").notNull(),
+    tasks: integer("tasks").notNull(),
+    pqSrp: doublePrecision("pqSrp").notNull(),
+    pqSrtp: doublePrecision("pqSrtp").notNull(),
+    numberOfPilots: integer("numberOfPilots").notNull(),
+    pqRankDate: integer("pqRankDate"),
+    pilotsLast12Months: integer("pilotsLast12Months").notNull(),
+    competitionsLast12Months: integer("competitionsLast12Months").notNull(),
+    daysSinceEnd: integer("daysSinceEnd").notNull(),
+    lastScore: doublePrecision("lastScore").notNull(),
+    winnerScore: doublePrecision("winnerScore").notNull(),
+    resultsUpdated: text("resultsUpdated").notNull(),
+  },
+  (table) => [
+    uniqueIndex("Competition_competitionId_sourceUrl_idx").on(
+      table.competitionId,
+      table.sourceUrl,
+    ),
+  ],
+);
+
+export const competitionResult = pgTable(
+  "CompetitionResult",
+  {
+    competitionRowId: integer("competitionRowId")
+      .notNull()
+      .references(() => competition.id, { onDelete: "cascade" }),
+    civlId: integer("civlId").notNull(),
+    rank: integer("rank").notNull(),
+    pointFactor: doublePrecision("pointFactor").notNull(),
+    points: doublePrecision("points").notNull(),
+    timeDevaluatedPoints: doublePrecision("timeDevaluatedPoints").notNull(),
+    competitionScore: integer("competitionScore").notNull(),
+    pilotName: text("pilotName").notNull(),
+    nation: text("nation").notNull(),
+  },
+  (table) => [
+    primaryKey({
+      columns: [table.competitionRowId, table.civlId],
+      name: "CompetitionResult_competitionRowId_civlId_pk",
+    }),
+    index("CompetitionResult_civlId_idx").on(table.civlId),
+  ],
+);
