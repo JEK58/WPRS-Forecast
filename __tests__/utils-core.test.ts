@@ -17,6 +17,11 @@ describe("Core utility functions", () => {
     ).toBe(true);
     expect(
       isValidUrl(
+        "https://pwca.org/events/2026-paragliding-world-cup-spain-pegalajar-2027-season-2026",
+      ),
+    ).toBe(true);
+    expect(
+      isValidUrl(
         "https://www.swissleague.ch/comp-league/competitions/detailsx/gb4JPNipbgzOMSp2FD4Aj1",
       ),
     ).toBe(true);

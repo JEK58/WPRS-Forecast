@@ -7,6 +7,13 @@ interface PWCApiResponse {
   subscriptionStatusesOrder?: string[];
 }
 
+type PWCApiDetails = {
+  apiUrl?: string;
+  startDate: string;
+  endDate: string;
+  name: string;
+};
+
 type SubscriptionStatusKeys =
   | "confirmed"
   | "wildcard_confirmed"
@@ -36,7 +43,7 @@ interface PilotDetails {
 // https://pwca.org/storage/3539/PWCA-Competition-Rules-2023.pdf
 const MAX_PILOTS = 125;
 
-async function getPwcApiDetails(compUrl: string) {
+async function getPwcApiDetails(compUrl: string): Promise<PWCApiDetails | null> {
   try {
     // Fetch the main page and grab the iframe src
     const res = await fetch(compUrl, { cache: "no-store" });
@@ -47,31 +54,22 @@ async function getPwcApiDetails(compUrl: string) {
 
     const $ = load(await res.text());
     const iframeSrc = $("#advanced_iframe").attr("src");
-    if (!iframeSrc) {
-      console.error("Iframe URL not found in the page");
-      return null;
-    }
+    if (!iframeSrc) return getPwcEventDetails($);
 
     const name = $("h2.elementor-heading-title").first().text().trim();
-
-    // find the clock‐icon list item and grab its text
     const dateText = $("i.u-icon-clock")
       .closest("li")
       .find(".elementor-icon-list-text")
       .text()
       .trim();
+    const dateRange = parsePwcDateRange(dateText);
 
-    // match “DD.MM.YYYY - DD.MM.YYYY”
-    const match = dateText.match(
-      /(\d{2}\.\d{2}\.\d{4})\s*-\s*(\d{2}\.\d{2}\.\d{4})/,
-    );
-
-    if (!match) {
+    if (!dateRange) {
       console.error("Date range not found in the page");
       return null;
     }
 
-    const [, startDate, endDate] = match;
+    const { startDate, endDate } = dateRange;
 
     // Fetch the iframe and pull out the api-url
     const frameRes = await fetch(iframeSrc, { cache: "no-store" });
@@ -93,6 +91,34 @@ async function getPwcApiDetails(compUrl: string) {
     console.error("Error fetching or parsing page:", error);
     return null;
   }
+}
+
+function getPwcEventDetails($: ReturnType<typeof load>): PWCApiDetails | null {
+  const event = $("[data-event]").first();
+  const name = event.find("[data-flux-heading]").first().text().trim();
+  const dateText = event.find("[data-date] span").first().text().trim();
+  const dateRange = parsePwcDateRange(dateText);
+
+  if (!name || !dateRange) {
+    console.error("PWC event details not found in the page");
+    return null;
+  }
+
+  return { name, ...dateRange };
+}
+
+function parsePwcDateRange(dateText: string) {
+  const match = dateText.match(
+    /(\d{2}\.\d{2}\.\d{4})\s*-\s*(\d{2}\.\d{2}\.\d{4})/,
+  );
+
+  if (!match) return null;
+
+  const [, startDate, endDate] = match;
+
+  if (!startDate || !endDate) return null;
+
+  return { startDate, endDate };
 }
 
 function parseGermanDate(dateString: string): Date {
@@ -138,6 +164,16 @@ export async function getPwcComp(url: string) {
   const compTitle = details?.name;
   const startDate = parseGermanDate(details?.startDate ?? "");
   const endDate = parseGermanDate(details?.endDate ?? "");
+
+  if (!details.apiUrl) {
+    return {
+      compTitle,
+      maxPilots: MAX_PILOTS,
+      pilots: [],
+      compDate: { startDate, endDate },
+      pilotsUrl: compUrl,
+    };
+  }
 
   const femaleApiUrl = details.apiUrl + "?gender=female";
   const maleApiUrl = details.apiUrl + "?gender=male";
@@ -200,8 +236,18 @@ function isConfirmed(status?: string) {
 }
 
 function normalizePwcUrl(input: string) {
-  const RE =
-    /^(?:https?:\/\/)?(?:www\.)?(?:pwca\.events|pwca\.org\/events)\/([^\/#?]+)(?:[\/#?].*)?$/i;
-  const m = input.trim().match(RE);
-  return m ? `https://pwca.events/${m[1]}` : null;
+  const pwcaEventsRe =
+    /^(?:https?:\/\/)?(?:www\.)?pwca\.events\/([^\/#?]+)(?:[\/#?].*)?$/i;
+  const pwcaOrgEventsRe =
+    /^(?:https?:\/\/)?(?:www\.)?pwca\.org\/events\/([^\/#?]+)(?:[\/#?].*)?$/i;
+
+  const trimmedInput = input.trim();
+  const pwcaEventsMatch = trimmedInput.match(pwcaEventsRe);
+  if (pwcaEventsMatch?.[1]) return `https://pwca.events/${pwcaEventsMatch[1]}`;
+
+  const pwcaOrgEventsMatch = trimmedInput.match(pwcaOrgEventsRe);
+  if (pwcaOrgEventsMatch?.[1])
+    return `https://pwca.org/events/${pwcaOrgEventsMatch[1]}`;
+
+  return null;
 }
