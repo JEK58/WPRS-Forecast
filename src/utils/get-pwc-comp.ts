@@ -371,8 +371,9 @@ async function getPwcSelectionPilots(details: PwcSelectionTableDetails) {
           .get();
         const status = cells[columns.status];
         const name = cells[columns.pilot]?.toLowerCase();
+        const confirmed = isConfirmed(status);
 
-        if (!name || !isConfirmed(status)) return null;
+        if (!name || !isRegistered(status)) return null;
 
         return {
           name,
@@ -380,7 +381,7 @@ async function getPwcSelectionPilots(details: PwcSelectionTableDetails) {
           civlID: CIVL_PLACEHOLDER_ID,
           wing: cells[columns.glider],
           status,
-          confirmed: true,
+          confirmed,
         };
       })
       .get()
@@ -451,13 +452,27 @@ async function getPwcScoringPilots(scoringUrl: string) {
 }
 
 function isConfirmed(status?: string) {
-  const normalizedStatus = status?.toLowerCase().replace(/[\s-]+/g, "_");
+  const normalizedStatus = normalizePwcStatus(status);
 
   return (
     normalizedStatus == "confirmed" ||
     normalizedStatus == "wildcard_confirmed" ||
     normalizedStatus == "guest_card_confirmed"
   );
+}
+
+function isRegistered(status?: string) {
+  const normalizedStatus = normalizePwcStatus(status);
+
+  return (
+    isConfirmed(status) ||
+    normalizedStatus == "payment_in_progress" ||
+    normalizedStatus == "waiting_for_payment"
+  );
+}
+
+function normalizePwcStatus(status?: string) {
+  return status?.toLowerCase().replace(/[\s-]+/g, "_");
 }
 
 function normalizePwcUrl(input: string) {

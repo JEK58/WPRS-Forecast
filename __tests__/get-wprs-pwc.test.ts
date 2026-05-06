@@ -30,6 +30,7 @@ describe("Get WPRS for PWC comps", () => {
 
     expect(res).toBeDefined();
     if (!res) throw new Error("Expected PWC competition response");
+    expect(res.pilots.length).toBe(136);
     expect(res.pilots.filter((p) => p.confirmed).length).toBe(112);
   }, 80000);
 
