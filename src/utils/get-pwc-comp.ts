@@ -361,15 +361,27 @@ async function getPwcSelectionPilots(details: PwcSelectionTableDetails) {
       .map((_, cell) => normalizeSelectionCell($(cell).text()))
       .get();
     const columns = getPwcSelectionColumns(headerCells);
+    const inferredStatus = getPwcSelectionInferredStatus($);
 
     return rows
       .slice(1)
-      .map((_, row) => {
+      .map((rowIndex, row) => {
+        if (
+          columns.status === undefined &&
+          inferredStatus &&
+          rowIndex >= inferredStatus.count
+        ) {
+          return null;
+        }
+
         const cells = $(row)
           .find("td")
           .map((_, cell) => normalizeSelectionCell($(cell).text()))
           .get();
-        const status = cells[columns.status];
+        const status =
+          columns.status === undefined
+            ? inferredStatus?.status
+            : cells[columns.status];
         const name = cells[columns.pilot]?.toLowerCase();
         const confirmed = isConfirmed(status);
 
@@ -379,7 +391,8 @@ async function getPwcSelectionPilots(details: PwcSelectionTableDetails) {
           name,
           nationality: cells[columns.country],
           civlID: CIVL_PLACEHOLDER_ID,
-          wing: cells[columns.glider],
+          wing:
+            columns.glider === undefined ? undefined : cells[columns.glider],
           status,
           confirmed,
         };
@@ -398,17 +411,51 @@ function normalizeSelectionCell(value: string) {
 
 function getPwcSelectionColumns(headers: string[]) {
   const normalizedHeaders = headers.map((header) => header.toLowerCase());
-  const getIndex = (name: string, fallback: number) => {
+  const getIndex = (name: string, fallback: number): number | undefined => {
     const index = normalizedHeaders.indexOf(name);
-    return index >= 0 ? index : fallback;
+    if (index >= 0) return index;
+    return headers.length > fallback ? fallback : undefined;
   };
 
   return {
-    pilot: getIndex("pilot", 1),
-    country: getIndex("country", 2),
+    pilot: getIndex("pilot", 1) ?? 1,
+    country: getIndex("country", 2) ?? 2,
     glider: getIndex("glider", 3),
     status: getIndex("status", 6),
   };
+}
+
+function getPwcSelectionInferredStatus($: ReturnType<typeof load>) {
+  const statusCounts = parsePwcSelectionStatusCounts(
+    $("[data-status]").first().text(),
+  );
+  const registeredStatuses = Object.entries(statusCounts).filter(([status]) =>
+    isRegistered(status),
+  );
+
+  if (registeredStatuses.length !== 1) return;
+
+  const registeredStatus = registeredStatuses[0];
+  if (!registeredStatus) return;
+
+  const [status, count] = registeredStatus;
+  if (!status || !count) return;
+
+  return { status, count };
+}
+
+function parsePwcSelectionStatusCounts(statusText: string) {
+  const counts: Record<string, number> = {};
+  const normalizedStatusText = normalizeSelectionCell(statusText);
+  const matches = normalizedStatusText.matchAll(/([A-Za-z ]+):\s*(\d+)/g);
+
+  for (const match of matches) {
+    const [, status, count] = match;
+    if (!status || !count) continue;
+    counts[status.trim()] = Number(count);
+  }
+
+  return counts;
 }
 
 async function getPwcScoringPilots(scoringUrl: string) {
@@ -467,7 +514,8 @@ function isRegistered(status?: string) {
   return (
     isConfirmed(status) ||
     normalizedStatus == "payment_in_progress" ||
-    normalizedStatus == "waiting_for_payment"
+    normalizedStatus == "waiting_for_payment" ||
+    normalizedStatus == "waiting_list"
   );
 }
 

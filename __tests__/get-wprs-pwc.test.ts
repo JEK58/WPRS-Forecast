@@ -47,6 +47,20 @@ describe("Get WPRS for PWC comps", () => {
     ).toBe(true);
   }, 80000);
 
+  it("should treat waiting list pilots as registered but unconfirmed", async () => {
+    const url =
+      "https://pwca.org/events/2026-paragliding-world-cup-italy-gemona-2026";
+    const res = await getPwcComp(url);
+
+    expect(res).toBeDefined();
+    if (!res) throw new Error("Expected PWC competition response");
+    const waitingList = res.pilots.filter((p) => p.status === "Waiting List");
+
+    expect(res.pilots.length).toBe(waitingList.length);
+    expect(waitingList.length).toBeGreaterThanOrEqual(100);
+    expect(res.pilots.every((p) => !p.confirmed)).toBe(true);
+  }, 80000);
+
   // it("should get the correct amount of confirmed pilots", async () => {
   //   const url = "https://pwca.events/world-cup-gourdon-france-2024/selection";
   //   const res = await getPwcComp(url);
