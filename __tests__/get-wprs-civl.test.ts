@@ -4,7 +4,7 @@ import { getCivlcompsComp } from "@/utils/get-civl-comp";
 
 describe("Get data for CIVL comps", () => {
   it("should find the correct amount of registered pilots", async () => {
-    const expectedNumOfPilots = 192;
+    const expectedNumOfPilots = 193;
 
     const url = "https://civlcomps.org/event/german-open-2026/participants";
     const res = await getCivlcompsComp(url);
