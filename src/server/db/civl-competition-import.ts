@@ -1,8 +1,8 @@
-import { inArray, sql } from "drizzle-orm";
+import { inArray } from "drizzle-orm";
 import { load, type CheerioAPI } from "cheerio";
 
 import { db } from "@/server/db";
-import { competition, competitionResult } from "@/server/db/schema";
+import { competition } from "@/server/db/schema";
 import { competitionImportSchema } from "@/server/db/competition-import";
 import { importCompetitionRecords } from "@/server/db/import-competitions";
 
@@ -116,8 +116,6 @@ export async function importRecentCivlCompetitions() {
       }
     },
   );
-  await logDbImportTarget();
-
   return {
     candidates: recentCandidates.length,
     imported,
@@ -471,25 +469,6 @@ function logImportedCompetition(
     resultsUpdated: candidate.resultsUpdated,
     resultCount,
   });
-}
-
-async function logDbImportTarget() {
-  const [target] = await db
-    .select({
-      database: sql<string>`current_database()`,
-      schema: sql<string>`current_schema()`,
-      address: sql<string>`inet_server_addr()::text`,
-      port: sql<number>`inet_server_port()`,
-      competitions: sql<number>`count(distinct ${competition.id})::int`,
-      results: sql<number>`count(${competitionResult.civlId})::int`,
-    })
-    .from(competition)
-    .leftJoin(
-      competitionResult,
-      sql`${competitionResult.competitionRowId} = ${competition.id}`,
-    );
-
-  console.info("CIVL competition import DB target", target);
 }
 
 async function fetchText(url: string) {
