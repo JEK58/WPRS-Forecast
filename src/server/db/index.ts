@@ -16,3 +16,8 @@ const conn = globalForDb.conn ?? postgres(env.DATABASE_URL);
 if (env.NODE_ENV !== "production") globalForDb.conn = conn;
 
 export const db = drizzle(conn, { schema });
+
+export async function closeDbConnection() {
+  await conn.end();
+  if (globalForDb.conn === conn) globalForDb.conn = undefined;
+}
