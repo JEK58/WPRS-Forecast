@@ -354,24 +354,31 @@ async function getPwcSelectionPilots(details: PwcSelectionTableDetails) {
     if (!html) return [];
 
     const $ = load(html);
-    const rows = $("tr").slice(1);
+    const rows = $("tr");
+    const headerCells = rows
+      .first()
+      .find("th,td")
+      .map((_, cell) => normalizeSelectionCell($(cell).text()))
+      .get();
+    const columns = getPwcSelectionColumns(headerCells);
 
     return rows
+      .slice(1)
       .map((_, row) => {
         const cells = $(row)
           .find("td")
-          .map((_, cell) => $(cell).text().trim().replace(/\s+/g, " "))
+          .map((_, cell) => normalizeSelectionCell($(cell).text()))
           .get();
-        const status = cells[6];
-        const name = cells[1]?.toLowerCase();
+        const status = cells[columns.status];
+        const name = cells[columns.pilot]?.toLowerCase();
 
-        if (!name || status !== "Confirmed") return null;
+        if (!name || !isConfirmed(status)) return null;
 
         return {
           name,
-          nationality: cells[2],
+          nationality: cells[columns.country],
           civlID: CIVL_PLACEHOLDER_ID,
-          wing: cells[3],
+          wing: cells[columns.glider],
           status,
           confirmed: true,
         };
@@ -382,6 +389,25 @@ async function getPwcSelectionPilots(details: PwcSelectionTableDetails) {
     console.error("Error fetching or parsing PWC selection table:", error);
     return [];
   }
+}
+
+function normalizeSelectionCell(value: string) {
+  return value.trim().replace(/\s+/g, " ");
+}
+
+function getPwcSelectionColumns(headers: string[]) {
+  const normalizedHeaders = headers.map((header) => header.toLowerCase());
+  const getIndex = (name: string, fallback: number) => {
+    const index = normalizedHeaders.indexOf(name);
+    return index >= 0 ? index : fallback;
+  };
+
+  return {
+    pilot: getIndex("pilot", 1),
+    country: getIndex("country", 2),
+    glider: getIndex("glider", 3),
+    status: getIndex("status", 6),
+  };
 }
 
 async function getPwcScoringPilots(scoringUrl: string) {
@@ -425,10 +451,12 @@ async function getPwcScoringPilots(scoringUrl: string) {
 }
 
 function isConfirmed(status?: string) {
+  const normalizedStatus = status?.toLowerCase().replace(/[\s-]+/g, "_");
+
   return (
-    status?.toLowerCase() == "confirmed" ||
-    status?.toLowerCase() == "wildcard" ||
-    status?.toLowerCase() == "guest_card_confirmed"
+    normalizedStatus == "confirmed" ||
+    normalizedStatus == "wildcard_confirmed" ||
+    normalizedStatus == "guest_card_confirmed"
   );
 }
 

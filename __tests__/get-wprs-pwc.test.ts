@@ -20,7 +20,17 @@ describe("Get WPRS for PWC comps", () => {
 
     expect(res).toBeDefined();
     if (!res) throw new Error("Expected PWC competition response");
-    expect(res.pilots.filter((p) => p.confirmed).length).toBe(124);
+    expect(res.pilots.filter((p) => p.confirmed).length).toBe(133);
+  }, 80000);
+
+  it("should get confirmed pilots from the livewire selection table", async () => {
+    const url =
+      "https://pwca.org/events/2025-15th-paragliding-world-cup-superfinal-2025-spain-pegalajar";
+    const res = await getPwcComp(url);
+
+    expect(res).toBeDefined();
+    if (!res) throw new Error("Expected PWC competition response");
+    expect(res.pilots.filter((p) => p.confirmed).length).toBe(112);
   }, 80000);
 
   // it("should get the correct amount of confirmed pilots", async () => {
