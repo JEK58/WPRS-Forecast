@@ -177,7 +177,9 @@ export function PilotSelfProjection({
         if (requestId !== forecastRequestIdRef.current) return;
         if (error.name === "AbortError") return;
         setPositionForecast({});
-        setForecastError("Could not forecast position from historical results.");
+        setForecastError(
+          "Could not forecast position from historical results.",
+        );
       })
       .finally(() => {
         if (requestId !== forecastRequestIdRef.current) return;
@@ -217,7 +219,7 @@ export function PilotSelfProjection({
   if (!confirmedWprs?.length && !registeredWprs?.length) return null;
 
   return (
-    <div className="rounded-box mt-6 border border-green-300/80 bg-slate-50 p-4 dark:border-green-700/60 dark:bg-slate-950">
+    <div className="mt-6 rounded-lg border border-slate-300 bg-zinc-100/45 p-4 dark:border-slate-600 dark:bg-slate-800/35">
       <div className="flex items-center gap-2">
         <span className="rounded-full bg-green-500 px-2 py-0.5 text-xs font-semibold tracking-wide text-white uppercase">
           New
@@ -225,8 +227,8 @@ export function PilotSelfProjection({
         <h3 className="text-base font-semibold">Personal Position Forecast</h3>
       </div>
       <p className="mt-1 text-sm text-slate-600 dark:text-slate-300">
-        This forecast looks at how you’ve performed against the current field
-        in past competitions. Recent results count more than older ones, using a
+        This forecast looks at how you’ve performed against the current field in
+        past competitions. Recent results count more than older ones, using a
         two-year weighting system. No AI, just maths.
       </p>
       {isHydrated && !selectedPilot && (
@@ -246,7 +248,7 @@ export function PilotSelfProjection({
           />
 
           {!!query.trim().length && (
-            <div className="absolute inset-x-0 top-full z-20 mt-1 rounded-lg border border-slate-200 bg-white shadow-lg dark:border-slate-700 dark:bg-slate-900">
+            <div className="absolute inset-x-0 top-full z-20 mt-1 rounded-lg border border-slate-200 bg-white shadow-lg dark:border-slate-600 dark:bg-cyan-950">
               {isSearching ? (
                 <div className="px-3 py-2 text-sm text-slate-500 dark:text-slate-300">
                   Searching...
@@ -257,7 +259,7 @@ export function PilotSelfProjection({
                     <li key={pilot.id}>
                       <button
                         type="button"
-                        className="w-full border-b border-slate-200 px-3 py-2 text-left text-sm last:border-b-0 hover:bg-slate-100 dark:border-slate-700 dark:hover:bg-slate-800"
+                        className="w-full border-b border-slate-200 px-3 py-2 text-left text-sm last:border-b-0 hover:bg-slate-100 dark:border-slate-700 dark:hover:bg-slate-800/60"
                         onClick={() => onSelectPilot(pilot)}
                       >
                         <span className="font-medium">{pilot.name}</span>{" "}
@@ -280,7 +282,7 @@ export function PilotSelfProjection({
       )}
 
       {selectedPilot && (
-        <div className="mt-4 rounded-lg bg-slate-100 p-3 text-sm dark:bg-slate-900">
+        <div className="mt-4 rounded-lg border border-slate-200 bg-white/65 p-3 text-sm dark:border-slate-700 dark:bg-cyan-950/50">
           <div className="flex items-start justify-between gap-3">
             <div className="font-semibold">
               {selectedPilot.name} (CIVL {selectedPilot.id})
@@ -345,7 +347,7 @@ function ProjectionCard({
   error: string | null;
 }) {
   return (
-    <div className="rounded-lg border border-slate-200 p-3 dark:border-slate-700">
+    <div className="rounded-lg border border-slate-200 bg-white/65 p-3 dark:border-slate-700 dark:bg-cyan-950/50">
       <div className="font-medium">{title}</div>
       {isLoading ? (
         <div className="mt-2 text-sm text-slate-500 dark:text-slate-300">
@@ -424,7 +426,7 @@ function ProjectionCard({
 
 function ProbabilityStat({ label, value }: { label: string; value: number }) {
   return (
-    <div className="rounded-md bg-slate-100 px-2 py-1 dark:bg-slate-900">
+    <div className="rounded-md bg-zinc-100 px-2 py-1 dark:bg-slate-800/50">
       <div className="text-slate-500 dark:text-slate-300">{label}</div>
       <div className="font-semibold">{formatProbability(value)}</div>
     </div>
@@ -449,7 +451,7 @@ function PositionProbabilityCurve({
   );
 
   return (
-    <div className="mt-3">
+    <div className="mt-3 text-slate-500 dark:text-slate-300">
       <div className="mb-1 text-xs font-medium text-slate-500 dark:text-slate-300">
         Place probability
       </div>
@@ -458,12 +460,18 @@ function PositionProbabilityCurve({
           data={chartData}
           margin={{ top: 8, right: 12, left: 6, bottom: 4 }}
         >
-          <CartesianGrid strokeDasharray="3 3" vertical={false} />
+          <CartesianGrid
+            stroke="currentColor"
+            strokeDasharray="3 3"
+            strokeOpacity={0.28}
+            vertical={false}
+          />
           <XAxis
             dataKey="position"
             ticks={xAxisTicks}
             interval={0}
-            tick={{ fontSize: 10 }}
+            axisLine={false}
+            tick={{ fontSize: 10, fill: "currentColor" }}
             tickLine={false}
             tickMargin={6}
             tickFormatter={(position) =>
@@ -473,20 +481,14 @@ function PositionProbabilityCurve({
             }
           />
           <YAxis
-            tick={{ fontSize: 10 }}
+            axisLine={false}
+            tick={{ fontSize: 10, fill: "currentColor" }}
             tickLine={false}
             tickMargin={4}
             tickFormatter={(value) => `${value}%`}
             width={34}
           />
-          <Tooltip
-            separator=": "
-            formatter={(value) => [
-              formatProbability(Number(value) / 100),
-              "Probability",
-            ]}
-            labelFormatter={(position) => `Place #${position}`}
-          />
+          <Tooltip content={<PositionProbabilityTooltip />} />
           <ReferenceLine
             x={forecast.predictedPosition}
             stroke={CHART_COLORS[3]}
@@ -506,7 +508,33 @@ function PositionProbabilityCurve({
   );
 }
 
-function getProbabilityAxisTicks(positions: number[], predictedPosition: number) {
+function PositionProbabilityTooltip({
+  active,
+  payload,
+  label,
+}: {
+  active?: boolean;
+  payload?: { value?: number }[];
+  label?: string | number;
+}) {
+  const probability = payload?.[0]?.value;
+
+  if (!active || typeof probability !== "number") return null;
+
+  return (
+    <div className="rounded-md border border-slate-200 bg-white px-2 py-1 text-xs text-slate-700 shadow-sm dark:border-slate-700 dark:bg-cyan-950 dark:text-slate-200">
+      <div className="font-medium">Place #{label}</div>
+      <div className="text-slate-500 dark:text-slate-300">
+        Probability: {formatProbability(probability / 100)}
+      </div>
+    </div>
+  );
+}
+
+function getProbabilityAxisTicks(
+  positions: number[],
+  predictedPosition: number,
+) {
   if (positions.length <= 8) return positions;
 
   const step = Math.ceil(positions.length / 6);
