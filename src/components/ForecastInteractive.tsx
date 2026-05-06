@@ -272,7 +272,8 @@ export function ForecastInteractive({ data }: { data: Forecast }) {
 
     const activeValue =
       value > 0 && value < 0.01 ? "+<0.01" : `+${value.toFixed(2)}`;
-    const inactiveValue = value > 0 && value < 0.01 ? "<0.01" : value.toFixed(2);
+    const inactiveValue =
+      value > 0 && value < 0.01 ? "<0.01" : value.toFixed(2);
 
     return isSelected ? activeValue : inactiveValue;
   };
@@ -280,7 +281,7 @@ export function ForecastInteractive({ data }: { data: Forecast }) {
   const pilotImpactSection =
     allPilotEntries.length > 0 ? (
       <div
-        className={`collapse collapse-arrow mt-4 border border-green-300/80 dark:border-green-700/60 ${
+        className={`collapse-arrow collapse mt-4 border border-slate-300 bg-zinc-100/45 dark:border-slate-600 dark:bg-slate-800/35 ${
           isPilotImpactOpen ? "collapse-open" : ""
         }`}
       >
@@ -339,16 +340,22 @@ export function ForecastInteractive({ data }: { data: Forecast }) {
             </div>
 
             <div
-              className="not-prose relative mb-2 h-[25rem] overflow-x-hidden overflow-y-auto overscroll-contain rounded-md border border-slate-200 dark:border-slate-700"
+              className="not-prose relative mb-2 h-[25rem] overflow-x-hidden overflow-y-auto overscroll-contain rounded-md border border-slate-200 bg-white/65 dark:border-slate-700 dark:bg-cyan-950/50"
               onWheel={(event) => event.stopPropagation()}
               onTouchMove={(event) => event.stopPropagation()}
             >
-              <table className="table-pin-rows table-sm table w-full">
+              <table className="table-pin-rows table-sm table w-full [&_tbody_tr:hover]:bg-slate-100/70 dark:[&_tbody_tr:hover]:bg-slate-800/60">
                 <thead>
                   <tr className="border-b-0">
-                    <th className="bg-base-200">Pilot</th>
-                    <th className="bg-base-200">Impact</th>
-                    <th className="bg-base-200 text-right">Include</th>
+                    <th className="bg-zinc-100 text-slate-600 shadow-none dark:bg-cyan-950 dark:text-slate-300">
+                      Pilot
+                    </th>
+                    <th className="bg-zinc-100 text-slate-600 shadow-none dark:bg-cyan-950 dark:text-slate-300">
+                      Impact
+                    </th>
+                    <th className="bg-zinc-100 text-right text-slate-600 shadow-none dark:bg-cyan-950 dark:text-slate-300">
+                      Include
+                    </th>
                   </tr>
                 </thead>
                 <tbody>
@@ -424,7 +431,7 @@ export function ForecastInteractive({ data }: { data: Forecast }) {
                   })}
                 </tbody>
               </table>
-              <div className="bg-base-100 pointer-events-none sticky bottom-0 -mt-6 flex h-16 [mask-image:linear-gradient(transparent,#000000)]" />
+              <div className="pointer-events-none sticky bottom-0 -mt-6 flex h-16 bg-linear-to-b from-transparent to-white/85 dark:to-cyan-950/85" />
             </div>
           </div>
         )}
@@ -457,8 +464,8 @@ export function ForecastInteractive({ data }: { data: Forecast }) {
       )}
 
       <p className="mt-4 text-sm">
-        The competition WPRS forecast uses CIVL rankings as required by the
-        WPRS rules. Your personal position forecast uses historical competition
+        The competition WPRS forecast uses CIVL rankings as required by the WPRS
+        rules. Your personal position forecast uses historical competition
         results against the current field.
       </p>
       <div className="mt-2">
