@@ -1,9 +1,9 @@
 import {
   date,
+  foreignKey,
   index,
   primaryKey,
   pgTable,
-  serial,
   text,
   doublePrecision,
   integer,
@@ -14,7 +14,10 @@ import {
 } from "drizzle-orm/pg-core";
 
 export const compRanking = pgTable("CompRanking", {
-  id: serial("id").primaryKey().notNull(),
+  id: integer("id")
+    .primaryKey()
+    .generatedAlwaysAsIdentity({ cache: 1 })
+    .notNull(),
   period: text("period").notNull(),
   name: text("name").notNull(),
   link: text("link"),
@@ -90,7 +93,10 @@ export const ranking = pgTable("Ranking", {
 export const competition = pgTable(
   "Competition",
   {
-    id: serial("id").primaryKey().notNull(),
+    id: integer("id")
+      .primaryKey()
+      .generatedAlwaysAsIdentity({ cache: 1 })
+      .notNull(),
     competitionId: integer("competitionId").notNull(),
     schemaVersion: integer("schemaVersion").notNull(),
     sourceUrl: text("sourceUrl").notNull(),
@@ -144,5 +150,86 @@ export const competitionResult = pgTable(
       name: "CompetitionResult_competitionRowId_civlId_pk",
     }),
     index("CompetitionResult_civlId_idx").on(table.civlId),
+  ],
+);
+
+export const positionForecastSnapshot = pgTable(
+  "PositionForecastSnapshot",
+  {
+    id: uuid("id").primaryKey().notNull().defaultRandom(),
+    createdAt: timestamp("createdAt", {
+      precision: 3,
+      mode: "string",
+    })
+      .defaultNow()
+      .notNull(),
+    updatedAt: timestamp("updatedAt", {
+      precision: 3,
+      mode: "string",
+    })
+      .defaultNow()
+      .notNull(),
+    competitionUrl: text("competitionUrl").notNull(),
+    pilotsUrl: text("pilotsUrl"),
+    competitionTitle: text("competitionTitle"),
+    startDate: timestamp("startDate", {
+      precision: 3,
+      mode: "string",
+    }),
+    endDate: timestamp("endDate", {
+      precision: 3,
+      mode: "string",
+    }),
+    scenario: text("scenario").notNull(),
+    selectedCivlId: integer("selectedCivlId").notNull(),
+    selectedPilotName: text("selectedPilotName"),
+    fieldSize: integer("fieldSize").notNull(),
+    fieldCivlIds: jsonb("fieldCivlIds").$type<number[]>().notNull(),
+    fieldSignature: text("fieldSignature").notNull(),
+    predictedPosition: integer("predictedPosition").notNull(),
+    expectedPlace: doublePrecision("expectedPlace").notNull(),
+    likelyRangeLower: integer("likelyRangeLower").notNull(),
+    likelyRangeUpper: integer("likelyRangeUpper").notNull(),
+    likelyRangeProbability: doublePrecision("likelyRangeProbability").notNull(),
+    winProbability: doublePrecision("winProbability").notNull(),
+    podiumProbability: doublePrecision("podiumProbability").notNull(),
+    topTenProbability: doublePrecision("topTenProbability").notNull(),
+    confidence: text("confidence").notNull(),
+    selectedPilotCompetitionCount: integer(
+      "selectedPilotCompetitionCount",
+    ).notNull(),
+    directComparisonCount: integer("directComparisonCount").notNull(),
+    opponentHistoryCoverage: doublePrecision(
+      "opponentHistoryCoverage",
+    ).notNull(),
+    forecast: jsonb("forecast").$type<Record<string, unknown>>().notNull(),
+    actualPosition: integer("actualPosition"),
+    actualCompetitionRowId: integer("actualCompetitionRowId"),
+    evaluatedAt: timestamp("evaluatedAt", {
+      precision: 3,
+      mode: "string",
+    }),
+  },
+  (table) => [
+    uniqueIndex(
+      "PositionForecastSnapshot_competition_pilot_scenario_field_idx",
+    ).on(
+      table.competitionUrl,
+      table.selectedCivlId,
+      table.scenario,
+      table.fieldSignature,
+    ),
+    index("PositionForecastSnapshot_selectedCivlId_idx").on(
+      table.selectedCivlId,
+    ),
+    index("PositionForecastSnapshot_competitionUrl_idx").on(
+      table.competitionUrl,
+    ),
+    index("PositionForecastSnapshot_endDate_idx").on(table.endDate),
+    foreignKey({
+      columns: [table.actualCompetitionRowId],
+      foreignColumns: [competition.id],
+      name: "PositionForecastSnapshot_actualCompetitionRowId_fk",
+    }).onDelete("set null"),
   ],
 );

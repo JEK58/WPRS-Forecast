@@ -5,6 +5,7 @@ import Link from "next/link";
 import {
   type Forecast,
   type ForecastSimulation,
+  type PositionForecastRequestContext,
   type Pilot,
 } from "@/types/common";
 import { Button } from "@/components/ui/Button";
@@ -25,6 +26,12 @@ type PilotEntry = {
   isConfirmed: boolean;
   ranking?: RankedPilot;
 };
+
+function toIsoDateString(value?: Date | string) {
+  if (!value) return undefined;
+  const date = value instanceof Date ? value : new Date(value);
+  return Number.isNaN(date.getTime()) ? undefined : date.toISOString();
+}
 
 function comparePilotEntries(a: PilotEntry, b: PilotEntry) {
   const rankA = a.ranking?.rank ?? Number.POSITIVE_INFINITY;
@@ -115,6 +122,45 @@ export function ForecastInteractive({ data }: { data: Forecast }) {
         .filter((entry) => selectedPilotSet.has(entry.key))
         .map((entry) => entry.pilot),
     [allPilotEntries, selectedPilotSet],
+  );
+
+  const selectedPilotCivlIds = useMemo(
+    () =>
+      selectedPilots
+        .map((pilot) => pilot.civlID)
+        .filter(
+          (civlId): civlId is number =>
+            typeof civlId === "number" && civlId > 0,
+        ),
+    [selectedPilots],
+  );
+
+  const registeredPilotCivlIds = useMemo(
+    () =>
+      allPilotEntries
+        .map((entry) => entry.pilot.civlID)
+        .filter(
+          (civlId): civlId is number =>
+            typeof civlId === "number" && civlId > 0,
+        ),
+    [allPilotEntries],
+  );
+
+  const positionForecastContext = useMemo(
+    (): PositionForecastRequestContext => ({
+      competitionUrl: data.compUrl,
+      pilotsUrl: data.pilotsUrl,
+      competitionTitle: data.compTitle,
+      startDate: toIsoDateString(data.compDate?.startDate),
+      endDate: toIsoDateString(data.compDate?.endDate),
+    }),
+    [
+      data.compDate?.endDate,
+      data.compDate?.startDate,
+      data.compTitle,
+      data.compUrl,
+      data.pilotsUrl,
+    ],
   );
 
   const isDefaultSelection = useMemo(() => {
@@ -411,9 +457,9 @@ export function ForecastInteractive({ data }: { data: Forecast }) {
       )}
 
       <p className="mt-4 text-sm">
-        This forecast is based on the currently confirmed/registered pilots and
-        their CIVL rankings. The calculation will become more accurate as the
-        competition date approaches.
+        The competition WPRS forecast uses CIVL rankings as required by the
+        WPRS rules. Your personal position forecast uses historical competition
+        results against the current field.
       </p>
       <div className="mt-2">
         <Link
@@ -426,8 +472,9 @@ export function ForecastInteractive({ data }: { data: Forecast }) {
       </div>
       {pilotImpactSection}
       <PilotSelfProjection
-        confirmedPilots={displayData.confirmed?.pilots}
-        registeredPilots={data.all?.pilots}
+        confirmedPilotCivlIds={selectedPilotCivlIds}
+        registeredPilotCivlIds={registeredPilotCivlIds}
+        forecastContext={positionForecastContext}
         confirmedWprs={displayData.confirmed?.WPRS}
         registeredWprs={data.all?.WPRS}
       />

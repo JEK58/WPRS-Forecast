@@ -73,3 +73,40 @@ export type ForecastSimulation = {
   genders?: { male: number; female: number };
   contributions?: Record<string, number | null>;
 };
+
+export type PositionForecastScenario = {
+  predictedPosition: number;
+  expectedPlace: number;
+  totalPilots: number;
+  likelyRange: {
+    lower: number;
+    upper: number;
+    probability: number;
+  };
+  winProbability: number;
+  podiumProbability: number;
+  topTenProbability: number;
+  positionProbabilities: {
+    position: number;
+    probability: number;
+  }[];
+  confidence: "low" | "medium" | "high";
+  selectedPilotCompetitionCount: number;
+  directComparisonCount: number;
+  opponentHistoryCoverage: number;
+};
+
+export type PositionForecastRequestContext = {
+  competitionUrl?: string;
+  pilotsUrl?: string;
+  competitionTitle?: string;
+  startDate?: string;
+  endDate?: string;
+};
+
+export type PositionForecastResponse = {
+  scenarios: {
+    confirmed?: PositionForecastScenario | null;
+    registered?: PositionForecastScenario | null;
+  };
+};
