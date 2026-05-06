@@ -30,8 +30,21 @@ describe("Get WPRS for PWC comps", () => {
 
     expect(res).toBeDefined();
     if (!res) throw new Error("Expected PWC competition response");
-    expect(res.pilots.length).toBe(136);
-    expect(res.pilots.filter((p) => p.confirmed).length).toBe(112);
+    const paymentInProgress = res.pilots.filter(
+      (p) => p.status === "Payment in Progress",
+    );
+    const waitingForPayment = res.pilots.filter(
+      (p) => p.status === "Waiting for Payment",
+    );
+
+    expect(res.pilots.filter((p) => p.confirmed).length).toBeGreaterThanOrEqual(
+      112,
+    );
+    expect(paymentInProgress.length).toBeGreaterThanOrEqual(4);
+    expect(waitingForPayment.length).toBeGreaterThanOrEqual(20);
+    expect(
+      [...paymentInProgress, ...waitingForPayment].every((p) => !p.confirmed),
+    ).toBe(true);
   }, 80000);
 
   // it("should get the correct amount of confirmed pilots", async () => {

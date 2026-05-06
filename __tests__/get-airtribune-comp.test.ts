@@ -15,7 +15,7 @@ describe("Airtribune", () => {
 
     expect(res.compDate.startDate.toISOString()).toBe(expectedStartDate);
     expect(res.compDate.endDate.toISOString()).toBe(expectedEndDate);
-  });
+  }, 20000);
 
   it("finds the correct comp date for another event", async () => {
     const expectedStartDate = "2026-07-08T00:00:00.000Z";
@@ -29,7 +29,7 @@ describe("Airtribune", () => {
 
     expect(res.compDate.startDate.toISOString()).toBe(expectedStartDate);
     expect(res.compDate.endDate.toISOString()).toBe(expectedEndDate);
-  });
+  }, 20000);
 
   it("should forecast an upcoming comp", async () => {
     const url = "https://airtribune.com/pao2026";
@@ -47,5 +47,5 @@ describe("Airtribune", () => {
     if ("maxPilots" in res)
       expect(res.maxPilots).toBe(expectedNumberOfMaxPilots);
     else throw new Error("Unexpected result");
-  });
+  }, 20000);
 });
