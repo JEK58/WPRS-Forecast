@@ -168,7 +168,6 @@ async function recordPositionForecastSnapshots({
     const existingSnapshots = await db
       .select({
         id: positionForecastSnapshot.id,
-        evaluatedAt: positionForecastSnapshot.evaluatedAt,
       })
       .from(positionForecastSnapshot)
       .where(
@@ -186,8 +185,6 @@ async function recordPositionForecastSnapshots({
       await db.insert(positionForecastSnapshot).values(row);
       continue;
     }
-
-    if (existingSnapshot.evaluatedAt) continue;
 
     await db
       .update(positionForecastSnapshot)

@@ -1,6 +1,5 @@
 import {
   date,
-  foreignKey,
   index,
   primaryKey,
   pgTable,
@@ -203,12 +202,6 @@ export const positionForecastSnapshot = pgTable(
       "opponentHistoryCoverage",
     ).notNull(),
     forecast: jsonb("forecast").$type<Record<string, unknown>>().notNull(),
-    actualPosition: integer("actualPosition"),
-    actualCompetitionRowId: integer("actualCompetitionRowId"),
-    evaluatedAt: timestamp("evaluatedAt", {
-      precision: 3,
-      mode: "string",
-    }),
   },
   (table) => [
     uniqueIndex(
@@ -226,10 +219,5 @@ export const positionForecastSnapshot = pgTable(
       table.competitionUrl,
     ),
     index("PositionForecastSnapshot_endDate_idx").on(table.endDate),
-    foreignKey({
-      columns: [table.actualCompetitionRowId],
-      foreignColumns: [competition.id],
-      name: "PositionForecastSnapshot_actualCompetitionRowId_fk",
-    }).onDelete("set null"),
   ],
 );
