@@ -49,14 +49,26 @@ const RecentQueriesTable = async () => {
             <span className="font-normal text-gray-400"></span>
           )} */}
         </TableCell>
-        <TableCell className="font-bold text-green-500">
-          {stat.wprs ?? "---"}
-          {stat.potentialWprs && (
-            <span className="font-normal text-gray-400">
-              {" "}
-              | {stat.potentialWprs}
+        <TableCell className="font-mono text-sm font-bold tabular-nums">
+          <span className="hidden whitespace-nowrap text-green-600 sm:inline dark:text-green-400">
+            {stat.wprs ?? "---"}
+            {stat.potentialWprs && (
+              <span className="font-normal text-slate-400">
+                {" "}
+                | {stat.potentialWprs}
+              </span>
+            )}
+          </span>
+          <span className="flex flex-col leading-tight whitespace-nowrap sm:hidden">
+            <span className="text-green-600 dark:text-green-400">
+              {stat.wprs ?? "---"}
             </span>
-          )}
+            {stat.potentialWprs && (
+              <span className="mt-1 text-xs font-normal text-slate-400">
+                {stat.potentialWprs}
+              </span>
+            )}
+          </span>
         </TableCell>
         <TableCell className="hidden sm:table-cell">
           {formatAge(stat.ageInHours)}
@@ -96,9 +108,11 @@ const RecentQueriesTable = async () => {
 
   return (
     <>
-      <h2 className="card-title dark:text-slate-200">Recent Queries</h2>
+      <h2 className="text-lg font-semibold tracking-tight text-slate-950 dark:text-slate-100">
+        Recent Queries
+      </h2>
       <div className="w-full overflow-x-auto">
-        <Table className="w-full text-left [&_tbody_tr:hover]:bg-slate-50 dark:[&_tbody_tr:hover]:bg-slate-900/35">
+        <Table className="w-full text-left [&_tbody_tr:hover]:bg-white/60 dark:[&_tbody_tr:hover]:bg-slate-900/35">
           <TableHeader>
             <TableRow>
               <TableHead>Competition</TableHead>

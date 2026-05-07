@@ -28,7 +28,7 @@ export async function ForecastView({ url }: { url?: string }) {
     <>
       <div className="flex items-start justify-between">
         <div className="grow">
-          <h2 className="mb-1 text-xl leading-tight font-bold tracking-tight text-slate-950 sm:text-2xl dark:text-slate-100">
+          <h2 className="mb-1 text-xl leading-tight font-bold tracking-tight text-slate-800 sm:text-2xl dark:text-slate-100">
             {data.compTitle}
           </h2>
         </div>

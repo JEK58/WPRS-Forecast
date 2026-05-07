@@ -1,7 +1,6 @@
 "use client";
 
 import { useEffect, useMemo, useRef, useState } from "react";
-import Link from "next/link";
 import {
   type Forecast,
   type ForecastSimulation,
@@ -281,7 +280,7 @@ export function ForecastInteractive({ data }: { data: Forecast }) {
   const pilotImpactSection =
     allPilotEntries.length > 0 ? (
       <div
-        className={`collapse-arrow collapse mt-5 rounded-lg border border-slate-200 bg-slate-50/80 dark:border-slate-800 dark:bg-slate-900/35 ${
+        className={`collapse-arrow collapse mt-5 rounded-lg border border-slate-200 bg-white/55 shadow-sm shadow-slate-950/5 dark:border-slate-800 dark:bg-slate-900/35 ${
           isPilotImpactOpen ? "collapse-open" : ""
         }`}
       >
@@ -441,9 +440,46 @@ export function ForecastInteractive({ data }: { data: Forecast }) {
   return (
     <>
       <div className="mt-5 grid gap-3 sm:grid-cols-2">
-        <div className="rounded-lg border border-slate-200 bg-slate-50/80 p-3 dark:border-slate-800 dark:bg-slate-900/35">
-          <div className="text-xs font-semibold tracking-wide text-slate-500 uppercase dark:text-slate-400">
-            WPRS
+        <div className="relative rounded-lg border border-slate-200 bg-white/58 p-3 shadow-sm shadow-slate-950/5 before:absolute before:inset-x-0 before:top-0 before:h-1 before:rounded-t-lg before:bg-linear-to-r before:from-green-400 before:to-blue-500 dark:border-slate-800 dark:bg-slate-900/35">
+          <div className="flex items-start justify-between gap-3">
+            <div className="text-xs font-semibold tracking-wide text-slate-500 uppercase dark:text-slate-400">
+              WPRS
+            </div>
+            <div className="group relative -mt-1 -mr-1 inline-flex">
+              <button
+                type="button"
+                aria-describedby="forecast-method-info"
+                className="btn btn-circle btn-ghost btn-xs h-7 min-h-7 w-7 border border-slate-200 bg-white/65 text-slate-500 shadow-sm hover:border-sky-300 hover:bg-sky-50 hover:text-sky-700 focus-visible:ring-2 focus-visible:ring-sky-400 focus-visible:outline-none dark:border-slate-700 dark:bg-slate-900/35 dark:text-slate-300 dark:hover:border-sky-500 dark:hover:bg-sky-500/10 dark:hover:text-sky-300"
+              >
+                <svg
+                  aria-hidden="true"
+                  className="h-3.5 w-3.5"
+                  fill="none"
+                  height="24"
+                  stroke="currentColor"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth="2"
+                  viewBox="0 0 24 24"
+                  width="24"
+                  xmlns="http://www.w3.org/2000/svg"
+                >
+                  <circle cx="12" cy="12" r="10" />
+                  <path d="M12 16v-4" />
+                  <path d="M12 8h.01" />
+                </svg>
+                <span className="sr-only">Forecast method information</span>
+              </button>
+              <div
+                id="forecast-method-info"
+                role="tooltip"
+                className="pointer-events-none absolute top-full right-0 z-20 mt-2 w-[min(22rem,calc(100vw-3rem))] rounded-lg border border-slate-200 bg-white/95 p-3 text-sm leading-5 text-slate-600 opacity-0 shadow-xl shadow-slate-950/15 backdrop-blur-sm transition-opacity group-focus-within:opacity-100 group-hover:opacity-100 dark:border-slate-700 dark:bg-cyan-950/95 dark:text-slate-300"
+              >
+                The competition WPRS forecast uses CIVL rankings as required by
+                the WPRS rules. Your personal position forecast uses historical
+                competition results against the current field.
+              </div>
+            </div>
           </div>
           {hasCurrentTa3 ? (
             <>
@@ -462,7 +498,7 @@ export function ForecastInteractive({ data }: { data: Forecast }) {
         </div>
 
         {data.maxPilots && data.maxPilots > 0 && (
-          <div className="rounded-lg border border-slate-200 bg-slate-50/80 p-3 dark:border-slate-800 dark:bg-slate-900/35">
+          <div className="relative rounded-lg border border-slate-200 bg-white/58 p-3 shadow-sm shadow-slate-950/5 before:absolute before:inset-x-0 before:top-0 before:h-1 before:rounded-t-lg before:bg-linear-to-r before:from-blue-500 before:to-green-400 dark:border-slate-800 dark:bg-slate-900/35">
             <div className="text-xs font-semibold tracking-wide text-slate-500 uppercase dark:text-slate-400">
               Potential WPRS
             </div>
@@ -476,20 +512,6 @@ export function ForecastInteractive({ data }: { data: Forecast }) {
         )}
       </div>
 
-      <p className="mt-5 text-sm leading-6 text-slate-600 dark:text-slate-300">
-        The competition WPRS forecast uses CIVL rankings as required by the WPRS
-        rules. Your personal position forecast uses historical competition
-        results against the current field.
-      </p>
-      <div className="mt-2">
-        <Link
-          className="text-sm font-medium text-green-700 underline decoration-green-500 decoration-dotted hover:decoration-solid dark:text-green-400"
-          target="_blank"
-          href="https://www.fai.org/sites/default/files/civl/documents/sporting_code_s7_e_-_wprs_2022.pdf"
-        >
-          Details can be found in the FAI Sporting Code Section 7E
-        </Link>
-      </div>
       {pilotImpactSection}
       <PilotSelfProjection
         confirmedPilotCivlIds={selectedPilotCivlIds}

@@ -11,7 +11,7 @@ export function CompUrlInput() {
 
       <CompUrlInputField />
 
-      <div className="mt-5 rounded-lg border border-slate-200 bg-slate-50/75 p-4 dark:border-slate-800 dark:bg-slate-900/35">
+      <div className="mt-2 border-t border-slate-200 pt-4 dark:border-slate-700">
         <ul className="list-outside list-disc space-y-1 px-4 text-sm text-slate-600 dark:text-slate-300">
           <li>This only works for XC paragliding competitions.</li>
           <li>
@@ -29,7 +29,7 @@ export function CompUrlInput() {
         <p className="mt-3 text-sm text-slate-600 dark:text-slate-300">
           See the{" "}
           <Link
-            className="font-medium text-green-600 underline decoration-green-500 decoration-dotted hover:decoration-solid dark:text-green-400"
+            className="font-semibold text-green-600 underline decoration-green-500 decoration-dotted underline-offset-3 hover:decoration-solid dark:text-green-400"
             href="/history"
           >
             history page

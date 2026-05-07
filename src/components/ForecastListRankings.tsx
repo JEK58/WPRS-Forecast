@@ -32,7 +32,7 @@ export function ListRankings({ data }: { data: Forecast["confirmed"] }) {
   };
 
   return (
-    <details className="collapse-arrow collapse mt-5 rounded-lg border border-slate-200 bg-slate-50/80 dark:border-slate-800 dark:bg-slate-900/35">
+    <details className="collapse-arrow collapse mt-5 rounded-lg border border-slate-200 bg-white/55 shadow-sm shadow-slate-950/5 dark:border-slate-800 dark:bg-slate-900/35">
       <summary className="collapse-title cursor-pointer list-none font-semibold text-slate-900 dark:text-slate-100">
         Show points for every position
       </summary>
