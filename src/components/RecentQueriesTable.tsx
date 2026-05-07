@@ -27,9 +27,9 @@ const RecentQueriesTable = async () => {
 
     return (
       <TableRow key={stat.id}>
-        <TableCell>
+        <TableCell className="font-medium">
           <a
-            className="decoration-green-500 hover:underline hover:decoration-dotted"
+            className="text-slate-800 decoration-green-500 hover:text-green-700 hover:underline hover:decoration-dotted dark:text-slate-100 dark:hover:text-green-300"
             href={sanitizeUrl(stat.compUrl)}
             target="_blank"
             rel="noopener noreferrer"
@@ -66,7 +66,7 @@ const RecentQueriesTable = async () => {
             asChild
             aria-label="Update"
             size="sm"
-            className="border-transparent bg-green-500 text-white hover:bg-green-700"
+            className="h-9 min-h-9 border-transparent bg-green-500 text-white hover:bg-green-600"
           >
             <Link href={`/forecast?url=${stat.compUrl}`}>
               <span className="hidden sm:inline">Update</span>
@@ -98,10 +98,10 @@ const RecentQueriesTable = async () => {
     <>
       <h2 className="card-title dark:text-slate-200">Recent Queries</h2>
       <div className="w-full overflow-x-auto">
-        <Table className="w-full text-left [&_tbody_tr:nth-child(even)]:bg-zinc-100/45 [&_tbody_tr:nth-child(odd)]:bg-transparent dark:[&_tbody_tr:nth-child(even)]:bg-slate-800/35 dark:[&_tbody_tr:nth-child(odd)]:bg-transparent">
+        <Table className="w-full text-left [&_tbody_tr:hover]:bg-slate-50 dark:[&_tbody_tr:hover]:bg-slate-900/35">
           <TableHeader>
             <TableRow>
-              <TableHead></TableHead>
+              <TableHead>Competition</TableHead>
               <TableHead>Begins</TableHead>
               <TableHead>WPRS</TableHead>
               <TableHead className="hidden sm:table-cell">Updated</TableHead>

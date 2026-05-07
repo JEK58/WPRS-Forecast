@@ -38,10 +38,12 @@ export function LevelChart({ data }: { data: Forecast["confirmed"] }) {
   }));
 
   return (
-    <div className="mt-6">
-      <h2 className="text-lg font-bold">Pilot level distribution</h2>
+    <section className="mt-6 border-t border-slate-200 pt-5 dark:border-slate-800">
+      <h2 className="text-lg font-semibold tracking-tight text-slate-950 dark:text-slate-100">
+        Pilot level distribution
+      </h2>
 
-      <ResponsiveContainer width="100%" height={300} className={"mt-4"}>
+      <ResponsiveContainer width="100%" height={280} className={"mt-4"}>
         <AreaChart
           data={chartData}
           margin={{
@@ -51,7 +53,7 @@ export function LevelChart({ data }: { data: Forecast["confirmed"] }) {
             bottom: 18,
           }}
         >
-          <CartesianGrid strokeDasharray="3 3" />
+          <CartesianGrid strokeDasharray="3 3" strokeOpacity={0.35} />
           <XAxis
             dataKey="name"
             label={{
@@ -82,6 +84,6 @@ export function LevelChart({ data }: { data: Forecast["confirmed"] }) {
           />
         </AreaChart>
       </ResponsiveContainer>
-    </div>
+    </section>
   );
 }

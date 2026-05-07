@@ -281,7 +281,7 @@ export function ForecastInteractive({ data }: { data: Forecast }) {
   const pilotImpactSection =
     allPilotEntries.length > 0 ? (
       <div
-        className={`collapse-arrow collapse mt-4 border border-slate-300 bg-zinc-100/45 dark:border-slate-600 dark:bg-slate-800/35 ${
+        className={`collapse-arrow collapse mt-5 rounded-lg border border-slate-200 bg-slate-50/80 dark:border-slate-800 dark:bg-slate-900/35 ${
           isPilotImpactOpen ? "collapse-open" : ""
         }`}
       >
@@ -340,20 +340,20 @@ export function ForecastInteractive({ data }: { data: Forecast }) {
             </div>
 
             <div
-              className="not-prose relative mb-2 h-[25rem] overflow-x-hidden overflow-y-auto overscroll-contain rounded-md border border-slate-200 bg-white/65 dark:border-slate-700 dark:bg-cyan-950/50"
+              className="not-prose relative mb-2 h-[25rem] overflow-x-hidden overflow-y-auto overscroll-contain rounded-lg border border-slate-200 bg-white/80 dark:border-slate-700 dark:bg-cyan-950/50"
               onWheel={(event) => event.stopPropagation()}
               onTouchMove={(event) => event.stopPropagation()}
             >
-              <table className="table-pin-rows table-sm table w-full [&_tbody_tr:hover]:bg-slate-100/70 dark:[&_tbody_tr:hover]:bg-slate-800/60">
+              <table className="table-pin-rows table-sm table w-full [&_tbody_tr:hover]:bg-slate-50 dark:[&_tbody_tr:hover]:bg-slate-800/60">
                 <thead>
                   <tr className="border-b-0">
-                    <th className="bg-zinc-100 text-slate-600 shadow-none dark:bg-cyan-950 dark:text-slate-300">
+                    <th className="bg-slate-50 text-xs font-semibold tracking-wide text-slate-500 uppercase shadow-none dark:bg-cyan-950 dark:text-slate-300">
                       Pilot
                     </th>
-                    <th className="bg-zinc-100 text-slate-600 shadow-none dark:bg-cyan-950 dark:text-slate-300">
+                    <th className="bg-slate-50 text-xs font-semibold tracking-wide text-slate-500 uppercase shadow-none dark:bg-cyan-950 dark:text-slate-300">
                       Impact
                     </th>
-                    <th className="bg-zinc-100 text-right text-slate-600 shadow-none dark:bg-cyan-950 dark:text-slate-300">
+                    <th className="bg-slate-50 text-right text-xs font-semibold tracking-wide text-slate-500 uppercase shadow-none dark:bg-cyan-950 dark:text-slate-300">
                       Include
                     </th>
                   </tr>
@@ -431,7 +431,7 @@ export function ForecastInteractive({ data }: { data: Forecast }) {
                   })}
                 </tbody>
               </table>
-              <div className="pointer-events-none sticky bottom-0 -mt-6 flex h-16 bg-linear-to-b from-transparent to-white/85 dark:to-cyan-950/85" />
+              <div className="pointer-events-none sticky bottom-0 -mt-6 flex h-16 bg-linear-to-b from-transparent to-white/90 dark:to-cyan-950/90" />
             </div>
           </div>
         )}
@@ -440,37 +440,50 @@ export function ForecastInteractive({ data }: { data: Forecast }) {
 
   return (
     <>
-      <div className="mt-4 font-semibold">
-        WPRS:{" "}
-        {hasCurrentTa3 ? (
-          <span className="font-semibold text-green-500">
-            {currentTa3?.toFixed(1)}
-          </span>
-        ) : (
-          <span>No confirmed pilots yet.</span>
+      <div className="mt-5 grid gap-3 sm:grid-cols-2">
+        <div className="rounded-lg border border-slate-200 bg-slate-50/80 p-3 dark:border-slate-800 dark:bg-slate-900/35">
+          <div className="text-xs font-semibold tracking-wide text-slate-500 uppercase dark:text-slate-400">
+            WPRS
+          </div>
+          {hasCurrentTa3 ? (
+            <>
+              <div className="mt-0.5 text-2xl font-bold tracking-tight text-green-600 dark:text-green-400">
+                {currentTa3?.toFixed(1)}
+              </div>
+              <p className="mt-0.5 text-xs leading-5 text-slate-600 dark:text-slate-300">
+                Based on the currently confirmed pilots.
+              </p>
+            </>
+          ) : (
+            <div className="mt-2 text-sm text-slate-600 dark:text-slate-300">
+              No confirmed pilots yet.
+            </div>
+          )}
+        </div>
+
+        {data.maxPilots && data.maxPilots > 0 && (
+          <div className="rounded-lg border border-slate-200 bg-slate-50/80 p-3 dark:border-slate-800 dark:bg-slate-900/35">
+            <div className="text-xs font-semibold tracking-wide text-slate-500 uppercase dark:text-slate-400">
+              Potential WPRS
+            </div>
+            <div className="mt-0.5 text-2xl font-bold tracking-tight text-green-600 dark:text-green-400">
+              {hasPotentialTa3 ? potentialTa3?.toFixed(1) : "-"}
+            </div>
+            <p className="mt-0.5 text-xs leading-5 text-slate-600 dark:text-slate-300">
+              If the top {data.maxPilots} registered pilots would be confirmed.
+            </p>
+          </div>
         )}
       </div>
 
-      {data.maxPilots && data.maxPilots > 0 && (
-        <div className="mt-2">
-          Potential WPRS:{" "}
-          <span className="text-green-500">
-            {hasPotentialTa3 ? potentialTa3?.toFixed(1) : "-"}
-          </span>
-          <p className="text-sm">
-            If the top {data.maxPilots} registered pilots would be confirmed.
-          </p>
-        </div>
-      )}
-
-      <p className="mt-4 text-sm">
+      <p className="mt-5 text-sm leading-6 text-slate-600 dark:text-slate-300">
         The competition WPRS forecast uses CIVL rankings as required by the WPRS
         rules. Your personal position forecast uses historical competition
         results against the current field.
       </p>
       <div className="mt-2">
         <Link
-          className="text-sm underline decoration-green-500 decoration-dotted hover:decoration-solid"
+          className="text-sm font-medium text-green-700 underline decoration-green-500 decoration-dotted hover:decoration-solid dark:text-green-400"
           target="_blank"
           href="https://www.fai.org/sites/default/files/civl/documents/sporting_code_s7_e_-_wprs_2022.pdf"
         >
@@ -495,7 +508,7 @@ export function ForecastInteractive({ data }: { data: Forecast }) {
       )}
       {displayData.genders && <Genders data={displayData.genders} />}
       {(displayData.nationalities ?? displayData.genders) && (
-        <div className="mt-4 text-sm">
+        <div className="mt-4 text-sm text-slate-600 dark:text-slate-300">
           The sum of pilots may not be equal to the number of confirmed pilots
           because of lookup mismatches.
         </div>

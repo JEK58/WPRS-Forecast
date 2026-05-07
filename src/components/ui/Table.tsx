@@ -10,7 +10,7 @@ const Table = React.forwardRef<
     <table
       ref={ref}
       className={cn(
-        "table table-zebra w-full dark:[&_tbody_tr:nth-child(even)]:bg-slate-800/35 dark:[&_tbody_tr:nth-child(odd)]:bg-transparent",
+        "w-full border-separate border-spacing-0 text-sm",
         className,
       )}
       {...props}
@@ -39,11 +39,7 @@ const TableFooter = React.forwardRef<
   HTMLTableSectionElement,
   React.HTMLAttributes<HTMLTableSectionElement>
 >(({ className, ...props }, ref) => (
-  <tfoot
-    ref={ref}
-    className={cn("font-medium", className)}
-    {...props}
-  />
+  <tfoot ref={ref} className={cn("font-medium", className)} {...props} />
 ));
 TableFooter.displayName = "TableFooter";
 
@@ -61,7 +57,10 @@ const TableHead = React.forwardRef<
 >(({ className, ...props }, ref) => (
   <th
     ref={ref}
-    className={cn("text-zinc-500 dark:text-zinc-400", className)}
+    className={cn(
+      "px-3 py-2 text-left text-xs font-semibold tracking-wide text-slate-500 uppercase dark:text-slate-400",
+      className,
+    )}
     {...props}
   />
 ));
@@ -71,7 +70,14 @@ const TableCell = React.forwardRef<
   HTMLTableCellElement,
   React.TdHTMLAttributes<HTMLTableCellElement>
 >(({ className, ...props }, ref) => (
-  <td ref={ref} className={cn("align-middle", className)} {...props} />
+  <td
+    ref={ref}
+    className={cn(
+      "border-t border-slate-200 px-3 py-3 align-middle dark:border-slate-800",
+      className,
+    )}
+    {...props}
+  />
 ));
 TableCell.displayName = "TableCell";
 

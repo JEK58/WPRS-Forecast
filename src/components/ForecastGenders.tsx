@@ -41,8 +41,10 @@ export function Genders({ data }: { data: Forecast["genders"] }) {
   };
 
   return (
-    <div className="mt-2">
-      <h2 className="text-lg font-bold">Genders</h2>
+    <section className="mt-5 border-t border-slate-200 pt-5 dark:border-slate-800">
+      <h2 className="text-lg font-semibold tracking-tight text-slate-950 dark:text-slate-100">
+        Genders
+      </h2>
 
       <ResponsiveContainer width="100%" height={200}>
         <PieChart>
@@ -69,6 +71,6 @@ export function Genders({ data }: { data: Forecast["genders"] }) {
           <Tooltip />
         </PieChart>
       </ResponsiveContainer>
-    </div>
+    </section>
   );
 }

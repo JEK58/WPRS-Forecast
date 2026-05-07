@@ -39,7 +39,7 @@ export function CompUrlInputField() {
 
   return (
     <>
-      <form className="mt-4 flex flex-col gap-2 md:flex-row">
+      <form className="mt-4 flex flex-col gap-2 md:flex-row md:gap-0">
         <div className="relative grow">
           <Input
             name="url"
@@ -48,8 +48,8 @@ export function CompUrlInputField() {
             type="text"
             value={url}
             onChange={(e) => setUrl(e.target.value)}
-            className="input-lg h-12 border-2 border-gray-300 pr-10 text-base focus:outline-none focus:ring-2 focus:ring-blue-500 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-100"
-            placeholder="CIVL, PWC, Airtribune or Swissleague"
+            className="input-lg h-12 pr-11 text-base md:rounded-r-none md:border-r-0"
+            placeholder="Paste competition URL"
           />
           {url.length > 0 ? (
             <Button
@@ -58,9 +58,23 @@ export function CompUrlInputField() {
               onClick={() => setUrl("")}
               variant="ghost"
               size="sm"
-              className="btn-circle absolute right-1 top-1/2 h-8 min-h-8 w-8 -translate-y-1/2 text-gray-500 hover:text-green-500 dark:text-slate-300 dark:hover:text-green-500"
+              className="btn-circle absolute top-1/2 right-1 h-8 min-h-8 w-8 -translate-y-1/2 text-slate-500 hover:text-green-600 dark:text-slate-300 dark:hover:text-green-400"
             >
-              X
+              <svg
+                className="h-4 w-4"
+                fill="none"
+                height="24"
+                stroke="currentColor"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth="2"
+                viewBox="0 0 24 24"
+                width="24"
+                xmlns="http://www.w3.org/2000/svg"
+              >
+                <path d="M18 6 6 18" />
+                <path d="m6 6 12 12" />
+              </svg>
             </Button>
           ) : (
             clipboardApiSupported && (
@@ -68,7 +82,7 @@ export function CompUrlInputField() {
                 type="button"
                 variant="ghost"
                 size="sm"
-                className="btn-circle absolute right-1 top-1/2 h-8 min-h-8 w-8 -translate-y-1/2 text-gray-500 hover:text-gray-700 dark:text-slate-300 dark:hover:text-white"
+                className="btn-circle absolute top-1/2 right-1 h-8 min-h-8 w-8 -translate-y-1/2 text-slate-500 hover:text-slate-700 dark:text-slate-300 dark:hover:text-white"
                 onClick={handlePaste}
               >
                 <svg
@@ -96,9 +110,10 @@ export function CompUrlInputField() {
           asChild
           size="lg"
           className={cn(
-            "h-12 min-h-12 w-full md:w-auto md:self-center",
-            "border-transparent bg-blue-500 text-white hover:bg-blue-700",
-            !isValidLink && "btn-disabled pointer-events-none",
+            "h-12 min-h-12 w-full md:w-auto md:self-center md:rounded-l-none md:px-6",
+            "border-transparent bg-blue-500 text-white shadow-blue-900/10 hover:bg-blue-600",
+            !isValidLink &&
+              "btn-disabled pointer-events-none border-slate-300 bg-slate-300 text-slate-500 hover:bg-slate-300",
           )}
         >
           <Link
@@ -110,7 +125,7 @@ export function CompUrlInputField() {
           </Link>
         </Button>
       </form>
-      <div className="text-sm text-red-500">
+      <div className="min-h-5 pt-1 text-sm text-red-500">
         {!isValidLink && url.length > 0 && <p>This is not a valid link</p>}
       </div>
     </>

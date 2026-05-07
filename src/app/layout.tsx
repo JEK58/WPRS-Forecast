@@ -29,25 +29,25 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en">
-      <body className={`font-sans ${inter.variable}`}>
+      <body className={`font-sans antialiased ${inter.variable}`}>
         <PlausibleProvider
           domain="wprs-forecast.org"
           selfHosted={true}
           customDomain={env.NEXT_PUBLIC_PLAUSIBLE_URL}
         >
-          <div className="flex min-h-screen flex-col bg-linear-to-r from-green-400 to-blue-500 pb-4">
-            <div className="flex flex-col items-center justify-center space-y-8 px-0 py-4 md:px-4">
-              <h1 className="mt-6 text-6xl font-bold text-white sm:text-center sm:text-[5rem] sm:leading-tight">
-                  <Link
-                    href="/"
-                    className="inline-block focus:outline-none focus-visible:ring-2 focus-visible:ring-white/80"
-                  >
-                    WPRS
-                    <span className="block text-green-300 sm:inline">
-                      Forecast
-                    </span>
-                  </Link>
-                </h1>
+          <div className="flex min-h-screen flex-col bg-linear-to-r from-green-400 to-blue-500 pb-4 text-slate-950 dark:text-slate-100">
+            <div className="flex flex-col items-center justify-center space-y-6 px-3 py-6 md:px-4 md:py-8">
+              <h1 className="mt-2 text-center text-5xl leading-none font-extrabold tracking-tight text-white drop-shadow-sm sm:text-7xl">
+                <Link
+                  href="/"
+                  className="inline-block rounded-lg px-2 py-1 focus:outline-none focus-visible:ring-2 focus-visible:ring-white/80"
+                >
+                  WPRS{" "}
+                  <span className="block text-green-200 sm:ml-3 sm:inline">
+                    Forecast
+                  </span>
+                </Link>
+              </h1>
               {/* Alert */}
               {/* <div className="px-3 md:max-w-3xl">
                 <div role="alert" className="alert alert-error">

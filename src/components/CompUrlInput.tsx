@@ -5,12 +5,14 @@ import { CompUrlInputField } from "./CompUrlInputField";
 export function CompUrlInput() {
   return (
     <Box>
-      <h2 className="card-title dark:text-slate-200">Link to Comp</h2>
+      <h2 className="text-lg font-semibold tracking-tight text-slate-950 dark:text-slate-100">
+        Link to Comp
+      </h2>
 
       <CompUrlInputField />
 
-      <div className="mt-4 border-t border-gray-200 py-2 dark:border-slate-600">
-        <ul className="list-outside list-disc px-4 text-gray-500 dark:text-inherit">
+      <div className="mt-5 rounded-lg border border-slate-200 bg-slate-50/75 p-4 dark:border-slate-800 dark:bg-slate-900/35">
+        <ul className="list-outside list-disc space-y-1 px-4 text-sm text-slate-600 dark:text-slate-300">
           <li>This only works for XC paragliding competitions.</li>
           <li>
             Make sure to paste the correct link from the platform that actually
@@ -24,10 +26,10 @@ export function CompUrlInput() {
 
           <li> It will not work for past events. It&apos;s a forecast!</li>
         </ul>
-        <p className="mt-2 text-gray-500 dark:text-inherit">
+        <p className="mt-3 text-sm text-slate-600 dark:text-slate-300">
           See the{" "}
           <Link
-            className="text-green-500 underline decoration-green-500 decoration-dotted hover:decoration-solid"
+            className="font-medium text-green-600 underline decoration-green-500 decoration-dotted hover:decoration-solid dark:text-green-400"
             href="/history"
           >
             history page

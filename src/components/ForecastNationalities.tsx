@@ -31,10 +31,12 @@ export function Nationalities({ data }: { data: Forecast["nationalities"] }) {
   };
 
   return (
-    <div className="mt-6">
-      <h2 className="text-lg font-bold">Nationalities</h2>
+    <section className="mt-6 border-t border-slate-200 pt-5 dark:border-slate-800">
+      <h2 className="text-lg font-semibold tracking-tight text-slate-950 dark:text-slate-100">
+        Nationalities
+      </h2>
 
-      <ResponsiveContainer width="100%" height={600}>
+      <ResponsiveContainer width="100%" height={520}>
         <PieChart>
           <Pie
             dataKey="value"
@@ -57,6 +59,6 @@ export function Nationalities({ data }: { data: Forecast["nationalities"] }) {
           <Tooltip />
         </PieChart>
       </ResponsiveContainer>
-    </div>
+    </section>
   );
 }

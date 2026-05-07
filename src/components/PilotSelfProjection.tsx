@@ -219,12 +219,14 @@ export function PilotSelfProjection({
   if (!confirmedWprs?.length && !registeredWprs?.length) return null;
 
   return (
-    <div className="mt-6 rounded-lg border border-slate-300 bg-zinc-100/45 p-4 dark:border-slate-600 dark:bg-slate-800/35">
+    <div className="mt-6 rounded-lg border border-slate-200 bg-slate-50/80 p-4 dark:border-slate-800 dark:bg-slate-900/35">
       <div className="flex items-center gap-2">
         <span className="rounded-full bg-green-500 px-2 py-0.5 text-xs font-semibold tracking-wide text-white uppercase">
           New
         </span>
-        <h3 className="text-base font-semibold">Personal Position Forecast</h3>
+        <h3 className="text-base font-semibold tracking-tight text-slate-950 dark:text-slate-100">
+          Personal Position Forecast
+        </h3>
       </div>
       <p className="mt-1 text-sm text-slate-600 dark:text-slate-300">
         This forecast looks at how you’ve performed against the current field in
@@ -282,7 +284,7 @@ export function PilotSelfProjection({
       )}
 
       {selectedPilot && (
-        <div className="mt-4 rounded-lg border border-slate-200 bg-white/65 p-3 text-sm dark:border-slate-700 dark:bg-cyan-950/50">
+        <div className="mt-4 rounded-lg border border-slate-200 bg-white/80 p-3 text-sm dark:border-slate-700 dark:bg-cyan-950/50">
           <div className="flex items-start justify-between gap-3">
             <div className="font-semibold">
               {selectedPilot.name} (CIVL {selectedPilot.id})
@@ -348,7 +350,9 @@ function ProjectionCard({
 }) {
   return (
     <div className="rounded-lg border border-slate-200 bg-white/65 p-3 dark:border-slate-700 dark:bg-cyan-950/50">
-      <div className="font-medium">{title}</div>
+      <div className="font-medium text-slate-900 dark:text-slate-100">
+        {title}
+      </div>
       {isLoading ? (
         <div className="mt-2 text-sm text-slate-500 dark:text-slate-300">
           Forecasting...
@@ -426,7 +430,7 @@ function ProjectionCard({
 
 function ProbabilityStat({ label, value }: { label: string; value: number }) {
   return (
-    <div className="rounded-md bg-zinc-100 px-2 py-1 dark:bg-slate-800/50">
+    <div className="rounded-md border border-slate-200 bg-slate-50 px-2 py-1 dark:border-slate-700 dark:bg-slate-800/50">
       <div className="text-slate-500 dark:text-slate-300">{label}</div>
       <div className="font-semibold">{formatProbability(value)}</div>
     </div>

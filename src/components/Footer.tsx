@@ -2,24 +2,24 @@ import Link from "next/link";
 
 export function Footer() {
   return (
-    <footer className="mt-auto w-full bg-gray-800 px-0 py-4 text-center text-sm text-gray-300">
+    <footer className="mt-auto w-full border-t border-white/15 bg-slate-950/18 px-0 py-4 text-center text-sm text-white/80 backdrop-blur-sm">
       <div className="mx-auto flex max-w-7xl flex-wrap items-center justify-center space-x-4 px-4 sm:px-6 lg:px-8">
         <Link
-          className="whitespace-nowrap py-1 align-middle hover:underline"
+          className="rounded-md py-1 align-middle whitespace-nowrap hover:text-white hover:underline focus:outline-none focus-visible:ring-2 focus-visible:ring-white/70"
           href="/imprint"
         >
           Imprint & Privacy
         </Link>
-        <span className="hidden py-1 text-gray-400 sm:inline">|</span>
+        <span className="hidden py-1 text-white/35 sm:inline">|</span>
         <Link
-          className="whitespace-nowrap py-1 align-middle hover:underline"
+          className="rounded-md py-1 align-middle whitespace-nowrap hover:text-white hover:underline focus:outline-none focus-visible:ring-2 focus-visible:ring-white/70"
           href="https://github.com/JEK58/wprs-forecast"
           target="_blank"
           rel="noopener noreferrer"
         >
           Made with
           <svg
-            className="mx-1 inline text-red-500"
+            className="mx-1 inline text-red-300"
             fill="none"
             height="20"
             stroke="currentColor"

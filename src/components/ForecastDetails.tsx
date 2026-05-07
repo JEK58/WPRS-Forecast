@@ -27,8 +27,8 @@ function formatWorldRankingDate(date: Date | string | undefined) {
 
 export function ForecastDetails({ data }: { data: Forecast }) {
   return (
-    <details className="collapse collapse-arrow mt-6 border border-slate-300 dark:border-slate-600">
-      <summary className="collapse-title cursor-pointer list-none font-semibold">
+    <details className="collapse-arrow collapse mt-6 rounded-lg border border-slate-200 bg-slate-50/80 dark:border-slate-800 dark:bg-slate-900/35">
+      <summary className="collapse-title cursor-pointer list-none font-semibold text-slate-900 dark:text-slate-100">
         Stats for nerds
       </summary>
       <div className="border-t border-slate-200 px-4 py-3 dark:border-slate-700">
