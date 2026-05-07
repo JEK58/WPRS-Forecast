@@ -14,9 +14,11 @@ const config = {
   output: "standalone",
 };
 
-const configWithPlausible = withPlausibleProxy({
-  customDomain: env.NEXT_PUBLIC_PLAUSIBLE_URL,
-})(config);
+const configWithPlausible = env.NEXT_PUBLIC_PLAUSIBLE_SRC
+  ? withPlausibleProxy({
+      src: env.NEXT_PUBLIC_PLAUSIBLE_SRC,
+    })(config)
+  : config;
 
 const sentryBuildOptions = {
   // For all available options, see:

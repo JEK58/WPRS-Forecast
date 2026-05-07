@@ -46,7 +46,7 @@ export const env = createEnv({
    */
   client: {
     // NEXT_PUBLIC_CLIENTVAR: z.string(),
-    NEXT_PUBLIC_PLAUSIBLE_URL: z.string().url().optional(),
+    NEXT_PUBLIC_PLAUSIBLE_SRC: z.url().optional(),
   },
 
   /**
@@ -63,7 +63,7 @@ export const env = createEnv({
     OPENAI_API_KEY: process.env.OPENAI_API_KEY,
     ALGOLIA_API_KEY: process.env.ALGOLIA_API_KEY,
     ALGOLIA_APP_ID: process.env.ALGOLIA_APP_ID,
-    NEXT_PUBLIC_PLAUSIBLE_URL: process.env.NEXT_PUBLIC_PLAUSIBLE_URL,
+    NEXT_PUBLIC_PLAUSIBLE_SRC: process.env.NEXT_PUBLIC_PLAUSIBLE_SRC,
     // NEXTAUTH_SECRET: process.env.NEXTAUTH_SECRET,
     // NEXTAUTH_URL: process.env.NEXTAUTH_URL,
     // DISCORD_CLIENT_ID: process.env.DISCORD_CLIENT_ID,

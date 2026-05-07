@@ -7,6 +7,17 @@ const TIME_FRAME = 30 * 1000; // 30 seconds
 
 // This function can be marked `async` if using `await` inside
 export function proxy(req: NextRequest) {
+  if (req.nextUrl.pathname === "/api/event") {
+    const requestHeaders = new Headers(req.headers);
+    requestHeaders.set("cookie", "");
+
+    return NextResponse.next({
+      request: {
+        headers: requestHeaders,
+      },
+    });
+  }
+
   const forwardedFor = req.headers.get("x-forwarded-for");
   const ip = forwardedFor?.split(",")[0]?.trim() ?? req.headers.get("x-real-ip");
 
@@ -34,5 +45,5 @@ export function proxy(req: NextRequest) {
 }
 
 export const config = {
-  matcher: "/bogus",
+  matcher: ["/api/event", "/bogus"],
 };
