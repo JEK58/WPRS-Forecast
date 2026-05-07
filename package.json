@@ -21,7 +21,7 @@
     "@radix-ui/react-slot": "^1.2.4",
     "@sentry/nextjs": "^10.51.0",
     "@t3-oss/env-nextjs": "^0.13.11",
-    "algoliasearch": "^5.52.0",
+    "algoliasearch": "^5.52.1",
     "axios": "^1.16.0",
     "cheerio": "^1.2.0",
     "class-variance-authority": "^0.7.1",
@@ -30,12 +30,12 @@
     "drizzle-orm": "^0.45.1",
     "ioredis": "^5.10.1",
     "minisearch": "^7.2.0",
-    "next": "^16.2.4",
+    "next": "^16.2.5",
     "next-plausible": "^3.12.5",
     "openai": "^6.36.0",
     "postgres": "^3.4.9",
-    "react": "^19.2.5",
-    "react-dom": "^19.2.5",
+    "react": "^19.2.6",
+    "react-dom": "^19.2.6",
     "recharts": "^3.8.1",
     "tailwind-merge": "^3.5.0",
     "xlsx": "https://cdn.sheetjs.com/xlsx-0.20.0/xlsx-0.20.0.tgz",
@@ -52,13 +52,13 @@
     "@typescript-eslint/parser": "^8.59.2",
     "drizzle-kit": "^0.31.10",
     "eslint": "^8.57.1",
-    "eslint-config-next": "^16.2.4",
+    "eslint-config-next": "^16.2.5",
     "eslint-plugin-drizzle": "^0.2.3",
     "pg": "^8.20.0",
     "prettier": "^3.8.3",
     "prettier-plugin-tailwindcss": "^0.7.4",
     "tailwindcss": "^4.2.4",
-    "typescript": "^5.9.3"
+    "typescript": "^6.0.3"
   },
   "ct3aMetadata": {
     "initVersion": "7.30.0"
@@ -66,6 +66,6 @@
   "engines": {
     "node": ">=18.17.0"
   },
-  "packageManager": "pnpm@10.33.3",
+  "packageManager": "pnpm@10.33.4",
   "browserslist": "> 1%"
 }

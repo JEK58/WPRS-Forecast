@@ -10,8 +10,16 @@ describe("Get data for CIVL comps", () => {
     if (!res) throw new Error("Expected CIVL competition response");
 
     expect(res.pilots.length).toBeGreaterThanOrEqual(190);
-    expect(res.pilots.every((pilot) => pilot.name.length > 0)).toBe(true);
-    expect(res.pilots.every((pilot) => pilot.status.length > 0)).toBe(true);
+    expect(
+      res.pilots.every(
+        (pilot) => pilot.name !== undefined && pilot.name.length > 0,
+      ),
+    ).toBe(true);
+    expect(
+      res.pilots.every(
+        (pilot) => pilot.status !== undefined && pilot.status.length > 0,
+      ),
+    ).toBe(true);
   }, 30000);
 
   it("should forecast an upcoming comp", async () => {
