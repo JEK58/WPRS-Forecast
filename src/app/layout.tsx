@@ -3,12 +3,14 @@ import "@/styles/globals.css";
 import Link from "next/link";
 import PlausibleProvider from "next-plausible";
 import { env } from "@/env.js";
-import { Inter } from "next/font/google";
+import localFont from "next/font/local";
 import { type Viewport } from "next";
 
-const inter = Inter({
-  subsets: ["latin"],
+const inter = localFont({
+  src: "./fonts/InterVariable.woff2",
+  display: "swap",
   variable: "--font-sans",
+  weight: "100 900",
 });
 
 export const metadata = {
