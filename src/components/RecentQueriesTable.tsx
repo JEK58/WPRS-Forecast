@@ -27,9 +27,9 @@ const RecentQueriesTable = async () => {
 
     return (
       <TableRow key={stat.id}>
-        <TableCell className="font-medium">
+        <TableCell className="w-[42%] max-w-0 px-2 font-medium sm:w-auto sm:max-w-none sm:px-3">
           <a
-            className="text-slate-800 decoration-green-500 hover:text-green-700 hover:underline hover:decoration-dotted dark:text-slate-100 dark:hover:text-green-300"
+            className="block min-w-0 overflow-hidden break-words text-slate-800 decoration-green-500 hover:text-green-700 hover:underline hover:decoration-dotted dark:text-slate-100 dark:hover:text-green-300"
             href={sanitizeUrl(stat.compUrl)}
             target="_blank"
             rel="noopener noreferrer"
@@ -37,9 +37,9 @@ const RecentQueriesTable = async () => {
             {compTitle}
           </a>
         </TableCell>
-        <TableCell>
+        <TableCell className="w-[18%] px-2 sm:w-auto sm:px-3">
           {!!stat.daysTillCompStart && stat.daysTillCompStart > 0 ? (
-            <span className="font-normal text-gray-400">
+            <span className="block leading-tight font-normal text-gray-400">
               {stat.daysTillCompStart}{" "}
               {stat.daysTillCompStart != 1 ? "days" : "day"}
             </span>
@@ -49,7 +49,7 @@ const RecentQueriesTable = async () => {
             <span className="font-normal text-gray-400"></span>
           )} */}
         </TableCell>
-        <TableCell className="font-mono text-sm font-bold tabular-nums">
+        <TableCell className="w-[18%] px-2 font-mono text-sm font-bold tabular-nums sm:w-auto sm:px-3">
           <span className="hidden whitespace-nowrap text-green-600 sm:inline dark:text-green-400">
             {stat.wprs ?? "---"}
             {stat.potentialWprs && (
@@ -73,12 +73,12 @@ const RecentQueriesTable = async () => {
         <TableCell className="hidden sm:table-cell">
           {formatAge(stat.ageInHours)}
         </TableCell>
-        <TableCell className="text-right">
+        <TableCell className="w-12 px-1 text-right sm:w-auto sm:px-3">
           <Button
             asChild
             aria-label="Update"
             size="sm"
-            className="h-9 min-h-9 border-transparent bg-green-500 text-white hover:bg-green-600"
+            className="h-9 min-h-9 w-9 border-transparent bg-green-500 p-0 text-white hover:bg-green-600 sm:w-auto sm:px-3"
           >
             <Link href={`/forecast?url=${stat.compUrl}`}>
               <span className="hidden sm:inline">Update</span>
@@ -111,15 +111,21 @@ const RecentQueriesTable = async () => {
       <h2 className="text-lg font-semibold tracking-tight text-slate-950 dark:text-slate-100">
         Recent Queries
       </h2>
-      <div className="w-full overflow-x-auto">
-        <Table className="w-full text-left [&_tbody_tr:hover]:bg-white/60 dark:[&_tbody_tr:hover]:bg-slate-900/35">
+      <div className="min-w-0 w-full overflow-hidden">
+        <Table className="w-full table-fixed text-left sm:table-auto [&_tbody_tr:hover]:bg-white/60 dark:[&_tbody_tr:hover]:bg-slate-900/35">
           <TableHeader>
             <TableRow>
-              <TableHead>Competition</TableHead>
-              <TableHead>Begins</TableHead>
-              <TableHead>WPRS</TableHead>
+              <TableHead className="w-[42%] px-2 sm:w-auto sm:px-3">
+                Competition
+              </TableHead>
+              <TableHead className="w-[18%] px-2 sm:w-auto sm:px-3">
+                Begins
+              </TableHead>
+              <TableHead className="w-[18%] px-2 sm:w-auto sm:px-3">
+                WPRS
+              </TableHead>
               <TableHead className="hidden sm:table-cell">Updated</TableHead>
-              <TableHead />
+              <TableHead className="w-12 px-1 sm:w-auto sm:px-3" />
             </TableRow>
           </TableHeader>
           <TableBody>{recentQueriesTableRows}</TableBody>
