@@ -1,0 +1,9 @@
+services:
+  wprs-forecast:
+    container_name: wprs-forecast
+    build:
+      context: ./
+      dockerfile: Dockerfile
+    environment:
+      DATABASE_URL: ${DATABASE_URL}
+    restart: always
