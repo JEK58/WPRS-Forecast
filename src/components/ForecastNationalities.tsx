@@ -146,8 +146,12 @@ export function Nationalities({ data }: { data: Forecast["nationalities"] }) {
               <NationalityTooltip {...props} isPinned={pinnedIndex !== null} />
             )}
             defaultIndex={pinnedIndex ?? undefined}
+            isAnimationActive={false}
             trigger={pinnedIndex === null ? "hover" : "click"}
-            wrapperStyle={{ pointerEvents: "auto", zIndex: 20 }}
+            wrapperStyle={{
+              pointerEvents: pinnedIndex === null ? "none" : "auto",
+              zIndex: 20,
+            }}
           />
         </PieChart>
       </ResponsiveContainer>
