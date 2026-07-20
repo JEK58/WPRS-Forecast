@@ -2,7 +2,7 @@ import { describe, it, expect, beforeAll } from "bun:test";
 import { calculateWPRS } from "@/utils/calculate-wprs";
 import { db } from "@/server/db";
 import { ranking } from "@/server/db/schema";
-import dummyRanking from "__tests__/data/DummyRanking.json";
+import dummyRanking from "./data/DummyRanking.json";
 import { gt, lte, and } from "drizzle-orm";
 
 beforeAll(async () => {

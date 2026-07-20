@@ -5,15 +5,15 @@ import { type Ranking } from "@/utils/calculate-wprs";
 function ranking(name: string, nation: string, id: number): Ranking {
   return {
     id,
-    createdAt: new Date("2026-01-01T00:00:00.000Z"),
-    updatedAt: new Date("2026-01-01T00:00:00.000Z"),
+    createdAt: "2026-01-01T00:00:00.000Z",
+    updatedAt: "2026-01-01T00:00:00.000Z",
     name,
     normalizedName: name,
     gender: "M",
     points: 1,
     rank: id,
     nation,
-    date: new Date("2026-01-01T00:00:00.000Z"),
+    date: "2026-01-01T00:00:00.000Z",
   };
 }
 
