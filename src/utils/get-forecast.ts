@@ -77,6 +77,7 @@ export async function getForecast(
 export function calculateNationalities(pilots: Ranking[]) {
   if (pilots.length === 0) return;
   const nationalitiesCount: Record<string, number> = {};
+  const pilotNames: Record<string, string[]> = {};
   pilots.forEach((pilot) => {
     if (!pilot.nation) return;
     if (nationalitiesCount[pilot.nation]) {
@@ -85,7 +86,16 @@ export function calculateNationalities(pilots: Ranking[]) {
     } else {
       nationalitiesCount[pilot.nation] = 1;
     }
+
+    pilotNames[pilot.nation] = [
+      ...(pilotNames[pilot.nation] ?? []),
+      pilot.name,
+    ];
   });
+
+  Object.values(pilotNames).forEach((names) =>
+    names.sort((a, b) => a.localeCompare(b)),
+  );
 
   const totalPilots = pilots.length;
 
@@ -96,7 +106,11 @@ export function calculateNationalities(pilots: Ranking[]) {
       "%";
   }
 
-  return { count: nationalitiesCount, percentage: nationalitiesPercentage };
+  return {
+    count: nationalitiesCount,
+    percentage: nationalitiesPercentage,
+    pilotNames,
+  };
 }
 
 export function calculateGender(pilots: Ranking[]) {

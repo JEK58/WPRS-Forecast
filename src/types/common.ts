@@ -24,6 +24,7 @@ export interface CompForecast {
 export interface Nationalities {
   count: Record<string, number>;
   percentage: Record<string, string>;
+  pilotNames: Record<string, string[]>;
 }
 
 export type Forecast = {
