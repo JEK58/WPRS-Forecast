@@ -9,6 +9,11 @@ import {
 } from "@/types/common";
 import { CHART_COLORS } from "@/utils/constants";
 import {
+  encodeSavedPilot,
+  restoreSavedPilot,
+  type RankedPilot as Pilot,
+} from "@/utils/saved-pilot";
+import {
   Area,
   AreaChart,
   CartesianGrid,
@@ -18,14 +23,6 @@ import {
   XAxis,
   YAxis,
 } from "recharts";
-
-type Pilot = {
-  id: number;
-  name: string;
-  rank: number;
-  points: number;
-  nation: string;
-};
 
 type WprsRow = {
   Ta1: number;
@@ -55,9 +52,7 @@ function getCookie(name: string) {
 function savePilotCookie(pilot: Pilot) {
   if (typeof document === "undefined") return;
 
-  document.cookie = `${PILOT_COOKIE_NAME}=${encodeURIComponent(
-    JSON.stringify(pilot),
-  )}; Path=/; Max-Age=${COOKIE_MAX_AGE_SECONDS}; SameSite=Lax`;
+  document.cookie = `${PILOT_COOKIE_NAME}=${encodeSavedPilot(pilot)}; Path=/; Max-Age=${COOKIE_MAX_AGE_SECONDS}; SameSite=Lax`;
 }
 
 function clearPilotCookie() {
@@ -88,25 +83,40 @@ export function PilotSelfProjection({
     PositionForecastResponse["scenarios"]
   >({});
   const [isHydrated, setIsHydrated] = useState(false);
+  const [restoreError, setRestoreError] = useState(false);
+  const [restoreAttempt, setRestoreAttempt] = useState(0);
   const forecastRequestIdRef = useRef(0);
 
   useEffect(() => {
     if (typeof window === "undefined") return;
 
     const raw = getCookie(PILOT_COOKIE_NAME);
-    if (raw) {
-      try {
-        const parsed = JSON.parse(decodeURIComponent(raw)) as Pilot;
-        if (parsed?.id && parsed?.name) {
-          setSelectedPilot(parsed);
-        }
-      } catch {
-        clearPilotCookie();
-      }
+    if (!raw) {
+      setIsHydrated(true);
+      return;
     }
 
-    setIsHydrated(true);
-  }, []);
+    const controller = new AbortController();
+    setIsHydrated(false);
+    setRestoreError(false);
+
+    restoreSavedPilot(raw, controller.signal)
+      .then((pilot) => {
+        if (controller.signal.aborted) return;
+        setSelectedPilot(pilot);
+        if (pilot) savePilotCookie(pilot);
+        else clearPilotCookie();
+      })
+      .catch(() => {
+        if (controller.signal.aborted) return;
+        setRestoreError(true);
+      })
+      .finally(() => {
+        if (!controller.signal.aborted) setIsHydrated(true);
+      });
+
+    return () => controller.abort();
+  }, [restoreAttempt]);
 
   useEffect(() => {
     const q = query.trim();
@@ -203,6 +213,7 @@ export function PilotSelfProjection({
   }, [positionForecast.registered, registeredWprs]);
 
   const onSelectPilot = (pilot: Pilot) => {
+    setRestoreError(false);
     setSelectedPilot(pilot);
     setQuery("");
     setResults([]);
@@ -233,6 +244,24 @@ export function PilotSelfProjection({
         past competitions. Recent results count more than older ones, using a
         two-year weighting system. No AI, just maths.
       </p>
+      {!isHydrated && (
+        <p className="mt-3 text-sm text-slate-500 dark:text-slate-300">
+          Loading saved pilot…
+        </p>
+      )}
+      {restoreError && (
+        <div className="mt-3 flex items-center gap-2 text-sm text-slate-600 dark:text-slate-300">
+          Could not load your saved pilot’s current ranking.
+          <Button
+            type="button"
+            variant="outline"
+            size="sm"
+            onClick={() => setRestoreAttempt((attempt) => attempt + 1)}
+          >
+            Retry
+          </Button>
+        </div>
+      )}
       {isHydrated && !selectedPilot && (
         <p className="mt-1 text-sm text-slate-600 dark:text-slate-300">
           Search your name or CIVL ID to forecast your place from historical
