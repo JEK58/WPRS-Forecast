@@ -66,7 +66,7 @@ was cached in Redis as placeholder `99999` (`name:*` keys, 10-day TTL in
 after the import. Flush Redis and re-request:
 
 ```bash
-docker exec wprs-forecast-cache-1 redis-cli FLUSHDB
+docker compose -f docker-compose-dev.yml exec cache redis-cli FLUSHDB
 ```
 
 ## Environment variables

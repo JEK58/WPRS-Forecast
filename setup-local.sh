@@ -32,9 +32,13 @@ fail()  { printf '\033[1;31mXX\033[0m %s\n' "$*" >&2; exit 1; }
 # --- 1. Prerequisite checks -------------------------------------------------
 info "Checking prerequisites..."
 
-node --version >/dev/null 2>&1 || fail "Node.js not found. Install Node >= 18.17 (https://nodejs.org)."
-NODE_MAJOR=$(node -p "process.versions.node.split('.')[0]")
-[ "$NODE_MAJOR" -ge 18 ] || fail "Node >= 18.17 required, found $(node --version)."
+node --version >/dev/null 2>&1 || fail "Node.js not found. Install Node >= 18.17.0 (https://nodejs.org)."
+NODE_VER=$(node -p "process.versions.node")
+NODE_MAJOR=${NODE_VER%%.*}
+NODE_MINOR=$(echo "$NODE_VER" | cut -d. -f2)
+if [ "$NODE_MAJOR" -lt 18 ] || { [ "$NODE_MAJOR" -eq 18 ] && [ "${NODE_MINOR:-0}" -lt 17 ]; }; then
+  fail "Node >= 18.17.0 required (package.json engines), found $(node --version)."
+fi
 
 command -v pnpm >/dev/null 2>&1 || fail "pnpm not found. Install with: corepack enable pnpm  (pinned: pnpm@10.34.5)"
 command -v docker >/dev/null 2>&1 || fail "Docker not found. Install Docker Desktop (https://docs.docker.com/get-docker/)."
@@ -129,7 +133,11 @@ else
   elif docker-compose -f docker-compose-dev.yml up -d 2>/dev/null; then
     info "Redis started (via docker-compose v1)."
   else
-    warn "Could not start Redis via compose. App works without Redis (REDIS_URL unset) — continuing."
+    warn "Could not start Redis via compose. Disabling REDIS_URL in .env so the app runs without cache — continuing."
+    if [ -f .env ] && grep -q '^REDIS_URL=' .env; then
+      sed -i.bak 's|^REDIS_URL=|# REDIS_URL=|' .env && rm -f .env.bak
+      info "REDIS_URL commented out in .env. To re-enable: docker compose -f docker-compose-dev.yml up -d, then uncomment REDIS_URL."
+    fi
   fi
 
   info "Waiting for Postgres to accept connections..."
