@@ -510,13 +510,14 @@ export type LivePilot = {
   noShow?: boolean;
 };
 
-async function getPwcLivePilots(scoringBaseUrl: string): Promise<{
+export async function getPwcLivePilots(scoringBaseUrl: string): Promise<{
   pilots: LivePilot[];
   sourceUrl?: string;
 }> {
   // Prefer the dedicated starter list (pilots.html), then the cumulative
-  // standings (ranking0.html), then the per-task pages (a taskN.html union
-  // covers stopped/cancelled-task edge cases where a ranking page is missing).
+  // standings (ranking0.html), then the union of all per-task pages
+  // (covers stopped/cancelled-task edge cases where a ranking page is
+  // missing or a pilot only appears in some tasks).
   const candidates = [
     `${scoringBaseUrl}pilots.html`,
     `${scoringBaseUrl}ranking0.html`,
@@ -528,18 +529,25 @@ async function getPwcLivePilots(scoringBaseUrl: string): Promise<{
 
   const taskUrls = await discoverScoringTaskUrls(scoringBaseUrl);
   const seen = new Map<string, LivePilot>();
+  let sourceUrl: string | undefined;
   for (const url of taskUrls) {
     const pilots = await getPwcScoringPilots(url);
+    if (pilots.length > 0 && !sourceUrl) sourceUrl = url;
     for (const pilot of pilots) {
       if (!seen.has(pilot.name)) seen.set(pilot.name, pilot);
     }
-    if (seen.size > 0) break;
   }
-  const pilots = [...seen.values()];
-  return {
-    pilots,
-    sourceUrl: pilots.length > 0 ? taskUrls[0] : undefined,
-  };
+  return { pilots: [...seen.values()], sourceUrl };
+}
+
+// Sort task page filenames by numeric task index so task10.html comes after
+// task2.html (plain lexicographic sort would order it before).
+export function sortScoringTaskFiles(files: string[]): string[] {
+  return [...files].sort((a, b) => {
+    const numA = Number(a.match(/^task(\d+)\.html$/)?.[1] ?? 0);
+    const numB = Number(b.match(/^task(\d+)\.html$/)?.[1] ?? 0);
+    return numA - numB || (a < b ? -1 : a > b ? 1 : 0);
+  });
 }
 
 async function discoverScoringTaskUrls(
@@ -550,13 +558,11 @@ async function discoverScoringTaskUrls(
     if (!res.ok) return [`${scoringBaseUrl}task1.html`];
     const html = await res.text();
     const matches = html.matchAll(/href=["'](task\d+[a-z]*\.html)["']/gi);
-    const files = [
-      ...new Set(
-        [...matches].map((m) => m[1]).filter((f): f is string => !!f),
+    const files = sortScoringTaskFiles(
+      [...new Set([...matches].map((m) => m[1]).filter((f): f is string => !!f))].filter(
+        (f) => /^task\d+\.html$/.test(f),
       ),
-    ]
-      .filter((f) => /^task\d+\.html$/.test(f))
-      .sort();
+    );
     if (files.length === 0) return [`${scoringBaseUrl}task1.html`];
     return files.map((f) => `${scoringBaseUrl}${f}`);
   } catch {
@@ -578,6 +584,10 @@ function isPilotRow(cells: ScoringCells): boolean {
   return rank !== "" && id !== "" && Number.isInteger(Number(rank)) && Number.isInteger(Number(id));
 }
 
+function normalizeScoringName(value: string) {
+  return value.trim().replace(/\s+/g, " ").toLowerCase();
+}
+
 function parseScoringPilotRow(cells: ScoringCells): LivePilot | null {
   // Scoring table layout (pilots.html, ranking0.html, taskN.html):
   // # | Id | Name | gender | Nat | Glider | ... The Nat column holds the
@@ -586,7 +596,9 @@ function parseScoringPilotRow(cells: ScoringCells): LivePilot | null {
   // Note: nationality is informational only — the forecast's nationality and
   // gender breakdowns come from the CIVL world-ranking database, not from
   // this scraped field.
-  const name = cells.eq(2).text().trim().toLowerCase();
+  // Names are whitespace-normalized (like the selection table) so multi-space
+  // or nbsp variants still match during de-dupe and live/selection merging.
+  const name = normalizeScoringName(cells.eq(2).text());
   if (!name) return null;
   const nationality = cells.eq(4).text().trim();
   const wing = cells.eq(5).text().trim() || undefined;

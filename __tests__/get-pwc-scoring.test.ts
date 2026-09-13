@@ -1,9 +1,11 @@
-import { describe, expect, it } from "bun:test";
+import { afterEach, describe, expect, it } from "bun:test";
 import {
   baseUrlFromScoringUrl,
+  getPwcLivePilots,
   getScoringBaseUrl,
   mergeSelectionWithLiveStarters,
   parseScoringPilotsFromHtml,
+  sortScoringTaskFiles,
   type LivePilot,
 } from "@/utils/get-pwc-comp";
 
@@ -84,6 +86,19 @@ describe("PWC scoring portal parsing", () => {
     expect(pilots[0]?.nationality).toBe("CZE");
   });
 
+  it("normalizes multi-space and nbsp names so merging still matches", () => {
+    const pilots = parseScoringPilotsFromHtml(
+      PILOTS_HTML.replace("Adem Berk Aksoy", "Adem  Berk&nbsp;Aksoy"),
+    );
+
+    expect(pilots[0]?.name).toBe("adem berk aksoy");
+  });
+
+  it("sorts task pages numerically, not lexicographically", () => {
+    expect(
+      sortScoringTaskFiles(["task10.html", "task2.html", "task1.html"]),
+    ).toEqual(["task1.html", "task2.html", "task10.html"]);
+  });
   it("resolves the scoring base URL from the event page", () => {
     expect(
       getScoringBaseUrl(
@@ -125,5 +140,63 @@ describe("mergeSelectionWithLiveStarters", () => {
     expect(waiting?.confirmed).toBe(false);
     expect(waiting?.noShow ?? false).toBe(false);
     expect(waiting?.status).toBe("Waiting List");
+  });
+});
+
+function taskPage(pilots: Array<[rank: string, id: string, name: string]>) {
+  const rows = pilots
+    .map(
+      ([rank, id, name]) => `<tr class="result_row">
+    <td class="result" align="right">${rank}</td><td class="result">${id}</td>
+    <td class="result">${name}</td><td class="result">M</td>
+    <td class="result">FRA</td><td class="result">Ozone Enzo 3</td>
+  </tr>`,
+    )
+    .join("\n");
+  return `<table class="result">
+  <thead><tr class="result_row">
+    <th class="result">#</th><th class="result">Id</th><th class="result">Name</th>
+    <th class="result"></th><th class="result">Nat</th><th class="result">Glider</th>
+  </tr></thead>${rows}</table>`;
+}
+
+describe("getPwcLivePilots task fallback", () => {
+  const originalFetch = globalThis.fetch;
+
+  afterEach(() => {
+    globalThis.fetch = originalFetch;
+  });
+
+  it("unions all task pages and reports the first contributing page", async () => {
+    const base = "https://scoring.pwca.org/sopot-2026/";
+    const pages: Record<string, { ok: boolean; html: string }> = {
+      [base]: {
+        ok: true,
+        html: `<a href="task10.html">t10</a><a href="task1.html">t1</a><a href="task2.html">t2</a>`,
+      },
+      [`${base}pilots.html`]: { ok: false, html: "" },
+      [`${base}ranking0.html`]: { ok: true, html: "<p>empty</p>" },
+      [`${base}task1.html`]: { ok: false, html: "" },
+      [`${base}task2.html`]: {
+        ok: true,
+        html: taskPage([["1", "39", "Stanislav Klikar"]]),
+      },
+      [`${base}task10.html`]: {
+        ok: true,
+        html: taskPage([["1", "93", "Honorin Hamard"]]),
+      },
+    };
+    globalThis.fetch = (async (url: string | URL | Request) => {
+      const page = pages[String(url)] ?? { ok: false, html: "" };
+      return { ok: page.ok, text: async () => page.html };
+    }) as typeof fetch;
+
+    const { pilots, sourceUrl } = await getPwcLivePilots(base);
+
+    expect(pilots.map((p) => p.name).sort()).toEqual([
+      "honorin hamard",
+      "stanislav klikar",
+    ]);
+    expect(sourceUrl).toBe(`${base}task2.html`);
   });
 });
