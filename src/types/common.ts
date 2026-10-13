@@ -7,6 +7,9 @@ export interface Pilot {
   status?: string;
   confirmed?: boolean;
   rank?: number;
+  // True when the pilot was confirmed pre-event but never started the comp
+  // (missing from the scoring portal starter list).
+  noShow?: boolean;
 }
 
 export interface CompForecast {

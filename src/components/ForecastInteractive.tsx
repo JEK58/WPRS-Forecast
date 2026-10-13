@@ -96,7 +96,15 @@ export function ForecastInteractive({ data }: { data: Forecast }) {
   const unconfirmedEntries = useMemo(
     () =>
       allPilotEntries
-        .filter((entry) => !entry.isConfirmed)
+        .filter((entry) => !entry.isConfirmed && !entry.pilot.noShow)
+        .sort(comparePilotEntries),
+    [allPilotEntries],
+  );
+
+  const noShowEntries = useMemo(
+    () =>
+      allPilotEntries
+        .filter((entry) => !entry.isConfirmed && entry.pilot.noShow)
         .sort(comparePilotEntries),
     [allPilotEntries],
   );
@@ -393,6 +401,41 @@ export function ForecastInteractive({ data }: { data: Forecast }) {
                       </tr>
                     );
                   })}
+                  {!!noShowEntries.length && (
+                    <tr>
+                      <td
+                        colSpan={3}
+                        className="pt-4 pb-1 text-xs font-semibold text-slate-500 uppercase dark:text-slate-300"
+                      >
+                        No-shows (were confirmed, did not start)
+                      </td>
+                    </tr>
+                  )}
+                  {noShowEntries.map((entry, rowIndex) => {
+                    const isSelected = selectedPilotSet.has(entry.key);
+                    return (
+                      <tr key={entry.key}>
+                        <td className="font-medium">
+                          {confirmedEntries.length + rowIndex + 1}.{" "}
+                          {entry.pilot.name ?? `Pilot ${entry.index + 1}`}
+                        </td>
+                        <td className="font-mono text-xs">
+                          {renderContribution(entry.key, isSelected)}
+                        </td>
+                        <td className="text-right">
+                          <input
+                            type="checkbox"
+                            id={`pilot-impact-${entry.key}`}
+                            name={`pilot-impact-${entry.key}`}
+                            checked={isSelected}
+                            onChange={() => onTogglePilot(entry.key)}
+                            aria-label={`Toggle ${entry.pilot.name ?? `Pilot ${entry.index + 1}`}`}
+                            className="checkbox checkbox-sm"
+                          />
+                        </td>
+                      </tr>
+                    );
+                  })}
                   {!!unconfirmedEntries.length && (
                     <tr>
                       <td
@@ -408,7 +451,10 @@ export function ForecastInteractive({ data }: { data: Forecast }) {
                     return (
                       <tr key={entry.key}>
                         <td className="font-medium">
-                          {confirmedEntries.length + rowIndex + 1}.{" "}
+                          {confirmedEntries.length +
+                            noShowEntries.length +
+                            rowIndex +
+                            1}.{" "}
                           {entry.pilot.name ?? `Pilot ${entry.index + 1}`}
                         </td>
                         <td className="font-mono text-xs">
