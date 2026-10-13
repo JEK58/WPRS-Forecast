@@ -1,6 +1,10 @@
-import { describe, it, expect } from "bun:test";
+import { afterEach, describe, it, expect, setSystemTime } from "bun:test";
 import { getForecast } from "@/utils/get-forecast";
 import { getAirtribuneComp } from "@/utils/get-airtribune-comp";
+
+afterEach(() => {
+  setSystemTime();
+});
 
 describe("Airtribune", () => {
   it("finds the correct comp date", async () => {
@@ -32,6 +36,8 @@ describe("Airtribune", () => {
   }, 20000);
 
   it("should forecast an upcoming comp", async () => {
+    // Keep the July fixture upcoming regardless of when the suite runs.
+    setSystemTime(new Date("2026-07-01T12:00:00.000Z"));
     const url = "https://airtribune.com/pao2026";
     const res = await getForecast(url);
 
