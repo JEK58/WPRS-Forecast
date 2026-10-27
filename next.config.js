@@ -1,4 +1,4 @@
-import { withSentryConfig } from "@sentry/nextjs";
+import { withSentryConfig } from "@sentry/nextjs/config";
 import { withPlausibleProxy } from "next-plausible";
 import { env } from "./src/env.js";
 

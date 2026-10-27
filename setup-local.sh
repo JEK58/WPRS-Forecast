@@ -32,15 +32,14 @@ fail()  { printf '\033[1;31mXX\033[0m %s\n' "$*" >&2; exit 1; }
 # --- 1. Prerequisite checks -------------------------------------------------
 info "Checking prerequisites..."
 
-node --version >/dev/null 2>&1 || fail "Node.js not found. Install Node >= 18.17.0 (https://nodejs.org)."
+node --version >/dev/null 2>&1 || fail "Node.js not found. Install Node >= 24 (https://nodejs.org)."
 NODE_VER=$(node -p "process.versions.node")
 NODE_MAJOR=${NODE_VER%%.*}
-NODE_MINOR=$(echo "$NODE_VER" | cut -d. -f2)
-if [ "$NODE_MAJOR" -lt 18 ] || { [ "$NODE_MAJOR" -eq 18 ] && [ "${NODE_MINOR:-0}" -lt 17 ]; }; then
-  fail "Node >= 18.17.0 required (package.json engines), found $(node --version)."
+if [ "$NODE_MAJOR" -lt 24 ]; then
+  fail "Node >= 24 required (package.json engines), found $(node --version)."
 fi
 
-command -v pnpm >/dev/null 2>&1 || fail "pnpm not found. Install with: corepack enable pnpm  (pinned: pnpm@10.34.5)"
+command -v pnpm >/dev/null 2>&1 || fail "pnpm not found. Install with: corepack enable pnpm  (version pinned in package.json)"
 command -v docker >/dev/null 2>&1 || fail "Docker not found. Install Docker Desktop (https://docs.docker.com/get-docker/)."
 command -v bun >/dev/null 2>&1 && HAS_BUN=true || { HAS_BUN=false; warn "bun not found — optional, only needed for 'pnpm test' and 'pnpm db:import:competitions'. Install from https://bun.sh."; }
 docker info >/dev/null 2>&1 || fail "Docker daemon is not running. Start Docker Desktop first."

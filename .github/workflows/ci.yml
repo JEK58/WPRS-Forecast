@@ -1,4 +1,4 @@
-# This workflow will do a clean installation of node dependencies, cache/restore them, build the source code and run tests across different versions of node
+# Install the locked dependencies, validate the production build, and run tests.
 # For more information see: https://docs.github.com/en/actions/automating-builds-and-tests/building-and-testing-nodejs
 
 name: Run Tests
@@ -14,6 +14,7 @@ jobs:
     runs-on: ubuntu-latest
 
     env:
+      TZ: UTC
       DATABASE_URL: "postgres://postgres:postgres@localhost"
       API_KEY: ${{ secrets.API_KEY }}
       REDIS_URL: "localhost"
@@ -49,10 +50,23 @@ jobs:
 
     steps:
       - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: pnpm
       - uses: oven-sh/setup-bun@v1
 
-      - name: Install dependencies and run tests
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Lint
+        run: pnpm lint
+
+      - name: Build
+        run: pnpm build
+
+      - name: Run tests
         run: |
-          bun install
-          bun db:push
-          bun test:ci
+          pnpm db:push
+          pnpm test:ci

@@ -1,6 +1,6 @@
 # Local Setup Guide — WPRS Forecast
 
-Stack: Next.js + Postgres + Redis. Package manager: `pnpm@10.34.5`, Node `>=18.17`.
+Stack: Next.js + Postgres + Redis. Use Node 24 and the pnpm version pinned in `package.json`.
 `bun` is used for tests and the `db:import:competitions` script.
 
 ## Quickstart (automated)

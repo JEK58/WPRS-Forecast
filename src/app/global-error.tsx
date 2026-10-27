@@ -13,7 +13,6 @@ export default function GlobalError({ error }: { error: Error }) {
   return (
     <html>
       <body>
-        {/* eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-explicit-any */}
         <NextError statusCode={undefined as any} />{" "}
       </body>
     </html>
