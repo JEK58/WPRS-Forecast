@@ -10,7 +10,8 @@ export async function getMaxPilotsFromDescription(input: string) {
   if (input.length < 40) return 0;
   try {
     const completion = await openai.chat.completions.create({
-      model: "gpt-3.5-turbo",
+      model: "gpt-5.6-terra",
+      reasoning_effort: "none",
       messages: [
         {
           role: "system",

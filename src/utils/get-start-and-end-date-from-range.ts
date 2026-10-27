@@ -16,7 +16,7 @@ const COMP_DATE_CACHE_TTL = 60 * 60 * 24 * 20; // 20 days
 export async function getStartAndEndDateFromRange(input?: string) {
   if (!input) return;
 
-  // Check cache before asking GPT-3
+  // Check cache before asking OpenAI
   const cachedDate = redis
     ? await redis.get(`compDate:${input}`).catch(() => null)
     : null;
@@ -36,7 +36,8 @@ export async function getStartAndEndDateFromRange(input?: string) {
 
   try {
     const completion = await openai.chat.completions.create({
-      model: "gpt-4-turbo",
+      model: "gpt-5.6-sol",
+      reasoning_effort: "none",
       messages: [
         {
           role: "system",
