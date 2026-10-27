@@ -8,12 +8,14 @@ import { db } from "@/server/db";
 import { ranking } from "@/server/db/schema";
 import { inArray } from "drizzle-orm";
 import * as Sentry from "@sentry/nextjs";
+import { getCompetitionDateError } from "./competition-dates";
 
 const MIN_PILOTS = 25; // Minimum required confirmed pilots in a comp
 
 type Error =
   | "NOT_ENOUGH_PILOTS"
   | "PAST_EVENT"
+  | "COMPETITION_DATES_UNAVAILABLE"
   | "UNSUPPORTED_PLATFORM"
   | "NO_URL";
 export type GetForecastError = {
@@ -45,12 +47,8 @@ export async function getForecast(
   if (!comp || !platform) return { error: "UNSUPPORTED_PLATFORM" };
   if (comp?.pilots.length < MIN_PILOTS) return { error: "NOT_ENOUGH_PILOTS" };
 
-  // Check if the comp date is in the past
-  if (
-    comp.compDate?.endDate &&
-    isDateFromPreviousMonthOrOlder(comp.compDate.endDate)
-  )
-    return { error: "PAST_EVENT" };
+  const dateError = getCompetitionDateError(comp.compDate);
+  if (dateError) return { error: dateError };
 
   const confirmed = comp.pilots.filter((p) => p.confirmed);
   const numberOfConfirmed = confirmed.length;
@@ -155,19 +153,4 @@ function identifyCompHost(_url: string): Platform {
   if (url.hostname.endsWith("swissleague.ch")) return "SWISSLEAGUE";
   if (url.hostname.endsWith("pwca.org") || url.hostname.endsWith("pwca.events"))
     return "PWCA";
-}
-
-function isDateFromPreviousMonthOrOlder(dateToCompare: Date): boolean {
-  const currentDate = new Date();
-
-  const currentMonth = currentDate.getMonth();
-  const currentYear = currentDate.getFullYear();
-  const targetMonth = dateToCompare.getMonth();
-  const targetYear = dateToCompare.getFullYear();
-
-  const condition =
-    currentYear > targetYear ||
-    (currentYear === targetYear && currentMonth > targetMonth);
-
-  return condition ? true : false;
 }

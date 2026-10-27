@@ -11,6 +11,9 @@ export async function ForecastView({ url }: { url?: string }) {
 
     if (err === "NO_URL") errMessage = "No valid URL submitted";
     if (err === "PAST_EVENT") errMessage = "Competition date is in the past";
+    if (err === "COMPETITION_DATES_UNAVAILABLE")
+      errMessage =
+        "Could not verify the competition dates. Please try again later.";
     if (err === "NOT_ENOUGH_PILOTS")
       errMessage = "Not enough pilots in this comp.";
     if (err === "UNSUPPORTED_PLATFORM") errMessage = "No valid URL submitted.";

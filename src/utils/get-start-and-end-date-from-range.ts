@@ -2,6 +2,7 @@ import OpenAI from "openai";
 import { env } from "@/env.js";
 import * as Sentry from "@sentry/nextjs";
 import { redis } from "@/server/cache/redis";
+import { isValidCompetitionDateRange } from "./competition-dates";
 
 const openai = new OpenAI({
   apiKey: env.OPENAI_API_KEY,
@@ -24,10 +25,11 @@ export async function getStartAndEndDateFromRange(input?: string) {
   if (cachedDate) {
     try {
       const date = JSON.parse(cachedDate) as RedisCompDate;
-      return {
+      const compDate = {
         startDate: new Date(date.startDate),
         endDate: new Date(date.endDate),
       };
+      if (isValidCompetitionDateRange(compDate)) return compDate;
     } catch (error) {
       console.error("Error parsing JSON:", error);
       Sentry.captureException(error);
@@ -66,6 +68,9 @@ export async function getStartAndEndDateFromRange(input?: string) {
       startDate: new Date(startDate),
       endDate: new Date(endDate),
     };
+    if (!isValidCompetitionDateRange(compDate)) {
+      throw new Error("OpenAI returned invalid competition dates");
+    }
 
     // Cache result
     if (redis) {

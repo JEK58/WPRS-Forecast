@@ -1,5 +1,15 @@
 import { db } from "@/server/db";
-import { desc, eq, gt, isNotNull, and, isNull, sql } from "drizzle-orm";
+import {
+  desc,
+  eq,
+  gt,
+  gte,
+  lte,
+  isNotNull,
+  and,
+  isNull,
+  sql,
+} from "drizzle-orm";
 import { compRanking, usage } from "@/server/db/schema";
 import { z } from "zod";
 import { sanitizeUrl } from "@braintree/sanitize-url";
@@ -8,6 +18,7 @@ import { type GetForecastError, getForecast } from "@/utils/get-forecast";
 import { type Forecast } from "@/types/common";
 import * as Sentry from "@sentry/nextjs";
 import { cookies } from "next/headers";
+import { getCompetitionMonthStart } from "@/utils/competition-dates";
 
 const PILOT_COOKIE_NAME = "wprs_selected_pilot";
 const MAX_CIVL_ID = 10_000_000;
@@ -242,6 +253,9 @@ export async function fetchRecentQueries() {
         isNotNull(usage.potentialWprs),
         isNull(usage.error),
         gt(usage.createdAt, sql`NOW() - INTERVAL '10 days'`),
+        // Unknown dates must not let old events back into the forecast list.
+        gte(usage.endDate, getCompetitionMonthStart().toISOString()),
+        lte(usage.startDate, usage.endDate),
       ),
     )
     .orderBy(desc(usage.createdAt))
