@@ -85,6 +85,7 @@ may lag behind — if boot fails on env validation, compare against `src/env.js`
 | `OPENAI_API_KEY` | yes (schema) | boots with dummy, AI features fail gracefully | [platform.openai.com](https://platform.openai.com) → API keys → create key (`sk-...`). Used in `src/utils/get-start-and-end-date-from-range.ts` (`gpt-5.6-sol`) and `src/utils/get-max-pilots-from-description.ts` (`gpt-5.6-terra`). With a dummy key those helpers log an error and return `undefined` / `0` — the app still runs |
 | `ALGOLIA_APP_ID` / `ALGOLIA_API_KEY` | yes (schema) | boots with dummy, search falls back | [algolia.com](https://www.algolia.com) dashboard → your application → API keys, index `civl_ranking`. Used in `src/utils/get-civl-ids.ts` as a fallback after local Minisearch. Dummy works; tests even run with `DISABLE_ALGOLIA = true` (`__tests__/find-pilot.test.ts`) |
 | `NEXT_PUBLIC_PLAUSIBLE_SRC` | no | leave empty | Plausible dashboard → site-specific script URL. Analytics only |
+| `NEXT_PUBLIC_SENTRY_DSN` | no | leave empty | Opt-in Sentry reporting for browser, server, and edge. Set your project DSN before building; changes require a rebuild. Docker Compose passes it as a build argument. Reporting also requires production mode. |
 | `SENTRY_IGNORE_API_RESOLUTION_ERROR` | no | `1` | Sentry, prod-only |
 | `CLOUDFLARE_*` / `TRAEFIK_DOMAIN` | no (prod backup) | leave empty | Cloudflare R2 credentials for `backup/` service, prod-only |
 

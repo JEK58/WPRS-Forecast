@@ -19,6 +19,8 @@ RUN \
 FROM node:24-alpine AS builder
 
 ARG DATABASE_URL
+# Browser reporting is configured when Next.js builds the client bundle.
+ARG NEXT_PUBLIC_SENTRY_DSN
 
 WORKDIR /app
 COPY --from=deps /app/node_modules ./node_modules
