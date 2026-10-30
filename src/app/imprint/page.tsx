@@ -6,13 +6,13 @@ export default async function Page() {
     <PageContainer spaced={false}>
       <Box>
         <h2 className="card-title mb-6 text-2xl">Imprint</h2>
-        <p className="mb-6">This website is operated by:</p>
+        <p className="mb-6">Angaben gemäß § 5 DDG</p>
 
         <div className="mb-6">
           <p className="font-semibold">Stephan Schöpe</p>
-          <p>Geibelstr. 3</p>
-          <p>50931 Köln</p>
-          <p>Germany</p>
+          <p>c/o Impressumservice Dein-Impressum</p>
+          <p>Stettiner Str. 41</p>
+          <p>35410 Hungen</p>
           <p>
             <a
               href="mailto:hitme@stephanschoepe.de"
